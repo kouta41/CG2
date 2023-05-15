@@ -14,7 +14,7 @@
 int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	
 
-	WinApp* winapp = nullptr;
+	WinApp* winapp = new WinApp();
 
 	winapp->Initirize(L"CG2");
 
