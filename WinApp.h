@@ -2,11 +2,15 @@
 #include <Windows.h>
 #include <cstdint>
 
-class Win {
-	int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
+class WinApp {
+public:
+	WinApp(const wchar_t* title);
+	
 
-	}
-	const int32_t kClientWidth = 1280;
-	const int32_t kClientHeight = 720;
-	Win Draw(kClientWidth,);
+	static const int kClientWidth = 1280;
+	static const int kClientHeight = 720;
+	
+	static LRESULT WindowProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
+	
+	HWND hwnd = nullptr;
 };
