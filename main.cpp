@@ -3,24 +3,20 @@
 #include<format>
 #include <string>
 #include<d3d12.h>
-#include<dxgi1_6.h>
 #include<cassert> 
-#include<dxgidebug.h>
-#include<dxcapi.h>
 
-#pragma comment(lib,"dxcompiler.lib")
-#pragma comment(lib,"dxguid.lib")
-#pragma comment(lib,"d3d12.lib")
-#pragma comment(lib,"dxgi.lib")
 
 #include"WinApp.h"
+#include"ConvertString.h"
 
 
 //windowsアプリでのエントリーポイント(main関数)
 int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	
 
-	WinApp* winapp = new WinApp(L"CG2");
+	WinApp* winapp = nullptr;
+
+	winapp->Initirize(L"CG2");
 
 	MSG msg{};
 	//ウインドウのXボタンが押されるまでループ

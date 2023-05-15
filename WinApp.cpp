@@ -3,7 +3,7 @@
 
 
 	//ウインドウプロシージャ
-	LRESULT WinApp:: WindowProc(HWND hwnd, UINT msg,WPARAM wparam, LPARAM lparam) {
+	LRESULT WinApp::WindowProc(HWND hwnd, UINT msg,WPARAM wparam, LPARAM lparam) {
 	//メッセージに応じてゲーム固有の処理を行う
 	switch (msg) {
 		//ウインドウが破棄された
@@ -15,7 +15,7 @@
 	//標準のメッセージ処理を行う
 	return DefWindowProc(hwnd, msg, wparam, lparam);
 }
-	WinApp::WinApp(const wchar_t* title){
+	void WinApp::Initirize(const wchar_t* title){
 
 	WNDCLASS wc{};
 	//ウインドウプロシージャ
