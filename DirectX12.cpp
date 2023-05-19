@@ -2,7 +2,7 @@
 
 
 
-void DirectX12::Initirize(IDXGIFactory7* dxgiFactory, IDXGIAdapter4* useAdapte, ID3D12Device* device) {
+void DirectX12::Initirize(IDXGIFactory7* dxgiFactory, IDXGIAdapter4* useAdapter, ID3D12Device* device) {
 
 	void Log(const std::string & message);
 
@@ -12,7 +12,7 @@ void DirectX12::Initirize(IDXGIFactory7* dxgiFactory, IDXGIAdapter4* useAdapte, 
 	assert(SUCCEEDED(hr));
 
 	//使用するアダプタ用の変数。最初にnullptrを入れておく
-	IDXGIAdapter4* useAdapter = nullptr;
+	//IDXGIAdapter4* useAdapter = nullptr;
 	//よい順にアダプタに頼む
 	for (UINT i = 0; dxgiFactory->EnumAdapterByGpuPreference(i,
 		DXGI_GPU_PREFERENCE_HIGH_PERFORMANCE, IID_PPV_ARGS(&useAdapter)) !=

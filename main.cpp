@@ -19,10 +19,9 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 	winapp->Initirize(L"CG2");
 
-
-	DirectX12* directX12 = new DirectX12();
-
-	directX12->Initirize();
+	DirectX12* dxCommon = nullptr;
+	dxCommon = DirectX12::GetInstance();
+	dxCommon->Initirize();
 
 
 	MSG msg{};

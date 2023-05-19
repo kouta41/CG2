@@ -16,5 +16,17 @@
 class DirectX12 {
 public:
 
-	static void Initirize(IDXGIFactory7* dxgiFactory, IDXGIAdapter4* useAdapte, ID3D12Device* device);
+	static DirectX12* GetInstance();
+	 void Initirize(IDXGIFactory7* dxgiFactory,
+		IDXGIAdapter4* useAdapter,
+		ID3D12Device* device) {
+		 IDXGIFactory* dxgiFactory = nullptr;
+		 IDXGIAdapter4* useAdapte = nullptr;
+		 ID3D12Device* device = nullptr;
+	}
+private:
+	IDXGIFactory* dxgiFactory = nullptr;
+	IDXGIAdapter4* useAdapte = nullptr;
+	ID3D12Device* device=nullptr;
 };
+
