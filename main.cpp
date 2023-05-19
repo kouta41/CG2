@@ -8,6 +8,7 @@
 
 #include"WinApp.h"
 #include"ConvertString.h"
+#include"DirectX12.h"
 
 
 //windowsアプリでのエントリーポイント(main関数)
@@ -17,6 +18,12 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	WinApp* winapp = new WinApp();
 
 	winapp->Initirize(L"CG2");
+
+
+	DirectX12* directX12 = new DirectX12();
+
+	directX12->Initirize();
+
 
 	MSG msg{};
 	//ウインドウのXボタンが押されるまでループ
