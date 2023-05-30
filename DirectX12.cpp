@@ -2,9 +2,14 @@
 
 
 
-void DirectX12::Initirize(IDXGIFactory7* dxgiFactory, IDXGIAdapter4* useAdapter, ID3D12Device* device) {
+void DirectX12::Initirize() {
+	dxgiFactory = nullptr;
+	useAdapte = nullptr;
+	device = nullptr;
 
-	void Log(const std::string & message);
+}
+
+void DirectX12::Update() {
 
 	//HRESULTはWindows系のエラーコードであり、
 	//関数が成功したかどうかをSUCCEEDEDマクロで判定できる
@@ -51,4 +56,11 @@ void DirectX12::Initirize(IDXGIFactory7* dxgiFactory, IDXGIAdapter4* useAdapter,
 	assert(device != nullptr);
 	Log("Complete create D3D12Device!!!\n");
 }
+	//void Log(const std::string & message);
+
+void DirectX12::Draw() {
+
+
+}
+
 
