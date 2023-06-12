@@ -1,5 +1,6 @@
 #pragma once
 #include <Windows.h>
+#include<string>
 #include <cstdint>
 
 class WinApp {
@@ -7,7 +8,7 @@ private:
 	/*--ウィンドウクラスを登録する---*/
 	WNDCLASS wc_;
 
-	//クライアント�E領域サイズ
+	//クライアント�E領域サイズ
 	int32_t kClientWidth_;
 	int32_t kClientHeight_;
 
@@ -36,13 +37,13 @@ public:
 		LPARAM lparam
 	);
 
-	//ウィンドウの生�E
+	//ウィンドウの生成
 	void CreateAppWindow();
 	
 
 	//ウィンドウを表示する
 	void ShowAppWindow();
 
-	//メチE��ージの処琁E
+	//メッセージの処理
 	bool ProcessMessage();
 };

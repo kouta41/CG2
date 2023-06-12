@@ -1,23 +1,15 @@
 #include <Windows.h>
-#include<cstdint>
-#include<format>
-#include <string>
-#include<d3d12.h>
-#include<cassert> 
 
 
 #include"WinApp.h"
-#include"ConvertString.h"
-#include"DirectX12.h"
 
 
 //windowsアプリでのエントリーポイント(main関数)
 int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 	WinApp* winApp = new WinApp(1280, 720, L"CG2");
-	DirectX12* dxCommon = new DirectX12();
 	
-
+	
 	//
 	winApp->RegistrateWindowClass();
 	//
@@ -28,14 +20,10 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	winApp->ShowAppWindow();
 
 
-	/// <summary>
-	/// 
-	/// </summary>
-	dxCommon->UpdateDirectX();
 
 	MSG msg{};
 	//ウインドウのXボタンが押されるまでループ
-	while (WinApp::ProcessMessage() == 0) {
+	while (winApp->ProcessMessage() == 0) {
 
 		//windowsにメッセージが来たら最優先で処理させる
 		if (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE)) {
@@ -43,10 +31,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			DispatchMessage(&msg);
 		}
 		else {
-			/// <summary>
-			/// コマンド積む
-			/// </summary>
-			dxCommon->CommandPack();
+			
 
 		}
 	}

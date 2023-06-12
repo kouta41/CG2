@@ -1,12 +1,7 @@
 #include "WinApp.h"
 
-/// <summary>
-/// 
-/// </summary>
-/// <param name="width"></param>
-/// <param name="height"></param>
-/// <param name="title"></param>
-WinApp::WinApp(int width,int height,std::wstring title) {
+
+WinApp::WinApp(int width, int height, std::wstring title) {
 	this->kClientWidth_ = width;
 	this->kClientHeight_ = height;
 	this->title_ = title;
@@ -18,9 +13,6 @@ WinApp::WinApp(int width,int height,std::wstring title) {
 
 }
 
-/// <summary>
-/// 
-/// </summary>
 WinApp::~WinApp() {
 
 }
@@ -52,7 +44,7 @@ LRESULT CALLBACK WinApp::WindowProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM l
 
 
 void WinApp::CreateAppWindow() {
-	hwnd_ = CreateWindow(
+	this->hwnd_ = CreateWindow(
 		wc_.lpszClassName,        // 利用するクラス名
 		L"CG2",					 // タイトルバーの文字
 		WS_OVERLAPPEDWINDOW,	 // よく見るウィンドウスタイル
@@ -71,6 +63,17 @@ void WinApp::ShowAppWindow() {
 }
 
 bool WinApp::ProcessMessage() {
-	//ウインドウのXボタンが押されるまでループ
-	
+	MSG msg{}; // メッセージ
+
+	while (msg.message != WM_QUIT) {
+		if (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE)) {
+			TranslateMessage(&msg);
+			DispatchMessage(&msg);
+		}
+		else {
+			return false;
+		}
+		
+	}
+	return true;
 }
