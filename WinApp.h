@@ -2,6 +2,14 @@
 #include <Windows.h>
 #include<string>
 
+
+#include<d3d12.h>
+#include<dxgi1_6.h>
+//#include<cassert> 
+
+#pragma comment(lib,"d3d12.lib")
+#pragma comment(lib,"dxgi.lib")
+
 class WinApp {
 
 private:
@@ -19,6 +27,9 @@ private:
 
 	//ウィンドウ
 	HWND hwnd_;
+
+	ID3D12Debug1* debugController_;
+
 
 public:
 
@@ -55,5 +66,5 @@ public:
 
 	//
 	HWND Gethwnd_() { return this->hwnd_; }
-
+	ID3D12Debug1* GetdebugController_() { return debugController_; }
 };

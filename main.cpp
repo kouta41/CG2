@@ -34,6 +34,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		else {
 
 			dx12Common->DrawdirectX12();
+			dx12Common->DirectXRelease(winApp);
 		}
 	}
 }

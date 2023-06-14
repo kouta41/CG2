@@ -10,8 +10,13 @@ DirectX12::DirectX12() {
 	swapChain_ = nullptr;
 	rtvDescriptorHeap_ = nullptr;
 	swapChainResources_[2] = { nullptr };
-	rtvHandles_[2];
+	rtvHandles_[2]; 
+	infoQueue_ = nullptr;
+	fence_ = nullptr;
+	fenceValue_ = 0;
+	fenceEvent_;
 
+	debug_;
 
 	hr_;
 }
@@ -67,6 +72,37 @@ void DirectX12::Init(WinApp* winApp) {
 	assert(device_ != nullptr);
 	Log("Complete create D3D12Device!!!\n");
 
+#ifdef _DEBUG
+	
+	if (SUCCEEDED(device_->QueryInterface(IID_PPV_ARGS(&infoQueue_)))) {
+		//やばいエラー時に止まる
+		infoQueue_->SetBreakOnSeverity(D3D12_MESSAGE_SEVERITY_CORRUPTION, true);
+		//エラー時に止まる
+		infoQueue_->SetBreakOnSeverity(D3D12_MESSAGE_SEVERITY_ERROR, true);
+		////警告時に止まる
+		//infoQueue_->SetBreakOnSeverity(D3D12_MESSAGE_SEVERITY_WARNING, true);
+		//抑制するメッセージのID
+		D3D12_MESSAGE_ID denyIds[] = {
+			// Windows11でのDXGIデバックレイヤーとDX12デバックレイヤーの相互作用バグによるエラーメッセージ
+			// https://stackoverflow.com/questions/69805245/directx-12application-iscrashing-in-windows-11
+			D3D12_MESSAGE_ID_RESOURCE_BARRIER_MISMATCHING_COMMAND_LIST_TYPE
+		};
+		//抑制するレベル
+		D3D12_MESSAGE_SEVERITY severities[] = { D3D12_MESSAGE_SEVERITY_INFO };
+		D3D12_INFO_QUEUE_FILTER filter{};
+		filter.DenyList.NumIDs = _countof(denyIds);
+		filter.DenyList.pIDList = denyIds;
+		filter.DenyList.NumSeverities = _countof(severities);
+		filter.DenyList.pSeverityList = severities;
+		// 指定したメッセージの表示を抑制する
+		infoQueue_->PushStorageFilter(&filter);
+		
+		//解放
+		infoQueue_->Release();
+
+
+	}
+#endif // DEBUG
 
 	//コマンドキューを生成する
 	D3D12_COMMAND_QUEUE_DESC commandQueueDesc{};
@@ -127,16 +163,51 @@ void DirectX12::Init(WinApp* winApp) {
 	rtvHandles_[1].ptr = rtvHandles_[0].ptr + device_->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
 	//二つ目を作る
 	device_->CreateRenderTargetView(swapChainResources_[1], &rtvDesc, rtvHandles_[1]);
+
+	//初期値０でFenceを作る
+	hr_ = device_->CreateFence(fenceValue_, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&fence_));
+	assert(SUCCEEDED(hr_));
+
+	//FenceのSignalをもつためのイベントを作成する
+	fenceEvent_ = CreateEvent(NULL, FALSE, FALSE, NULL);
+	assert(fenceEvent_ != nullptr);
+
 }
 
 void DirectX12::DrawdirectX12() {
+
 	//これから書き込むバックバッファのインデックスを取得
 	UINT backBufferIndex = swapChain_->GetCurrentBackBufferIndex();
 
+	//TransitionBarrierの設定
+	D3D12_RESOURCE_BARRIER barrier{};
+	//今回のバリヤTransition
+	barrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
+	//Noneにしておく
+	barrier.Flags = D3D12_RESOURCE_BARRIER_FLAG_NONE;
+	//バリヤを張る対象のリソース。現在のバック府バッファに対して行う
+	barrier.Transition.pResource = swapChainResources_[backBufferIndex];
+	//遷移前（現在）のResourceState
+	barrier.Transition.StateBefore = D3D12_RESOURCE_STATE_PRESENT;
+	//遷移後のResourceState
+	barrier.Transition.StateAfter = D3D12_RESOURCE_STATE_RENDER_TARGET;
+	//TransitionBarrierを張る
+	commandList_->ResourceBarrier(1, &barrier);
+
+	//描画先のRTVを設定する
 	commandList_->OMSetRenderTargets(1, &rtvHandles_[backBufferIndex], false, nullptr);
 	//指定する色で画面全体をクリアする
 	float clearColor[] = { 0.1f,0.25f,0.5f,1.0f };
 	commandList_->ClearRenderTargetView(rtvHandles_[backBufferIndex], clearColor, 0, nullptr);
+	
+	//画面に描く処理はすべて終わり、画面に映すので、状態を遷移
+	//今回はRenderTargetからPresentにする
+	barrier.Transition.StateBefore = D3D12_RESOURCE_STATE_RENDER_TARGET;
+	barrier.Transition.StateAfter = D3D12_RESOURCE_STATE_PRESENT;
+	//TransitionBarrierを張る
+	commandList_->ResourceBarrier(1, &barrier);
+
+	//コマンドリストの内容を確定させる。すべてのコマンドを積んでからCloseすること
 	hr_ = commandList_->Close();
 	assert(SUCCEEDED(hr_));
 
@@ -145,10 +216,51 @@ void DirectX12::DrawdirectX12() {
 	commandQueue_->ExecuteCommandLists(1, commandLists);
 	//GPUとOSに画面を行うように通知する
 	swapChain_->Present(1, 0);
+
+	//Fenceの値を更新
+	fenceValue_++;
+	//GPUがここまでたどり着いたときに、Fenceの値を指定した値に代入するようにSignalを送る
+	commandQueue_->Signal(fence_, fenceValue_); 
+	//fenceの値が指定したSignal値にたどり着いているか確認する
+	//GetCompletedValueの初期値はFence作成時に渡した初期値
+	if (fence_->GetCompletedValue() < fenceValue_) {
+		//指定したSigenalにたどり着いていないので、たどり着くまで待つようにイベントを設定する
+		fence_->SetEventOnCompletion(fenceValue_, fenceEvent_);
+		//イベント待つ
+		WaitForSingleObject(fenceEvent_, INFINITE);
+	}
+
 	//次のフレーム用のコマンドリストの準備
 	hr_ = commandAllocator_->Reset();
 	assert(SUCCEEDED(hr_));
 	hr_ = commandList_->Reset(commandAllocator_, nullptr);
 	assert(SUCCEEDED(hr_));
 
+	
+}
+
+void DirectX12::DirectXRelease(WinApp* winApp) {
+	CloseHandle(fenceEvent_);
+	fence_->Release();
+	rtvDescriptorHeap_->Release();
+	swapChainResources_[0]->Release();
+	swapChainResources_[1]->Release();
+	swapChain_->Release();
+	commandList_->Release();
+	commandAllocator_->Release();
+	commandQueue_->Release();
+	device_->Release();
+	useAdapter_->Release();
+	dxgiFactory_->Release();
+#ifdef _DEBUG
+	winApp->GetdebugController_()->Release();
+#endif // _DEBUG
+	CloseWindow(winApp->Gethwnd_());
+
+	if (SUCCEEDED(DXGIGetDebugInterface1(0, IID_PPV_ARGS(&debug_)))) {
+		debug_->ReportLiveObjects(DXGI_DEBUG_ALL, DXGI_DEBUG_RLO_ALL);
+		debug_->ReportLiveObjects(DXGI_DEBUG_APP, DXGI_DEBUG_RLO_ALL);
+		debug_->ReportLiveObjects(DXGI_DEBUG_D3D12, DXGI_DEBUG_RLO_ALL);
+		debug_->Release();
+	}
 }

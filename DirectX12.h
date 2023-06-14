@@ -8,7 +8,9 @@
 #include<d3d12.h>
 #include<dxgi1_6.h>
 #include<cassert> 
+#include<dxgidebug.h>
 
+#pragma comment(lib,"dxguid.lib")
 #pragma comment(lib,"d3d12.lib")
 #pragma comment(lib,"dxgi.lib")
 
@@ -28,6 +30,12 @@ private:
 	ID3D12Resource* swapChainResources_[2];
 	D3D12_CPU_DESCRIPTOR_HANDLE rtvHandles_[2];
 
+	ID3D12InfoQueue* infoQueue_;
+	ID3D12Fence* fence_;
+	uint64_t fenceValue_;
+	HANDLE fenceEvent_;
+
+	IDXGIDebug1* debug_;
 
 	HRESULT hr_;
 
@@ -48,5 +56,5 @@ public:
 
 	void DrawdirectX12();
 
-
+	void DirectXRelease(WinApp* winApp);
 };

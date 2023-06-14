@@ -11,6 +11,9 @@ WinApp::WinApp(int width, int height, std::wstring title) {
 	wrc_ = { 0,0,kClientWidth_ ,kClientHeight_ };
 
 	hwnd_;
+
+	debugController_ = nullptr;
+
 }
 
 WinApp::~WinApp() {
@@ -56,7 +59,16 @@ void WinApp::CreateAppWindow() {
 		nullptr,				 // 親ウィンドウハンドル
 		nullptr,				 // メニューハンドル
 		wc_.hInstance,			 // インスタンスハンドル
-		nullptr);				 // オプション
+		nullptr);                // オプション
+
+#ifdef _DEBUG
+	if (SUCCEEDED(D3D12GetDebugInterface(IID_PPV_ARGS(&debugController_)))) {
+		//デバックレイヤーを有効化する
+		debugController_->EnableDebugLayer();
+		//さらにGPU側でもチェックを行うようにする
+		debugController_->SetEnableGPUBasedValidation(TRUE);
+	}
+#endif
 }
 
 void WinApp::ShowAppWindow() {
