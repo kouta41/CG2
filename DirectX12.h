@@ -1,6 +1,5 @@
-﻿#pragma once
+#pragma once
 #include <Windows.h>
-#include "ConvertString.h"
 
 #include<string>
 #include<format>
@@ -14,7 +13,8 @@
 #pragma comment(lib,"d3d12.lib")
 #pragma comment(lib,"dxgi.lib")
 
-#include"WinApp.h"
+class WinApp;
+class Triangle;
 
 class DirectX12 {
 private:
@@ -40,9 +40,7 @@ private:
 	HRESULT hr_;
 
 
-	void Log(const std::string& message) {
-		OutputDebugStringA(message.c_str());
-	}
+
 
 
 
@@ -52,9 +50,17 @@ public:
 	DirectX12();
 	~DirectX12();
 
-	void Init(WinApp* winApp);
+	void Init();
 
-	void DrawdirectX12();
+	void Initdxcommand(WinApp* winApp);
 
-	void DirectXRelease(WinApp* winApp);
+	void Loadcommand(Triangle* triangle);
+
+	void CreateFence();
+
+	void DirectXRelease(WinApp* winApp, Triangle* triangle);
+
+	HRESULT Gethr_() { return hr_; }
+
+	ID3D12Device* Getdevice() { return device_; }
 };

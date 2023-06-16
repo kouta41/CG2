@@ -1,16 +1,14 @@
-﻿#include<Windows.h>
+#include<Windows.h>
 #include "WinApp.h"
 #include"Directx12.h"
-#include"ConvertString.h"
-
+#include"Triangle.h"
 
 //windowsアプリでのエントリーポイント(main関数)
 int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 	WinApp* winApp = new WinApp(1280, 720, L"CG2");
 	DirectX12* dx12Common = new DirectX12();
-
-	//
+	Triangle* triangle = new Triangle();
 
 	//winApp->GetInstance();
 	winApp->RegistrateWindowClass();
@@ -19,8 +17,13 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	//ウィンドウを表示する
 	winApp->ShowAppWindow();
 
-	dx12Common->Init(winApp);
+	dx12Common->Init();
 
+	dx12Common->Initdxcommand(winApp);
+
+	triangle->Init(dx12Common);
+
+	
 
 	MSG msg{};
 	//ウインドウのXボタンが押されるまでループ
@@ -33,8 +36,12 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		}
 		else {
 
-			dx12Common->DrawdirectX12();
-			dx12Common->DirectXRelease(winApp);
+			dx12Common->Loadcommand(triangle);
+
+			dx12Common->CreateFence();
+			
 		}
 	}
+	dx12Common->DirectXRelease(winApp, triangle);
+	return 0;
 }
