@@ -1,4 +1,4 @@
-﻿#include"Triangle.h"
+#include"Triangle.h"
 #include "ConvertString.h"
 #include"CompileShader.h"
 #include"DirectX12.h"
@@ -12,21 +12,21 @@ Triangle::Triangle() {
 	rootSignature_=nullptr;
 	device_=nullptr;
 	graphicsPipelineState_ = nullptr;
-	vertexData_ = nullptr;
+	vertexData_;
 	viewport_;
 	scissorRect_;
 	vertexBufferView_;
 	vertexShaderBlob_;
 	pixelShaderBlob_;
+	triangleData[10];
+	
 }
 
 Triangle::~Triangle() {
 
 }
 
-
-
-void Triangle::Init(DirectX12* dx12Common) {
+void Triangle::Init(DirectX12* dx12Common, Vector4 triangleData[10]) {
 	//dxcCompilerを初期化
 	hr_ = DxcCreateInstance(CLSID_DxcUtils, IID_PPV_ARGS(&dxcUtils_));
 	assert(SUCCEEDED(hr_));
@@ -48,7 +48,7 @@ void Triangle::Init(DirectX12* dx12Common) {
 		assert(false);
 	}
 	//バイナリを元に生成
-	device_ = dx12Common->Getdevice();
+	device_=dx12Common->Getdevice();
 	hr_ = device_->CreateRootSignature(0, signatureBlob_->GetBufferPointer(), signatureBlob_->GetBufferSize(), IID_PPV_ARGS(&rootSignature_));
 	assert(SUCCEEDED(hr_));
 
@@ -130,6 +130,7 @@ void Triangle::Init(DirectX12* dx12Common) {
 
 
 	//頂点バッファビューを作成する
+	
 	//リソースの先頭のアドレスから使う
 	vertexBufferView_.BufferLocation = vertexResource_->GetGPUVirtualAddress();
 	//リソースの先頭のアドレスは頂点３つぶんのサイズ
@@ -141,14 +142,14 @@ void Triangle::Init(DirectX12* dx12Common) {
 	//頂点リソースにデータを書き込む
 	//書き込むためのアドレスを取得
 	vertexResource_->Map(0, nullptr, reinterpret_cast<void**>(&vertexData_));
+
 	//左下
-	vertexData_[0] = { -0.5f,-0.5f,0.0f,1.0f };
+	vertexData_[0] = triangleData[0];
 	//上
-	vertexData_[1] = { 0.0f,0.5f,0.0f,1.0f };
+	vertexData_[1] = triangleData[1];
 	//右下
-	vertexData_[2] = { 0.5f,-0.5f,0.0f,1.0f };
-
-
+	vertexData_[2] = triangleData[2];
+	
 	//ビューポート
 	//クライアント領域のサイズと一緒にして画面全体に表示
 	viewport_.Width = 1280;
@@ -164,4 +165,32 @@ void Triangle::Init(DirectX12* dx12Common) {
 	scissorRect_.right = 1280;
 	scissorRect_.top = 0;
 	scissorRect_.bottom = 720;
+
+}
+
+void Triangle::Loadcommand(DirectX12* dx12Common) {
+	//コマンド積む
+	dx12Common->GetcommandList()->RSSetViewports(1, &viewport_);
+	dx12Common->GetcommandList()->RSSetScissorRects(1, &scissorRect_);
+	//RootSignatureを設定。PSOに設定しているけど別途設定が必要
+	dx12Common->GetcommandList()->SetGraphicsRootSignature(rootSignature_);
+	dx12Common->GetcommandList()->SetPipelineState(graphicsPipelineState_);
+	dx12Common->GetcommandList()->IASetVertexBuffers(0, 1, &vertexBufferView_);
+	//形状を設定。PSOに設定しているものとはまたは別。同じものを設定すると考えておけばよい
+	dx12Common->GetcommandList()->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	//描画！（DrawCall/ドローコール）。３ちょうてんで１つのインスタンス。インスタンスについては今後
+	dx12Common->GetcommandList()->DrawInstanced(3, 1, 0, 0);
+}
+
+void Triangle::TriangleRelease() {
+
+	vertexResource_->Release();
+	graphicsPipelineState_->Release();
+	signatureBlob_->Release();
+	if (errorBlob_) {
+		errorBlob_->Release();
+	}
+	rootSignature_->Release();
+	pixelShaderBlob_->Release();
+	vertexShaderBlob_->Release();
 }

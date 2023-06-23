@@ -29,6 +29,7 @@ private:
 	ID3D12DescriptorHeap* rtvDescriptorHeap_;
 	ID3D12Resource* swapChainResources_[2];
 	D3D12_CPU_DESCRIPTOR_HANDLE rtvHandles_[2];
+	D3D12_RESOURCE_BARRIER barrier{};
 
 	ID3D12InfoQueue* infoQueue_;
 	ID3D12Fence* fence_;
@@ -54,13 +55,15 @@ public:
 
 	void Initdxcommand(WinApp* winApp);
 
-	void Loadcommand(Triangle* triangle);
+	void Loadcommand();
 
 	void CreateFence();
 
-	void DirectXRelease(WinApp* winApp, Triangle* triangle);
+	void DirectXRelease(WinApp* winApp);
 
 	HRESULT Gethr_() { return hr_; }
 
 	ID3D12Device* Getdevice() { return device_; }
+
+	ID3D12GraphicsCommandList* GetcommandList() { return commandList_; }
 };

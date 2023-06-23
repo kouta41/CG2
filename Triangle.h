@@ -1,9 +1,6 @@
 #pragma once
 #include <Windows.h>
-//#include<string>
-//#include<format>
-
-
+#include"Vector4.h"
 
 #include<dxcapi.h>
 #include<d3d12.h>
@@ -20,12 +17,7 @@ class DirectX12;
 
 class Triangle {
 private:
-	struct Vector4 final {
-		float x;
-		float y;
-		float z;
-		float w;
-	};
+	
 
 	IDxcUtils* dxcUtils_;
 	IDxcCompiler3* dxcCompiler_;
@@ -43,27 +35,33 @@ private:
 	IDxcBlob* vertexShaderBlob_;
 	IDxcBlob* pixelShaderBlob_;
 
+	
 
-	HRESULT hr_;
+
 
 	
+
+	HRESULT hr_;
 
 public:
 	Triangle();
 	~Triangle();
 
-	void Init(DirectX12* dx12Common);
+	
+	Vector4 triangleData[10];
 
 
-	D3D12_VIEWPORT &Getviewport() { return viewport_; }
-	D3D12_RECT &GetscissorRect() { return scissorRect_; }
-	ID3D12RootSignature* GetrootSignature() { return rootSignature_; }
-	ID3D12PipelineState* GetgraphicsPipelineState() { return graphicsPipelineState_; }
-	D3D12_VERTEX_BUFFER_VIEW &GetvertexBufferView() { return vertexBufferView_; }
 
-	ID3D12Resource* GetvertexResource() { return vertexResource_; }
-	ID3DBlob* GeterrorBlob() { return errorBlob_; }
-	ID3DBlob* GetsignatureBlob() { return signatureBlob_; }
-	IDxcBlob* GetvertexShaderBlob() { return vertexShaderBlob_; }
-	IDxcBlob* GetpixelShaderBlob() { return pixelShaderBlob_; }
+
+	void Init(DirectX12* dx12Common, Vector4 triangleData[10]);
+	
+
+
+	void Loadcommand(DirectX12* dx12Common);
+	
+	void TriangleRelease();
+	
+		
 };
+
+

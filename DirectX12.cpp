@@ -18,7 +18,6 @@ DirectX12::DirectX12() {
 	fence_ = nullptr;
 	fenceValue_ = 0;
 	fenceEvent_;
-
 	debug_;
 
 	hr_;
@@ -181,13 +180,13 @@ void DirectX12::Initdxcommand(WinApp* winApp) {
 
 
 
-void DirectX12::Loadcommand(Triangle* triangle) {
+void DirectX12::Loadcommand() {
 
 	//これから書き込むバックバッファのインデックスを取得
 	UINT backBufferIndex = swapChain_->GetCurrentBackBufferIndex();
 
 	//TransitionBarrierの設定
-	D3D12_RESOURCE_BARRIER barrier{};
+	
 	//今回のバリヤTransition
 	barrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
 	//Noneにしておく
@@ -208,22 +207,12 @@ void DirectX12::Loadcommand(Triangle* triangle) {
 	commandList_->ClearRenderTargetView(rtvHandles_[backBufferIndex], clearColor, 0, nullptr);
 	
 
-	//コマンド積む
-	commandList_->RSSetViewports(1, &triangle->Getviewport());
-	commandList_->RSSetScissorRects(1, &triangle->GetscissorRect());
-	//RootSignatureを設定。PSOに設定しているけど別途設定が必要
-	commandList_->SetGraphicsRootSignature(triangle->GetrootSignature());
-	commandList_->SetPipelineState(triangle->GetgraphicsPipelineState());
-	commandList_->IASetVertexBuffers(0, 1, &triangle->GetvertexBufferView());
-	//形状を設定。PSOに設定しているものとはまたは別。同じものを設定すると考えておけばよい
-	commandList_->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-	//描画！（DrawCall/ドローコール）。３ちょうてんで１つのインスタンス。インスタンスについては今後
-	commandList_->DrawInstanced(3, 1, 0, 0);
+	
+}
 
-
-
+void DirectX12::CreateFence() {
 	//画面に描く処理はすべて終わり、画面に映すので、状態を遷移
-	//今回はRenderTargetからPresentにする
+//今回はRenderTargetからPresentにする
 	barrier.Transition.StateBefore = D3D12_RESOURCE_STATE_RENDER_TARGET;
 	barrier.Transition.StateAfter = D3D12_RESOURCE_STATE_PRESENT;
 	//TransitionBarrierを張る
@@ -238,11 +227,6 @@ void DirectX12::Loadcommand(Triangle* triangle) {
 	commandQueue_->ExecuteCommandLists(1, commandLists);
 	//GPUとOSに画面を行うように通知する
 	swapChain_->Present(1, 0);
-
-	
-}
-
-void DirectX12::CreateFence() {
 	//Fenceの値を更新
 	fenceValue_++;
 	//GPUがここまでたどり着いたときに、Fenceの値を指定した値に代入するようにSignalを送る
@@ -263,7 +247,7 @@ void DirectX12::CreateFence() {
 	assert(SUCCEEDED(hr_));
 }
 
-void DirectX12::DirectXRelease(WinApp* winApp, Triangle* triangle)
+void DirectX12::DirectXRelease(WinApp* winApp)
 {
 	CloseHandle(fenceEvent_);
 	fence_->Release();
@@ -282,15 +266,7 @@ void DirectX12::DirectXRelease(WinApp* winApp, Triangle* triangle)
 #endif // _DEBUG
 	CloseWindow(winApp->Gethwnd_());
 
-	triangle->GetvertexResource()->Release();
-	triangle->GetgraphicsPipelineState()->Release();
-	triangle->GetsignatureBlob()->Release();
-	if (triangle->GeterrorBlob()) {
-		triangle->GeterrorBlob()->Release();
-	}
-	triangle->GetrootSignature()->Release();
-	triangle->GetpixelShaderBlob()->Release();
-	triangle->GetvertexShaderBlob()->Release();
+	
 
 	if (SUCCEEDED(DXGIGetDebugInterface1(0, IID_PPV_ARGS(&debug_)))) {
 		debug_->ReportLiveObjects(DXGI_DEBUG_ALL, DXGI_DEBUG_RLO_ALL);
