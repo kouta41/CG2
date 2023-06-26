@@ -1,19 +1,14 @@
-﻿#include"WinApp.h"
+#include"WinApp.h"
 
 
 WinApp::WinApp(int width, int height, std::wstring title) {
 	kClientWidth_ = width;
 	kClientHeight_ = height;
 	title_ = title;
-
 	wc_ = {};
-
 	wrc_ = { 0,0,kClientWidth_ ,kClientHeight_ };
-
 	hwnd_;
-
 	debugController_ = nullptr;
-
 }
 
 WinApp::~WinApp() {

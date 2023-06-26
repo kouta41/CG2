@@ -1,11 +1,10 @@
-﻿#pragma once
+#pragma once
 #include <Windows.h>
 #include<string>
 
 
 #include<d3d12.h>
 #include<dxgi1_6.h>
-//#include<cassert> 
 
 #pragma comment(lib,"d3d12.lib")
 #pragma comment(lib,"dxgi.lib")
@@ -60,11 +59,6 @@ public:
 	//メッセージの処理
 	bool ProcessMessage();
 
-	//int GetkClientWidth_() { return kClientWidth_; }
-	//int GetkClientHeight_() { return kClientHeight_; }
-
-
-	//
 	HWND Gethwnd_() { return this->hwnd_; }
 
 	ID3D12Debug1* GetdebugController_() { return debugController_; }

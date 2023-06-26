@@ -19,7 +19,6 @@ DirectX12::DirectX12() {
 	fenceValue_ = 0;
 	fenceEvent_;
 	debug_;
-
 	hr_;
 }
 
@@ -81,8 +80,6 @@ void DirectX12::Init() {
 		infoQueue_->SetBreakOnSeverity(D3D12_MESSAGE_SEVERITY_CORRUPTION, true);
 		//エラー時に止まる
 		infoQueue_->SetBreakOnSeverity(D3D12_MESSAGE_SEVERITY_ERROR, true);
-		////警告時に止まる
-		
 		//抑制するメッセージのID
 		D3D12_MESSAGE_ID denyIds[] = {
 			// Windows11でのDXGIデバックレイヤーとDX12デバックレイヤーの相互作用バグによるエラーメッセージ
@@ -101,7 +98,6 @@ void DirectX12::Init() {
 		
 		//解放
 		infoQueue_->Release();
-
 
 	}
 #endif // DEBUG
@@ -186,7 +182,6 @@ void DirectX12::Loadcommand() {
 	UINT backBufferIndex = swapChain_->GetCurrentBackBufferIndex();
 
 	//TransitionBarrierの設定
-	
 	//今回のバリヤTransition
 	barrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
 	//Noneにしておく
@@ -204,15 +199,12 @@ void DirectX12::Loadcommand() {
 	commandList_->OMSetRenderTargets(1, &rtvHandles_[backBufferIndex], false, nullptr);
 	//指定する色で画面全体をクリアする
 	float clearColor[] = { 0.1f,0.25f,0.5f,1.0f };
-	commandList_->ClearRenderTargetView(rtvHandles_[backBufferIndex], clearColor, 0, nullptr);
-	
-
-	
+	commandList_->ClearRenderTargetView(rtvHandles_[backBufferIndex], clearColor, 0, nullptr);	
 }
 
 void DirectX12::CreateFence() {
 	//画面に描く処理はすべて終わり、画面に映すので、状態を遷移
-//今回はRenderTargetからPresentにする
+	//今回はRenderTargetからPresentにする
 	barrier.Transition.StateBefore = D3D12_RESOURCE_STATE_RENDER_TARGET;
 	barrier.Transition.StateAfter = D3D12_RESOURCE_STATE_PRESENT;
 	//TransitionBarrierを張る
@@ -265,8 +257,6 @@ void DirectX12::DirectXRelease(WinApp* winApp)
 	winApp->GetdebugController_()->Release();
 #endif // _DEBUG
 	CloseWindow(winApp->Gethwnd_());
-
-	
 
 	if (SUCCEEDED(DXGIGetDebugInterface1(0, IID_PPV_ARGS(&debug_)))) {
 		debug_->ReportLiveObjects(DXGI_DEBUG_ALL, DXGI_DEBUG_RLO_ALL);

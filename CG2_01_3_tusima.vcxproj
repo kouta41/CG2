@@ -90,17 +90,17 @@ copy "$(windowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="CompileShader.cpp" />
     <ClCompile Include="ConvertString.cpp" />
     <ClCompile Include="DirectX12.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Resource.cpp" />
     <ClCompile Include="Triangle.cpp" />
     <ClCompile Include="WinApp.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="CompileShader.h" />
     <ClInclude Include="ConvertString.h" />
     <ClInclude Include="DirectX12.h" />
+    <ClInclude Include="Resource.h" />
     <ClInclude Include="Triangle.h" />
     <ClInclude Include="Types.h" />
     <ClInclude Include="Vector4.h" />

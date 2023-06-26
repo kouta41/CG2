@@ -30,23 +30,14 @@ private:
 	ID3D12Resource* swapChainResources_[2];
 	D3D12_CPU_DESCRIPTOR_HANDLE rtvHandles_[2];
 	D3D12_RESOURCE_BARRIER barrier{};
-
 	ID3D12InfoQueue* infoQueue_;
 	ID3D12Fence* fence_;
 	uint64_t fenceValue_;
 	HANDLE fenceEvent_;
-
 	IDXGIDebug1* debug_;
-
 	HRESULT hr_;
 
-
-
-
-
-
 public:
-	//WinApp* winApp = new WinApp(1280, 720, L"CG2");
 
 	DirectX12();
 	~DirectX12();
@@ -61,9 +52,8 @@ public:
 
 	void DirectXRelease(WinApp* winApp);
 
+
 	HRESULT Gethr_() { return hr_; }
-
 	ID3D12Device* Getdevice() { return device_; }
-
 	ID3D12GraphicsCommandList* GetcommandList() { return commandList_; }
 };

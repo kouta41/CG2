@@ -39,7 +39,6 @@ void Function::Log(const std::string& message) {
     OutputDebugStringA(message.c_str());
 }
 
-#include"CompileShader.h"
 
 IDxcBlob* CompileShader(
 	//CompilerするShaderファイルへのパス

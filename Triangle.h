@@ -34,13 +34,6 @@ private:
 	D3D12_VERTEX_BUFFER_VIEW vertexBufferView_{};
 	IDxcBlob* vertexShaderBlob_;
 	IDxcBlob* pixelShaderBlob_;
-
-	
-
-
-
-	
-
 	HRESULT hr_;
 
 public:
@@ -49,9 +42,6 @@ public:
 
 	
 	Vector4 triangleData[10];
-
-
-
 
 	void Init(DirectX12* dx12Common, Vector4 triangleData[10]);
 	
