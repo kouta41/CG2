@@ -74,7 +74,6 @@ void DirectX12::Init() {
 	Function::Log("Complete create D3D12Device!!!\n");
 
 #ifdef _DEBUG
-	
 	if (SUCCEEDED(device_->QueryInterface(IID_PPV_ARGS(&infoQueue_)))) {
 		//やばいエラー時に止まる
 		infoQueue_->SetBreakOnSeverity(D3D12_MESSAGE_SEVERITY_CORRUPTION, true);
@@ -95,14 +94,12 @@ void DirectX12::Init() {
 		filter.DenyList.pSeverityList = severities;
 		// 指定したメッセージの表示を抑制する
 		infoQueue_->PushStorageFilter(&filter);
-		
 		//解放
 		infoQueue_->Release();
-
 	}
 #endif // DEBUG
-
 }
+
 void DirectX12::Initdxcommand(WinApp* winApp) {
 
 	//コマンドキューを生成する
@@ -239,8 +236,7 @@ void DirectX12::CreateFence() {
 	assert(SUCCEEDED(hr_));
 }
 
-void DirectX12::DirectXRelease(WinApp* winApp)
-{
+void DirectX12::DirectXRelease(WinApp* winApp){
 	CloseHandle(fenceEvent_);
 	fence_->Release();
 	rtvDescriptorHeap_->Release();

@@ -8,17 +8,18 @@ Triangle::Triangle() {
 	errorBlob_ = nullptr;
 	includeHandler_ = nullptr;
 	signatureBlob_ = nullptr;
-	rootSignature_=nullptr;
-	device_=nullptr;
+	rootSignature_ = nullptr;
+	device_ = nullptr;
 	graphicsPipelineState_ = nullptr;
 	vertexData_;
+	materialDate_;
 	viewport_;
 	scissorRect_;
 	vertexBufferView_;
 	vertexShaderBlob_;
 	pixelShaderBlob_;
 	triangleData[10];
-	
+
 }
 
 Triangle::~Triangle() {
@@ -42,13 +43,12 @@ void Triangle::Init(DirectX12* dx12Common, Vector4 triangleData[10]) {
 	descriptionRootSignature.Flags = D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT;
 
 	//RootParameter作成。複数設定できるので配列。今回は結果1つだけなので長さ1の配列
-	D3D12_ROOT_PARAMETER rootParameters[1] = {};
-	rootParameters[0].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV; //CBVを使う
-	rootParameters[0].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;//PixelShaderで使う
-	rootParameters[0].Descriptor.ShaderRegister = 0;//レジスタ番号0とバインド
-	descriptionRootSignature.pParameters = rootParameters;//ルートパラメータ配列へのポインタ
-	descriptionRootSignature.NumParameters = _countof(rootParameters);//配列の長さ
-
+	D3D12_ROOT_PARAMETER rootParmeters[1] = {};
+	rootParmeters[0].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV; //CBVを使う
+	rootParmeters[0].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL; //PixelShaderで使う
+	rootParmeters[0].Descriptor.ShaderRegister = 0;//レジスタ番号0とバインド
+	descriptionRootSignature.pParameters = rootParmeters;//ルートパラメータ配列へのポインタ
+	descriptionRootSignature.NumParameters = _countof(rootParmeters);//配列の長さ
 	//シリアライズしてバイナリにする
 	hr_ = D3D12SerializeRootSignature(&descriptionRootSignature, D3D_ROOT_SIGNATURE_VERSION_1, &signatureBlob_, &errorBlob_);
 	if (FAILED(hr_)) {
@@ -56,8 +56,9 @@ void Triangle::Init(DirectX12* dx12Common, Vector4 triangleData[10]) {
 		assert(false);
 	}
 	//バイナリを元に生成
-	device_=dx12Common->Getdevice();
-	hr_ = device_->CreateRootSignature(0, signatureBlob_->GetBufferPointer(), signatureBlob_->GetBufferSize(), IID_PPV_ARGS(&rootSignature_));
+	device_ = dx12Common->Getdevice();
+	hr_ = device_->CreateRootSignature(0, signatureBlob_->GetBufferPointer(),
+		signatureBlob_->GetBufferSize(), IID_PPV_ARGS(&rootSignature_));
 	assert(SUCCEEDED(hr_));
 
 
@@ -76,7 +77,7 @@ void Triangle::Init(DirectX12* dx12Common, Vector4 triangleData[10]) {
 	D3D12_BLEND_DESC blendDesc{};
 	//すべての色要素を書き込む
 	blendDesc.RenderTarget[0].RenderTargetWriteMask =
-	D3D12_COLOR_WRITE_ENABLE_ALL;
+		D3D12_COLOR_WRITE_ENABLE_ALL;
 
 	//ResiterzerStateの設定
 	D3D12_RASTERIZER_DESC rasterizerDesc{};
@@ -94,7 +95,6 @@ void Triangle::Init(DirectX12* dx12Common, Vector4 triangleData[10]) {
 	assert(pixelShaderBlob_ != nullptr);
 
 
-	//PSOを生成する
 	D3D12_GRAPHICS_PIPELINE_STATE_DESC graphicsPipelineStateDesc{};
 	graphicsPipelineStateDesc.pRootSignature = rootSignature_;//RootSignature
 	graphicsPipelineStateDesc.InputLayout = inputLayoutDesc;//InputLayout
@@ -116,36 +116,69 @@ void Triangle::Init(DirectX12* dx12Common, Vector4 triangleData[10]) {
 	hr_ = device_->CreateGraphicsPipelineState(&graphicsPipelineStateDesc, IID_PPV_ARGS(&graphicsPipelineState_));
 	assert(SUCCEEDED(hr_));
 
+//	//頂点リソース用のヒープの設定
+//	D3D12_HEAP_PROPERTIES uploadHeapProperties{};
+//	uploadHeapProperties.Type = D3D12_HEAP_TYPE_UPLOAD;//UploadHeapを使う
+//	//頂点リソースの設定
+//	D3D12_RESOURCE_DESC ResourceDesc{};
+//	//頂点リソースの設定
+//D3D12_RESOURCE_DESC materialResourceDesc{};
+////バッファリソース。テクスチャの場合はまた別の設定をする
+//materialResourceDesc.Dimension = D3D12_RESOURCE_DIMENSION_BUFFER;
+//materialResourceDesc.Width = sizeof(Vector4) * 3;//リソースのサイズ。今回はVector4を３頂点分
+////バッファの場合はこれらは１にする決まり
+//materialResourceDesc.Height = 1;
+//materialResourceDesc.DepthOrArraySize = 1;
+//materialResourceDesc.MipLevels = 1;
+//materialResourceDesc.SampleDesc.Count = 1;
+////バッファの場合はこれらにする決まり
+//materialResourceDesc.Layout = D3D12_TEXTURE_LAYOUT_ROW_MAJOR;
+////実際に頂点リソースを作る
+//hr_ = device_->CreateCommittedResource(&uploadHeapProperties, D3D12_HEAP_FLAG_NONE, &materialResourceDesc, D3D12_RESOURCE_STATE_GENERIC_READ, nullptr, IID_PPV_ARGS(&materialResource_));
+//assert(SUCCEEDED(hr_));
 
-	//頂点リソース用のヒープの設定
-	D3D12_HEAP_PROPERTIES uploadHeapProperties{};
-	uploadHeapProperties.Type = D3D12_HEAP_TYPE_UPLOAD;//UploadHeapを使う
-	//頂点リソースの設定
-	D3D12_RESOURCE_DESC vertexResourceDesc{};
-	//バッファリソース。テクスチャの場合はまた別の設定をする
-	vertexResourceDesc.Dimension = D3D12_RESOURCE_DIMENSION_BUFFER;
-	vertexResourceDesc.Width = sizeof(Vector4) * 3;//リソースのサイズ。今回はVector4を３頂点分
-	//バッファの場合はこれらは１にする決まり
-	vertexResourceDesc.Height = 1;
-	vertexResourceDesc.DepthOrArraySize = 1;
-	vertexResourceDesc.MipLevels = 1;
-	vertexResourceDesc.SampleDesc.Count = 1;
-	//バッファの場合はこれらにする決まり
-	vertexResourceDesc.Layout = D3D12_TEXTURE_LAYOUT_ROW_MAJOR;
-	//実際に頂点リソースを作る
-	hr_ = device_->CreateCommittedResource(&uploadHeapProperties, D3D12_HEAP_FLAG_NONE, &vertexResourceDesc, D3D12_RESOURCE_STATE_GENERIC_READ, nullptr, IID_PPV_ARGS(&vertexResource_));
-	assert(SUCCEEDED(hr_));
-
-
+	materialResource_ = CreatBufferResource(device_, sizeof(Vector4)*3);
 	//頂点バッファビューを作成する
-	
+	//リソースの先頭のアドレスから使う
+	materialBufferView_.BufferLocation = materialResource_->GetGPUVirtualAddress();
+	//リソースの先頭のアドレスは頂点３つぶんのサイズ
+	materialBufferView_.SizeInBytes = sizeof(Vector4);
+	//1頂点当たりのサイズ
+	materialBufferView_.StrideInBytes = sizeof(Vector4);
+
+	//頂点リソースにデータを書き込む
+	//書き込むためのアドレスを取得
+	materialResource_->Map(0, nullptr, reinterpret_cast<void**>(&materialDate_));
+
+	*materialDate_ = Vector4(1.0f, 0.0f, 0.0f, 1.0f);
+
+	////頂点リソース用のヒープの設定
+	//D3D12_HEAP_PROPERTIES uploadHeapProperties{};
+	//uploadHeapProperties.Type = D3D12_HEAP_TYPE_UPLOAD;//UploadHeapを使う
+	//頂点リソースの設定
+	//D3D12_RESOURCE_DESC vertexResourceDesc{};
+	////バッファリソース。テクスチャの場合はまた別の設定をする
+	//vertexResourceDesc.Dimension = D3D12_RESOURCE_DIMENSION_BUFFER;
+	//vertexResourceDesc.Width = sizeof(Vector4) * 3;//リソースのサイズ。今回はVector4を３頂点分
+	////バッファの場合はこれらは１にする決まり
+	//vertexResourceDesc.Height = 1;
+	//vertexResourceDesc.DepthOrArraySize = 1;
+	//vertexResourceDesc.MipLevels = 1;
+	//vertexResourceDesc.SampleDesc.Count = 1;
+	////バッファの場合はこれらにする決まり
+	//vertexResourceDesc.Layout = D3D12_TEXTURE_LAYOUT_ROW_MAJOR;
+	////実際に頂点リソースを作る
+	//hr_ = device_->CreateCommittedResource(&uploadHeapProperties, D3D12_HEAP_FLAG_NONE, &vertexResourceDesc, D3D12_RESOURCE_STATE_GENERIC_READ, nullptr, IID_PPV_ARGS(&vertexResource_));
+	//assert(SUCCEEDED(hr_));
+
+	vertexResource_ = CreatBufferResource(device_, sizeof(Vector4)*3);
+	//頂点バッファビューを作成する
 	//リソースの先頭のアドレスから使う
 	vertexBufferView_.BufferLocation = vertexResource_->GetGPUVirtualAddress();
 	//リソースの先頭のアドレスは頂点３つぶんのサイズ
 	vertexBufferView_.SizeInBytes = sizeof(Vector4) * 3;
 	//1頂点当たりのサイズ
 	vertexBufferView_.StrideInBytes = sizeof(Vector4);
-
 
 	//頂点リソースにデータを書き込む
 	//書き込むためのアドレスを取得
@@ -157,7 +190,7 @@ void Triangle::Init(DirectX12* dx12Common, Vector4 triangleData[10]) {
 	vertexData_[1] = triangleData[1];
 	//右下
 	vertexData_[2] = triangleData[2];
-	
+
 	//ビューポート
 	//クライアント領域のサイズと一緒にして画面全体に表示
 	viewport_.Width = 1280;
@@ -173,7 +206,6 @@ void Triangle::Init(DirectX12* dx12Common, Vector4 triangleData[10]) {
 	scissorRect_.right = 1280;
 	scissorRect_.top = 0;
 	scissorRect_.bottom = 720;
-
 }
 
 void Triangle::Loadcommand(DirectX12* dx12Common) {
@@ -184,8 +216,10 @@ void Triangle::Loadcommand(DirectX12* dx12Common) {
 	dx12Common->GetcommandList()->SetGraphicsRootSignature(rootSignature_);
 	dx12Common->GetcommandList()->SetPipelineState(graphicsPipelineState_);
 	dx12Common->GetcommandList()->IASetVertexBuffers(0, 1, &vertexBufferView_);
+//	dx12Common->GetcommandList()->IASetVertexBuffers(0, 1, &materialBufferView_);
 	//形状を設定。PSOに設定しているものとはまたは別。同じものを設定すると考えておけばよい
 	dx12Common->GetcommandList()->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	dx12Common->GetcommandList()->SetGraphicsRootConstantBufferView(0, materialResource_->GetGPUVirtualAddress());
 	//描画！（DrawCall/ドローコール）。３ちょうてんで１つのインスタンス。インスタンスについては今後
 	dx12Common->GetcommandList()->DrawInstanced(3, 1, 0, 0);
 }
@@ -193,6 +227,8 @@ void Triangle::Loadcommand(DirectX12* dx12Common) {
 void Triangle::TriangleRelease() {
 
 	vertexResource_->Release();
+	materialResource_->Release();
+
 	graphicsPipelineState_->Release();
 	signatureBlob_->Release();
 	if (errorBlob_) {
@@ -201,4 +237,30 @@ void Triangle::TriangleRelease() {
 	rootSignature_->Release();
 	pixelShaderBlob_->Release();
 	vertexShaderBlob_->Release();
+}
+
+ID3D12Resource* Triangle::CreatBufferResource(ID3D12Device* device_, size_t sizeInBytes) {
+	//頂点リソース用のヒープの設定
+	D3D12_HEAP_PROPERTIES uploadHeapProperties{};
+	uploadHeapProperties.Type = D3D12_HEAP_TYPE_UPLOAD;//UploadHeapを使う
+	//頂点リソースの設定
+	D3D12_RESOURCE_DESC ResourceDesc{};
+	//バッファリソース。テクスチャの場合はまた別の設定をする
+	ResourceDesc.Dimension = D3D12_RESOURCE_DIMENSION_BUFFER;
+	ResourceDesc.Width = sizeInBytes;//リソースのサイズ。今回はVector4を３頂点分
+	//バッファの場合はこれらは１にする決まり
+	ResourceDesc.Height = 1;
+	ResourceDesc.DepthOrArraySize = 1;
+	ResourceDesc.MipLevels = 1;
+	ResourceDesc.SampleDesc.Count = 1;
+	//バッファの場合はこれらにする決まり
+	ResourceDesc.Layout = D3D12_TEXTURE_LAYOUT_ROW_MAJOR;
+	//実際に頂点リソースを作る
+	ID3D12Resource* Resource_ = nullptr;
+	hr_ = device_->CreateCommittedResource(&uploadHeapProperties, D3D12_HEAP_FLAG_NONE, &ResourceDesc,
+		D3D12_RESOURCE_STATE_GENERIC_READ, nullptr, IID_PPV_ARGS(&Resource_));
+	assert(SUCCEEDED(hr_));
+
+	return Resource_;
+
 }

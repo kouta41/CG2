@@ -102,7 +102,6 @@ copy "$(windowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="DirectX12.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="Triangle.h" />
-    <ClInclude Include="Types.h" />
     <ClInclude Include="Vector4.h" />
     <ClInclude Include="WinApp.h" />
   </ItemGroup>

@@ -22,7 +22,7 @@ public:
 #include <debugapi.h>
 #include "ConvertString.h"
 #include <cassert>
-
+#include<d3d12.h>
 
 #pragma comment(lib,"dxcompiler.lib")
 
@@ -35,3 +35,7 @@ IDxcBlob* CompileShader(
 	IDxcUtils* dxcUtils,
 	IDxcCompiler3* dxcCompiler,
 	IDxcIncludeHandler* includeHandler);
+
+
+
+
