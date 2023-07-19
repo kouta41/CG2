@@ -19,14 +19,19 @@ Triangle::Triangle() {
 	vertexShaderBlob_;
 	pixelShaderBlob_;
 	triangleData[10];
-
+	wvpDate_ = nullptr;
+	wvpResource_ = nullptr;
+	wvpmResource_ = nullptr;
+	transform_={ {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f} };
+	cameraTransfrom_ = { {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},{0.0f,0.0f,-5.0f} };
+	transformationMatrixData_ = nullptr;
 }
 
 Triangle::~Triangle() {
 
 }
 
-void Triangle::Init(DirectX12* dx12Common, Vector4 triangleData[10]) {
+void Triangle::Init(DirectX12* dx12Common) {
 	//dxcCompilerを初期化
 	hr_ = DxcCreateInstance(CLSID_DxcUtils, IID_PPV_ARGS(&dxcUtils_));
 	assert(SUCCEEDED(hr_));
@@ -43,10 +48,13 @@ void Triangle::Init(DirectX12* dx12Common, Vector4 triangleData[10]) {
 	descriptionRootSignature.Flags = D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT;
 
 	//RootParameter作成。複数設定できるので配列。今回は結果1つだけなので長さ1の配列
-	D3D12_ROOT_PARAMETER rootParmeters[1] = {};
+	D3D12_ROOT_PARAMETER rootParmeters[2] = {};
 	rootParmeters[0].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV; //CBVを使う
 	rootParmeters[0].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL; //PixelShaderで使う
 	rootParmeters[0].Descriptor.ShaderRegister = 0;//レジスタ番号0とバインド
+	rootParmeters[1].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV; //CBVを使う
+	rootParmeters[1].ShaderVisibility = D3D12_SHADER_VISIBILITY_VERTEX; //PixelShaderで使う
+	rootParmeters[1].Descriptor.ShaderRegister = 0;//レジスタ番号0とバインド
 	descriptionRootSignature.pParameters = rootParmeters;//ルートパラメータ配列へのポインタ
 	descriptionRootSignature.NumParameters = _countof(rootParmeters);//配列の長さ
 	//シリアライズしてバイナリにする
@@ -116,28 +124,11 @@ void Triangle::Init(DirectX12* dx12Common, Vector4 triangleData[10]) {
 	hr_ = device_->CreateGraphicsPipelineState(&graphicsPipelineStateDesc, IID_PPV_ARGS(&graphicsPipelineState_));
 	assert(SUCCEEDED(hr_));
 
-//	//頂点リソース用のヒープの設定
-//	D3D12_HEAP_PROPERTIES uploadHeapProperties{};
-//	uploadHeapProperties.Type = D3D12_HEAP_TYPE_UPLOAD;//UploadHeapを使う
-//	//頂点リソースの設定
-//	D3D12_RESOURCE_DESC ResourceDesc{};
-//	//頂点リソースの設定
-//D3D12_RESOURCE_DESC materialResourceDesc{};
-////バッファリソース。テクスチャの場合はまた別の設定をする
-//materialResourceDesc.Dimension = D3D12_RESOURCE_DIMENSION_BUFFER;
-//materialResourceDesc.Width = sizeof(Vector4) * 3;//リソースのサイズ。今回はVector4を３頂点分
-////バッファの場合はこれらは１にする決まり
-//materialResourceDesc.Height = 1;
-//materialResourceDesc.DepthOrArraySize = 1;
-//materialResourceDesc.MipLevels = 1;
-//materialResourceDesc.SampleDesc.Count = 1;
-////バッファの場合はこれらにする決まり
-//materialResourceDesc.Layout = D3D12_TEXTURE_LAYOUT_ROW_MAJOR;
-////実際に頂点リソースを作る
-//hr_ = device_->CreateCommittedResource(&uploadHeapProperties, D3D12_HEAP_FLAG_NONE, &materialResourceDesc, D3D12_RESOURCE_STATE_GENERIC_READ, nullptr, IID_PPV_ARGS(&materialResource_));
-//assert(SUCCEEDED(hr_));
+}
 
-	materialResource_ = CreatBufferResource(device_, sizeof(Vector4)*3);
+void Triangle::Draw(Vector4 triangleData[10]) {
+
+	materialResource_ = CreatBufferResource(device_, sizeof(Vector4) * 3);
 	//頂点バッファビューを作成する
 	//リソースの先頭のアドレスから使う
 	materialBufferView_.BufferLocation = materialResource_->GetGPUVirtualAddress();
@@ -152,26 +143,7 @@ void Triangle::Init(DirectX12* dx12Common, Vector4 triangleData[10]) {
 
 	*materialDate_ = Vector4(1.0f, 0.0f, 0.0f, 1.0f);
 
-	////頂点リソース用のヒープの設定
-	//D3D12_HEAP_PROPERTIES uploadHeapProperties{};
-	//uploadHeapProperties.Type = D3D12_HEAP_TYPE_UPLOAD;//UploadHeapを使う
-	//頂点リソースの設定
-	//D3D12_RESOURCE_DESC vertexResourceDesc{};
-	////バッファリソース。テクスチャの場合はまた別の設定をする
-	//vertexResourceDesc.Dimension = D3D12_RESOURCE_DIMENSION_BUFFER;
-	//vertexResourceDesc.Width = sizeof(Vector4) * 3;//リソースのサイズ。今回はVector4を３頂点分
-	////バッファの場合はこれらは１にする決まり
-	//vertexResourceDesc.Height = 1;
-	//vertexResourceDesc.DepthOrArraySize = 1;
-	//vertexResourceDesc.MipLevels = 1;
-	//vertexResourceDesc.SampleDesc.Count = 1;
-	////バッファの場合はこれらにする決まり
-	//vertexResourceDesc.Layout = D3D12_TEXTURE_LAYOUT_ROW_MAJOR;
-	////実際に頂点リソースを作る
-	//hr_ = device_->CreateCommittedResource(&uploadHeapProperties, D3D12_HEAP_FLAG_NONE, &vertexResourceDesc, D3D12_RESOURCE_STATE_GENERIC_READ, nullptr, IID_PPV_ARGS(&vertexResource_));
-	//assert(SUCCEEDED(hr_));
-
-	vertexResource_ = CreatBufferResource(device_, sizeof(Vector4)*3);
+	vertexResource_ = CreatBufferResource(device_, sizeof(Vector4) * 3);
 	//頂点バッファビューを作成する
 	//リソースの先頭のアドレスから使う
 	vertexBufferView_.BufferLocation = vertexResource_->GetGPUVirtualAddress();
@@ -190,6 +162,26 @@ void Triangle::Init(DirectX12* dx12Common, Vector4 triangleData[10]) {
 	vertexData_[1] = triangleData[1];
 	//右下
 	vertexData_[2] = triangleData[2];
+
+
+	//WVP用のリソースを作る。matrix4x4 一つ分サイズ分を用意する
+	wvpResource_ = CreatBufferResource(device_, sizeof(Matrix4x4));
+	//データを書き込むためのアドレスを取得
+	wvpResource_->Map(0, nullptr, reinterpret_cast<void**>(&wvpDate_));
+	transform_.rotate.y += 0.03f;
+	Matrix4x4 WorldMatrix = MakeAffineMatrix(transform_.scale, transform_.rotate, transform_.translate);
+	//単位行列を書き込んでおく
+	*wvpDate_ = WorldMatrix;
+
+
+	wvpmResource_ = CreatBufferResource(device_, sizeof(Matrix4x4));
+	wvpmResource_->Map(0, nullptr, reinterpret_cast<void**>(&transformationMatrixData_));
+	Matrix4x4 worldMatrix = MakeAffineMatrix(transform_.scale, transform_.rotate, transform_.translate);
+	Matrix4x4 cameraMatrix = MakeAffineMatrix(cameraTransfrom_.scale, cameraTransfrom_.rotate, cameraTransfrom_.translate);
+	Matrix4x4 viewMatrix = Inverse(cameraMatrix);
+	Matrix4x4 projectionMatrix = MakePerspectiveFovMatrix(0.45f, 1280 / 720, 0.1f, 100.0f);
+	Matrix4x4 worldViewProjectionMatrix = Multiply(worldMatrix, Multiply(viewMatrix, projectionMatrix));
+	*transformationMatrixData_ = worldViewProjectionMatrix;
 
 	//ビューポート
 	//クライアント領域のサイズと一緒にして画面全体に表示
@@ -220,6 +212,7 @@ void Triangle::Loadcommand(DirectX12* dx12Common) {
 	//形状を設定。PSOに設定しているものとはまたは別。同じものを設定すると考えておけばよい
 	dx12Common->GetcommandList()->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	dx12Common->GetcommandList()->SetGraphicsRootConstantBufferView(0, materialResource_->GetGPUVirtualAddress());
+	dx12Common->GetcommandList()->SetGraphicsRootConstantBufferView(1, wvpResource_->GetGPUVirtualAddress());
 	//描画！（DrawCall/ドローコール）。３ちょうてんで１つのインスタンス。インスタンスについては今後
 	dx12Common->GetcommandList()->DrawInstanced(3, 1, 0, 0);
 }
@@ -228,6 +221,7 @@ void Triangle::TriangleRelease() {
 
 	vertexResource_->Release();
 	materialResource_->Release();
+	wvpResource_->Release();
 
 	graphicsPipelineState_->Release();
 	signatureBlob_->Release();

@@ -2,7 +2,6 @@
 #include "WinApp.h"
 #include"Directx12.h"
 #include"Triangle.h"
-#include"Vector4.h"
 
 
 //windowsアプリでのエントリーポイント(main関数)
@@ -11,6 +10,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	WinApp* winApp = new WinApp(1280, 720, L"CG2");
 	DirectX12* dx12Common = new DirectX12();
 	Triangle* triangle[10] = { new Triangle() };
+
 
 	//winApp->GetInstance();
 	winApp->RegistrateWindowClass();
@@ -32,7 +32,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	}	
 
 	for (int i = 0; i < kaunt; i++) {
-		triangle[i]->Init(dx12Common, triangle[i]->triangleData);
+		triangle[i]->Init(dx12Common);
 	}
 	
 
@@ -50,6 +50,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 			for (int i = 0; i < kaunt; i++)
 			{
+				triangle[i]->Draw(triangle[i]->triangleData);
 				triangle[i]->Loadcommand(dx12Common);
 			}
 

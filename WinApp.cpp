@@ -16,6 +16,7 @@ WinApp::~WinApp() {
 }
 
 void WinApp::RegistrateWindowClass() {
+	
 	//ウインドウプロシージャ
 	wc_.lpfnWndProc = WindowProc;
 	//ウインドウクラス名（何でもよい）

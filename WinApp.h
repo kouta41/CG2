@@ -2,7 +2,6 @@
 #include <Windows.h>
 #include<string>
 
-
 #include<d3d12.h>
 #include<dxgi1_6.h>
 
