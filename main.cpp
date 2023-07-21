@@ -24,18 +24,6 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	dx12Common->Initdxcommand(winApp);
 
 
-	//triangle[0]->triangleData[0] = { -0.8f,0.8f,0.0f,1.0f };
-
-	/*triangle[0]->triangleData[1] = { -0.7f,0.9f,0.0f,1.0f };
-
-	triangle[0]->triangleData[2] = { -0.6f,0.8f,0.0f,1.0f };
-
-
-	triangle[0]->triangleData[0] = { -0.7f,0.8f,0.0f,1.0f };
-
-	triangle[0]->triangleData[1] = { -0.6f,0.9f,0.0f,1.0f };
-
-	triangle[0]->triangleData[2] = { -0.5f,0.8f,0.0f,1.0f }*/;
 	                                              
 	for (int i = 0; i < kaunt; i++) {
 		triangle[i] = new Triangle();
