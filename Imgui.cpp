@@ -20,6 +20,9 @@ Imgui::~Imgui() {
 }
 
 void Imgui::Init() {
+	IMGUI_CHECKVERSION();
+	ImGui::CreateContext();
+	ImGui::StyleColorsDark(hwnd);
 
 }
 
