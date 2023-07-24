@@ -129,7 +129,6 @@ void Triangle::Init(DirectX12* dx12Common, Vector4 triangleData[10]) {
 
 
 	//頂点バッファビューを作成する
-	
 	//リソースの先頭のアドレスから使う
 	vertexBufferView_.BufferLocation = vertexResource_->GetGPUVirtualAddress();
 	//リソースの先頭のアドレスは頂点３つぶんのサイズ
