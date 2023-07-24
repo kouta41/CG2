@@ -1,6 +1,5 @@
 #include"Triangle.h"
 #include "ConvertString.h"
-#include"CompileShader.h"
 #include"DirectX12.h"
 
 Triangle::Triangle() {

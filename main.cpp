@@ -7,7 +7,7 @@
 
 //windowsアプリでのエントリーポイント(main関数)
 int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
-	int kaunt = 10;
+	int count = 10;
 	WinApp* winApp = new WinApp(1280, 720, L"CG2");
 	DirectX12* dx12Common = new DirectX12();
 	Triangle* triangle[10] = { new Triangle() };
@@ -24,8 +24,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	dx12Common->Initdxcommand(winApp);
 
 
-	                                              
-	for (int i = 0; i < kaunt; i++) {
+	for (int i = 0; i < count; i++) {
 		triangle[i] = new Triangle();
 
 		triangle[i]->triangleData[0] = { -0.8f + (i * 0.1f),0.8f,0.0f,1.0f };
@@ -36,19 +35,10 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	}
 
 
-	//手順
-
-	// 0. Kamata Engineを参考にしてVector4.hをつくる X
-	// 1. 三角形をひとつ描画する X
-	// 2. 三角形のデータの構造体を作る X
-	// 3. 構造体化された三角形をひとつ描画する X
-	// 4. 複数個の三角形を描画する
-	
-
-	for (int i = 0; i < kaunt; i++) {
+	for (int i = 0; i < count; i++) {
 		triangle[i]->Init(dx12Common, triangle[i]->triangleData);
 	}
-	
+
 
 	MSG msg{};
 	//ウインドウのXボタンが押されるまでループ
@@ -62,18 +52,18 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		else {
 			dx12Common->Loadcommand();
 
-			for (int i = 0; i < kaunt; i++)
+			for (int i = 0; i < count; i++)
 			{
 				triangle[i]->Loadcommand(dx12Common);
 			}
 
-			dx12Common->CreateFence();	
+			dx12Common->CreateFence();
 		}
 	}
-		dx12Common->DirectXRelease(winApp);
-		for (int i = 0; i < kaunt; i++)
-		{
-			triangle[i]->TriangleRelease();
-		}
+	dx12Common->DirectXRelease(winApp);
+	for (int i = 0; i < count; i++)
+	{
+		triangle[i]->TriangleRelease();
+	}
 	return 0;
 }

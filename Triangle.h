@@ -18,7 +18,6 @@ class DirectX12;
 class Triangle {
 private:
 	
-
 	IDxcUtils* dxcUtils_;
 	IDxcCompiler3* dxcCompiler_;
 	ID3DBlob* errorBlob_;
@@ -34,13 +33,6 @@ private:
 	D3D12_VERTEX_BUFFER_VIEW vertexBufferView_{};
 	IDxcBlob* vertexShaderBlob_;
 	IDxcBlob* pixelShaderBlob_;
-
-	
-
-
-
-	
-
 	HRESULT hr_;
 
 public:
@@ -51,16 +43,11 @@ public:
 	Vector4 triangleData[10];
 
 
-
-
 	void Init(DirectX12* dx12Common, Vector4 triangleData[10]);
 	
-
-
 	void Loadcommand(DirectX12* dx12Common);
 	
 	void TriangleRelease();
-	
 		
 };
 

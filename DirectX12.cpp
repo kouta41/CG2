@@ -19,7 +19,6 @@ DirectX12::DirectX12() {
 	fenceValue_ = 0;
 	fenceEvent_;
 	debug_;
-
 	hr_;
 }
 
