@@ -11,6 +11,7 @@ Triangle::Triangle() {
 	rootSignature_=nullptr;
 	device_=nullptr;
 	graphicsPipelineState_ = nullptr;
+	commandList_ = nullptr;
 	vertexData_;
 	viewport_;
 	scissorRect_;
@@ -163,21 +164,23 @@ void Triangle::Init(DirectX12* dx12Common, Vector4 triangleData[10]) {
 	scissorRect_.right = 1280;
 	scissorRect_.top = 0;
 	scissorRect_.bottom = 720;
+
+	commandList_ = dx12Common->GetcommandList();
 }
 
-void Triangle::Draw( DirectX12* dx12Common) {
+void Triangle::Draw() {
 	
 	//コマンド積む
-	dx12Common->GetcommandList()->RSSetViewports(1, &viewport_);
-	dx12Common->GetcommandList()->RSSetScissorRects(1, &scissorRect_);
+	commandList_->RSSetViewports(1, &viewport_);
+	commandList_->RSSetScissorRects(1, &scissorRect_);
 	//RootSignatureを設定。PSOに設定しているけど別途設定が必要
-	dx12Common->GetcommandList()->SetGraphicsRootSignature(rootSignature_);
-	dx12Common->GetcommandList()->SetPipelineState(graphicsPipelineState_);
-	dx12Common->GetcommandList()->IASetVertexBuffers(0, 1, &vertexBufferView_);
+	commandList_->SetGraphicsRootSignature(rootSignature_);
+	commandList_->SetPipelineState(graphicsPipelineState_);
+	commandList_->IASetVertexBuffers(0, 1, &vertexBufferView_);
 	//形状を設定。PSOに設定しているものとはまたは別。同じものを設定すると考えておけばよい
-	dx12Common->GetcommandList()->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	commandList_->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	//描画！（DrawCall/ドローコール）。３ちょうてんで１つのインスタンス。インスタンスについては今後
-	dx12Common->GetcommandList()->DrawInstanced(3, 1, 0, 0);
+	commandList_->DrawInstanced(3, 1, 0, 0);
 }
 
 void Triangle::Release() {

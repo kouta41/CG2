@@ -50,7 +50,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 			for (int i = 0; i < count; i++)
 			{
-				triangle[i]->Draw(dx12Common);
+				triangle[i]->Draw();
 			}
 
 			dx12Common->Close();

@@ -30,10 +30,12 @@ private:
 	D3D12_RESOURCE_BARRIER barrier{};
 	ID3D12InfoQueue* infoQueue_;
 	ID3D12Fence* fence_;
+	ID3D12Debug1* debugController_;
 	uint64_t fenceValue_;
 	HANDLE fenceEvent_;
 	IDXGIDebug1* debug_;
 	HRESULT hr_;
+	HWND hwnd_;
 
 
 public:
@@ -47,7 +49,7 @@ public:
 
 	void Close();
 
-	void Release(WinApp* winApp);
+	void Release();
 
 	HRESULT Gethr_() { return hr_; }
 

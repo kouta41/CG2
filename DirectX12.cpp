@@ -17,8 +17,10 @@ DirectX12::DirectX12() {
 	infoQueue_ = nullptr;
 	fence_ = nullptr;
 	fenceValue_ = 0;
+	debugController_ = nullptr;
 	fenceEvent_;
 	debug_;
+	hwnd_ = nullptr;
 	hr_;
 }
 
@@ -172,6 +174,9 @@ void DirectX12::Init(WinApp* winApp) {
 	//FenceのSignalをもつためのイベントを作成する
 	fenceEvent_ = CreateEvent(NULL, FALSE, FALSE, NULL);
 	assert(fenceEvent_ != nullptr);
+
+	debugController_ = winApp->GetdebugController_();
+	hwnd_ = winApp->Gethwnd_();
 }
 
 
@@ -243,7 +248,7 @@ void DirectX12::Close() {
 	assert(SUCCEEDED(hr_));
 }
 
-void DirectX12::Release(WinApp* winApp)
+void DirectX12::Release()
 {
 	CloseHandle(fenceEvent_);
 	fence_->Release();
@@ -258,9 +263,9 @@ void DirectX12::Release(WinApp* winApp)
 	useAdapter_->Release();
 	dxgiFactory_->Release();
 #ifdef _DEBUG
-	winApp->GetdebugController_()->Release();
+	debugController_->Release();
 #endif // _DEBUG
-	CloseWindow(winApp->Gethwnd_());
+	CloseWindow(hwnd_);
 
 	
 

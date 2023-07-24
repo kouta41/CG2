@@ -1,7 +1,8 @@
 #pragma once
 #include <Windows.h>
 #include"Vector4.h"
-
+#include<string>
+#include<format>
 #include<dxcapi.h>
 #include<d3d12.h>
 #include<dxgi1_6.h>
@@ -27,6 +28,7 @@ private:
 	ID3D12Device* device_;
 	ID3D12PipelineState* graphicsPipelineState_;
 	ID3D12Resource* vertexResource_;
+	ID3D12GraphicsCommandList* commandList_;
 	Vector4* vertexData_;
 	D3D12_VIEWPORT viewport_{};
 	D3D12_RECT scissorRect_{};
@@ -45,7 +47,7 @@ public:
 
 	void Init(DirectX12* dx12Common, Vector4 triangleData[10]);
 	
-	void Draw( DirectX12* dx12Common);
+	void Draw();
 	
 	void Release();
 		
