@@ -1,4 +1,4 @@
-#include"Imgui.h"
+#include"Debug.h"
 #include "ConvertString.h"
 
 
@@ -14,16 +14,13 @@ Imgui::~Imgui() {
 	//SRV用のヒープでディスクリプタの数は１２８。SRVはShader内で触るものなのでShaderVisibleはtrue
 	srvDescriptorHeap = CreatDescriptorHeap(device_, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, 128, true);
 
-	if (Imgui_ImplWin32_WndProcHandler()) {
-		return true;
-	}
+	
 }
 
 void Imgui::Init() {
-	IMGUI_CHECKVERSION();
-	ImGui::CreateContext();
-	ImGui::StyleColorsDark(hwnd);
-
+	//IMGUI_CHECKVERSION();
+	//ImGui::CreateContext();
+	
 }
 
 void Imgui::Update() {
