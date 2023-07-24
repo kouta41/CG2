@@ -56,7 +56,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			dx12Common->Close();
 		}
 	}
-	dx12Common->Release(winApp);
+	dx12Common->Release();
 	for (int i = 0; i < count; i++)
 	{
 		triangle[i]->Release();
