@@ -31,11 +31,8 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		triangle[i]->triangleData[1] = { -0.7f + (i * 0.1f),0.9f,0.0f,1.0f };
 
 		triangle[i]->triangleData[2] = { -0.6f + (i * 0.1f),0.8f,0.0f,1.0f };
-	}
 
-
-	for (int i = 0; i < count; i++) {
-		triangle[i]->Init(dx12Common);
+		triangle[i]->Init(dx12Common, triangle[i]->triangleData);
 	}
 
 
@@ -53,7 +50,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 			for (int i = 0; i < count; i++)
 			{
-				triangle[i]->Draw(triangle[i]->triangleData, dx12Common);
+				triangle[i]->Draw(dx12Common);
 			}
 
 			dx12Common->Close();

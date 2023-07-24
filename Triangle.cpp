@@ -25,7 +25,7 @@ Triangle::~Triangle() {
 
 }
 
-void Triangle::Init(DirectX12* dx12Common) {
+void Triangle::Init(DirectX12* dx12Common, Vector4 triangleData[10]) {
 	//dxcCompilerを初期化
 	hr_ = DxcCreateInstance(CLSID_DxcUtils, IID_PPV_ARGS(&dxcUtils_));
 	assert(SUCCEEDED(hr_));
@@ -126,12 +126,8 @@ void Triangle::Init(DirectX12* dx12Common) {
 	//実際に頂点リソースを作る
 	hr_ = device_->CreateCommittedResource(&uploadHeapProperties, D3D12_HEAP_FLAG_NONE, &vertexResourceDesc, D3D12_RESOURCE_STATE_GENERIC_READ, nullptr, IID_PPV_ARGS(&vertexResource_));
 	assert(SUCCEEDED(hr_));
-
-
 	
-}
 
-void Triangle::Draw(Vector4 triangleData[10], DirectX12* dx12Common) {
 	//頂点バッファビューを作成する
 	//リソースの先頭のアドレスから使う
 	vertexBufferView_.BufferLocation = vertexResource_->GetGPUVirtualAddress();
@@ -167,8 +163,10 @@ void Triangle::Draw(Vector4 triangleData[10], DirectX12* dx12Common) {
 	scissorRect_.right = 1280;
 	scissorRect_.top = 0;
 	scissorRect_.bottom = 720;
+}
 
-
+void Triangle::Draw( DirectX12* dx12Common) {
+	
 	//コマンド積む
 	dx12Common->GetcommandList()->RSSetViewports(1, &viewport_);
 	dx12Common->GetcommandList()->RSSetScissorRects(1, &scissorRect_);
