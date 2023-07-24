@@ -28,14 +28,18 @@ private:
 	ID3D12Device* device_;
 	ID3D12PipelineState* graphicsPipelineState_;
 	ID3D12Resource* vertexResource_;
+	ID3D12Resource* materialResource_;
 	ID3D12GraphicsCommandList* commandList_;
 	Vector4* vertexData_;
 	D3D12_VIEWPORT viewport_{};
 	D3D12_RECT scissorRect_{};
 	D3D12_VERTEX_BUFFER_VIEW vertexBufferView_{};
+	D3D12_VERTEX_BUFFER_VIEW materialBufferView_{};
 	IDxcBlob* vertexShaderBlob_;
 	IDxcBlob* pixelShaderBlob_;
+	Vector4* materialDate_;
 	HRESULT hr_;
+	ID3D12Resource* CreatBufferResource(ID3D12Device* device_, size_t sizeInBytes);
 
 public:
 	Triangle();
