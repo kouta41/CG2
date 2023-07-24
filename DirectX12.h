@@ -45,9 +45,9 @@ public:
 
 	void Draw();
 
-	void CreateFence();
+	void Close();
 
-	void DirectXRelease(WinApp* winApp);
+	void Release(WinApp* winApp);
 
 	HRESULT Gethr_() { return hr_; }
 

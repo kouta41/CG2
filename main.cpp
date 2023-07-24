@@ -53,17 +53,16 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 			for (int i = 0; i < count; i++)
 			{
-				triangle[i]->Draw(triangle[i]->triangleData);
-				triangle[i]->Loadcommand(dx12Common);
+				triangle[i]->Draw(triangle[i]->triangleData, dx12Common);
 			}
 
-			dx12Common->CreateFence();
+			dx12Common->Close();
 		}
 	}
-	dx12Common->DirectXRelease(winApp);
+	dx12Common->Release(winApp);
 	for (int i = 0; i < count; i++)
 	{
-		triangle[i]->TriangleRelease();
+		triangle[i]->Release();
 	}
 	return 0;
 }

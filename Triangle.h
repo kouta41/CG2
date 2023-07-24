@@ -45,11 +45,9 @@ public:
 
 	void Init(DirectX12* dx12Common);
 	
-	void Draw(Vector4 triangleData[10]);
-
-	void Loadcommand(DirectX12* dx12Common);
+	void Draw(Vector4 triangleData[10], DirectX12* dx12Common);
 	
-	void TriangleRelease();
+	void Release();
 		
 };
 

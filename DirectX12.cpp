@@ -206,7 +206,7 @@ void DirectX12::Draw() {
 	
 }
 
-void DirectX12::CreateFence() {
+void DirectX12::Close() {
 	//画面に描く処理はすべて終わり、画面に映すので、状態を遷移
 //今回はRenderTargetからPresentにする
 	barrier.Transition.StateBefore = D3D12_RESOURCE_STATE_RENDER_TARGET;
@@ -243,7 +243,7 @@ void DirectX12::CreateFence() {
 	assert(SUCCEEDED(hr_));
 }
 
-void DirectX12::DirectXRelease(WinApp* winApp)
+void DirectX12::Release(WinApp* winApp)
 {
 	CloseHandle(fenceEvent_);
 	fence_->Release();
