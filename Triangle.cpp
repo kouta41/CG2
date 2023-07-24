@@ -25,7 +25,7 @@ Triangle::~Triangle() {
 
 }
 
-void Triangle::Init(DirectX12* dx12Common, Vector4 triangleData[10]) {
+void Triangle::Init(DirectX12* dx12Common) {
 	//dxcCompilerを初期化
 	hr_ = DxcCreateInstance(CLSID_DxcUtils, IID_PPV_ARGS(&dxcUtils_));
 	assert(SUCCEEDED(hr_));
@@ -128,6 +128,10 @@ void Triangle::Init(DirectX12* dx12Common, Vector4 triangleData[10]) {
 	assert(SUCCEEDED(hr_));
 
 
+	
+}
+
+void Triangle::Draw(Vector4 triangleData[10]) {
 	//頂点バッファビューを作成する
 	//リソースの先頭のアドレスから使う
 	vertexBufferView_.BufferLocation = vertexResource_->GetGPUVirtualAddress();
@@ -147,7 +151,7 @@ void Triangle::Init(DirectX12* dx12Common, Vector4 triangleData[10]) {
 	vertexData_[1] = triangleData[1];
 	//右下
 	vertexData_[2] = triangleData[2];
-	
+
 	//ビューポート
 	//クライアント領域のサイズと一緒にして画面全体に表示
 	viewport_.Width = 1280;

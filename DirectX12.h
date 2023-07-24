@@ -41,11 +41,9 @@ public:
 	DirectX12();
 	~DirectX12();
 
-	void Init();
+	void Init(WinApp* winApp);
 
-	void Initdxcommand(WinApp* winApp);
-
-	void Loadcommand();
+	void Draw();
 
 	void CreateFence();
 

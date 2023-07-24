@@ -19,9 +19,8 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	//ウィンドウを表示する
 	winApp->ShowAppWindow();
 
-	dx12Common->Init();
+	dx12Common->Init(winApp);
 
-	dx12Common->Initdxcommand(winApp);
 
 
 	for (int i = 0; i < count; i++) {
@@ -36,7 +35,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 
 	for (int i = 0; i < count; i++) {
-		triangle[i]->Init(dx12Common, triangle[i]->triangleData);
+		triangle[i]->Init(dx12Common);
 	}
 
 
@@ -50,10 +49,11 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			DispatchMessage(&msg);
 		}
 		else {
-			dx12Common->Loadcommand();
+			dx12Common->Draw();
 
 			for (int i = 0; i < count; i++)
 			{
+				triangle[i]->Draw(triangle[i]->triangleData);
 				triangle[i]->Loadcommand(dx12Common);
 			}
 

@@ -27,7 +27,7 @@ DirectX12::~DirectX12() {
 
 
 
-void DirectX12::Init() {
+void DirectX12::Init(WinApp* winApp) {
 	//DXGIファクトリーの生成
 	//HRESULTはWindows系のエラーコードであり、
 	//関数が成功したかどうかをSUCCEEDEDマクロで判定できる
@@ -105,9 +105,6 @@ void DirectX12::Init() {
 	}
 #endif // DEBUG
 
-}
-void DirectX12::Initdxcommand(WinApp* winApp) {
-
 	//コマンドキューを生成する
 	D3D12_COMMAND_QUEUE_DESC commandQueueDesc{};
 	hr_ = device_->CreateCommandQueue(&commandQueueDesc,
@@ -179,7 +176,7 @@ void DirectX12::Initdxcommand(WinApp* winApp) {
 
 
 
-void DirectX12::Loadcommand() {
+void DirectX12::Draw() {
 
 	//これから書き込むバックバッファのインデックスを取得
 	UINT backBufferIndex = swapChain_->GetCurrentBackBufferIndex();
