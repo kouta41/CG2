@@ -2,7 +2,7 @@
 #include "WinApp.h"
 #include"Directx12.h"
 #include"Triangle.h"
-
+#include"ImguiManege.h"
 
 //windowsアプリでのエントリーポイント(main関数)
 int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
@@ -10,7 +10,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	WinApp* winApp = new WinApp(1280, 720, L"CG2");
 	DirectX12* dx12Common = new DirectX12();
 	Triangle* triangle[10] = { new Triangle() };
-
+	Imgui* imgui = new Imgui();
 
 	//winApp->GetInstance();
 	winApp->RegistrateWindowClass();
@@ -34,7 +34,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	for (int i = 0; i < kaunt; i++) {
 		triangle[i]->Init(dx12Common);
 	}
-	
+	imgui->Init();
 
 	MSG msg{};
 	//ウインドウのXボタンが押されるまでループ
@@ -53,7 +53,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 				triangle[i]->Draw(triangle[i]->triangleData);
 				triangle[i]->Loadcommand(dx12Common);
 			}
-
+			imgui->Draw();
 			dx12Common->CreateFence();	
 		}
 	}

@@ -1,12 +1,14 @@
 #pragma once
 #include <Windows.h>
 #include<string>
-
+#include"ImguiManege.h"
 #include<d3d12.h>
 #include<dxgi1_6.h>
 
 #pragma comment(lib,"d3d12.lib")
 #pragma comment(lib,"dxgi.lib")
+
+class Imgui;
 
 class WinApp {
 
@@ -27,6 +29,7 @@ private:
 	HWND hwnd_;
 
 	ID3D12Debug1* debugController_;
+
 
 
 public:

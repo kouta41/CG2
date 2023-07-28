@@ -1,4 +1,8 @@
 #include"WinApp.h"
+#include"externals/imgui/imgui.h"
+#include"externals/imgui/imgui_impl_dx12.h"
+#include"externals/imgui/imgui_impl_win32.h"
+extern IMGUI_IMPL_API LRESULT Imgui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
 
 WinApp::WinApp(int width, int height, std::wstring title) {
@@ -31,6 +35,10 @@ void WinApp::RegistrateWindowClass() {
 
 
 LRESULT CALLBACK WinApp::WindowProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam) {
+	if (Imgui_ImplWin32_WndProcHandler(hwnd, msg, wparam, lparam)) {
+		return true;
+	}
+
 	switch (msg) {
 		//ウインドウが破棄された
 	case WM_DESTROY:
