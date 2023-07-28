@@ -1,7 +1,7 @@
 #pragma once
 #include <Windows.h>
 #include"ConvertString.h"
-
+#include"DirectX12.h"
 #include <Windows.h>
 #include"ConvertString.h"
 #include"externals/imgui/imgui.h"
@@ -10,6 +10,7 @@
 #include <dxgi1_6.h>
 
 
+class 
 class Imgui {
 private:
 	ID3D12DescriptorHeap* rtvDescriptorHeap;

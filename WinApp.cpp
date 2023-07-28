@@ -93,3 +93,8 @@ bool WinApp::ProcessMessage() {
 	}
 	return true;
 }
+
+IMGUI_IMPL_API LRESULT Imgui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
+{
+	return IMGUI_IMPL_API LRESULT();
+}
