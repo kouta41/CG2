@@ -1,7 +1,12 @@
 #pragma once
 #include <string>
 #include <Windows.h>
-
+#include <dxcapi.h>
+#include <format>
+#include <debugapi.h>
+#include <cassert>
+#include "ConvertString.h"
+#pragma comment(lib,"dxcompiler.lib")
 
 std::string ConvertString(const std::wstring& str);
 std::wstring ConvertString(const std::string& str);
@@ -14,16 +19,7 @@ public:
 
 };
 
-#include<Windows.h>
-#include<dxcapi.h>
-#include<string>
-#include<format>
-#include <debugapi.h>
-#include "ConvertString.h"
-#include <cassert>
-#include<d3d12.h>
 
-#pragma comment(lib,"dxcompiler.lib")
 
 IDxcBlob* CompileShader(
 	//CompilerするShaderファイルへのパス
@@ -85,4 +81,3 @@ Matrix4x4 MakePerspectiveFovMatrix(float fovY, float aspectRatio, float nearClip
 Matrix4x4 Inverse(const Matrix4x4& m);
 
 //
-ID3D12DescriptorHeap* CreatDescriptorHeap(ID3D12Device* device, D3D12_DESCRIPTOR_HEAP_TYPE heapType, UINT numDescriptors, bool shaderVisible);

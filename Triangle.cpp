@@ -1,6 +1,7 @@
 #include"Triangle.h"
 #include "ConvertString.h"
 #include"DirectX12.h"
+#include"ImguiManege.h"
 
 Triangle::Triangle() {
 	dxcUtils_ = nullptr;
@@ -126,7 +127,7 @@ void Triangle::Init(DirectX12* dx12Common) {
 
 }
 
-void Triangle::Draw(Vector4 triangleData[10]) {
+void Triangle::Draw(Vector4 triangleData[10], DirectX12* dx12Common) {
 
 	materialResource_ = CreatBufferResource(device_, sizeof(Vector4) * 3);
 	//頂点バッファビューを作成する
@@ -141,8 +142,10 @@ void Triangle::Draw(Vector4 triangleData[10]) {
 	//書き込むためのアドレスを取得
 	materialResource_->Map(0, nullptr, reinterpret_cast<void**>(&materialDate_));
 
-	*materialDate_ = Vector4(1.0f, 0.0f, 0.0f, 1.0f);
-
+	*materialDate_ = color;
+	ImGui::Begin("Player pos");
+	ImGui::ColorEdit3("color",&color.x);
+	ImGui::End();
 	vertexResource_ = CreatBufferResource(device_, sizeof(Vector4) * 3);
 	//頂点バッファビューを作成する
 	//リソースの先頭のアドレスから使う
@@ -183,6 +186,7 @@ void Triangle::Draw(Vector4 triangleData[10]) {
 	Matrix4x4 worldViewProjectionMatrix = Multiply(worldMatrix, Multiply(viewMatrix, projectionMatrix));
 	*transformationMatrixData_ = worldViewProjectionMatrix;
 
+
 	//ビューポート
 	//クライアント領域のサイズと一緒にして画面全体に表示
 	viewport_.Width = 1280;
@@ -198,9 +202,8 @@ void Triangle::Draw(Vector4 triangleData[10]) {
 	scissorRect_.right = 1280;
 	scissorRect_.top = 0;
 	scissorRect_.bottom = 720;
-}
 
-void Triangle::Loadcommand(DirectX12* dx12Common) {
+
 	//コマンド積む
 	dx12Common->GetcommandList()->RSSetViewports(1, &viewport_);
 	dx12Common->GetcommandList()->RSSetScissorRects(1, &scissorRect_);
@@ -217,7 +220,7 @@ void Triangle::Loadcommand(DirectX12* dx12Common) {
 	dx12Common->GetcommandList()->DrawInstanced(3, 1, 0, 0);
 }
 
-void Triangle::TriangleRelease() {
+void Triangle::Release() {
 
 	vertexResource_->Release();
 	materialResource_->Release();

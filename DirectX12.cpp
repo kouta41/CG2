@@ -120,7 +120,6 @@ void DirectX12::Initdxcommand(WinApp* winApp) {
 	assert(SUCCEEDED(hr_));
 
 	// スワップチェーンを生成する
-	DXGI_SWAP_CHAIN_DESC1 swapChainDesc{};
 	swapChainDesc.Width = 1280;   //画面の幅。ウィンドウのクライアント領域を同じものにしておく
 	swapChainDesc.Height = 720; //画面の高さ。ウィンドウのクライアント領域を同じものにしておく。
 	swapChainDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM; //色の形式
@@ -132,13 +131,9 @@ void DirectX12::Initdxcommand(WinApp* winApp) {
 	hr_ = dxgiFactory_->CreateSwapChainForHwnd(commandQueue_, winApp->Gethwnd_(), &swapChainDesc, nullptr, nullptr, reinterpret_cast<IDXGISwapChain1**>(&swapChain_));
 	assert(SUCCEEDED(hr_));
 
-	//ディスクリプタヒープの生成
-	D3D12_DESCRIPTOR_HEAP_DESC rtvDescriptorHeapDesc{};
-	rtvDescriptorHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_RTV;
-	rtvDescriptorHeapDesc.NumDescriptors = 2;
-	hr_ = device_->CreateDescriptorHeap(&rtvDescriptorHeapDesc, IID_PPV_ARGS(&rtvDescriptorHeap_));
-	//ディスクリプタヒープの生成
-	assert(SUCCEEDED(hr_));
+	////ディスクリプタヒープの生成
+	rtvDescriptorHeap_ = CreatDescriptorHeap(device_, D3D12_DESCRIPTOR_HEAP_TYPE_RTV, 2, false);
+	srvDescriptorHeap_ = CreatDescriptorHeap(device_, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, 128, true);
 
 	//swapChainからResourceを引っ張ている
 	hr_ = swapChain_->GetBuffer(0, IID_PPV_ARGS(&swapChainResources_[0]));
@@ -148,7 +143,6 @@ void DirectX12::Initdxcommand(WinApp* winApp) {
 	assert(SUCCEEDED(hr_));
 
 	//PTVの設定
-	D3D12_RENDER_TARGET_VIEW_DESC rtvDesc{};
 	rtvDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM_SRGB;//出力結果をSRGBに変換して書き込む
 	rtvDesc.ViewDimension = D3D12_RTV_DIMENSION_TEXTURE2D;//２ｄテクスチャとして書き込む
 	//ディスクリプタの戦闘を取得する
@@ -203,6 +197,7 @@ void DirectX12::CreateFence() {
 	//画面に描く処理はすべて終わり、画面に映すので、状態を遷移
 	//今回はRenderTargetからPresentにする
 	barrier.Transition.StateBefore = D3D12_RESOURCE_STATE_RENDER_TARGET;
+
 	barrier.Transition.StateAfter = D3D12_RESOURCE_STATE_PRESENT;
 	//TransitionBarrierを張る
 	commandList_->ResourceBarrier(1, &barrier);
@@ -236,7 +231,7 @@ void DirectX12::CreateFence() {
 	assert(SUCCEEDED(hr_));
 }
 
-void DirectX12::DirectXRelease(WinApp* winApp){
+void DirectX12::Release(WinApp* winApp){
 	CloseHandle(fenceEvent_);
 	fence_->Release();
 	rtvDescriptorHeap_->Release();

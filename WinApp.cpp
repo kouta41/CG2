@@ -1,7 +1,7 @@
 #include"WinApp.h"
-#include"externals/imgui/imgui.h"
-#include"externals/imgui/imgui_impl_dx12.h"
-#include"externals/imgui/imgui_impl_win32.h"
+#include"imgui.h"
+#include"imgui_impl_dx12.h"
+#include"imgui_impl_win32.h"
 extern IMGUI_IMPL_API LRESULT Imgui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
 
@@ -38,7 +38,6 @@ LRESULT CALLBACK WinApp::WindowProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM l
 	if (Imgui_ImplWin32_WndProcHandler(hwnd, msg, wparam, lparam)) {
 		return true;
 	}
-
 	switch (msg) {
 		//ウインドウが破棄された
 	case WM_DESTROY:

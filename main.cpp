@@ -9,8 +9,10 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	int kaunt = 10;
 	WinApp* winApp = new WinApp(1280, 720, L"CG2");
 	DirectX12* dx12Common = new DirectX12();
-	Triangle* triangle[10] = { new Triangle() };
+	//Triangle* triangle[10] = { new Triangle() };
 	Imgui* imgui = new Imgui();
+
+	
 
 	//winApp->GetInstance();
 	winApp->RegistrateWindowClass();
@@ -23,22 +25,23 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 	dx12Common->Initdxcommand(winApp);
 
+	
 
-	for (int i = 0; i < kaunt; i++) {
+	/*for (int i = 0; i < kaunt; i++) {
 		triangle[i] = new Triangle();
 		triangle[i]->triangleData[0] = { -0.8f + (i * 0.1f),0.8f,0.0f,1.0f };
 		triangle[i]->triangleData[1] = { -0.7f + (i * 0.1f),0.9f,0.0f,1.0f };
 		triangle[i]->triangleData[2] = { -0.6f + (i * 0.1f),0.8f,0.0f,1.0f };
-	}	
-
-	for (int i = 0; i < kaunt; i++) {
 		triangle[i]->Init(dx12Common);
-	}
-	imgui->Init();
+	}	*/
+
+	imgui->Init(dx12Common, winApp);
+	
 
 	MSG msg{};
 	//ウインドウのXボタンが押されるまでループ
 	while (winApp->ProcessMessage() == 0) {
+
 
 		//windowsにメッセージが来たら最優先で処理させる
 		if (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE)) {
@@ -46,21 +49,25 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			DispatchMessage(&msg);
 		}
 		else {
-			dx12Common->Loadcommand();
+			//ゲームの更新処理
 
-			for (int i = 0; i < kaunt; i++)
+			dx12Common->Loadcommand();
+			imgui->Update();
+
+		/*	for (int i = 0; i < kaunt; i++)
 			{
-				triangle[i]->Draw(triangle[i]->triangleData);
-				triangle[i]->Loadcommand(dx12Common);
-			}
-			imgui->Draw();
-			dx12Common->CreateFence();	
+				triangle[i]->Draw(triangle[i]->triangleData, dx12Common);
+			}*/
+			imgui->Draw(dx12Common);
+
+
+			dx12Common->CreateFence();
 		}
 	}
-		dx12Common->DirectXRelease(winApp);
-		for (int i = 0; i < kaunt; i++)
+		dx12Common->Release(winApp);
+		/*for (int i = 0; i < kaunt; i++)
 		{
-			triangle[i]->TriangleRelease();
-		}
+			triangle[i]->Release();
+		}*/
 	return 0;
 }
