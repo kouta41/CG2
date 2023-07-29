@@ -28,13 +28,14 @@ void Imgui::Update() {
 	ImGui_ImplDX12_NewFrame();
 	ImGui_ImplWin32_NewFrame();
 	ImGui::NewFrame();
+	//開発用UIの処理。実際に開発用のUIを出す場合はここをゲーム固有の処理に置き換える
+	ImGui::ShowDemoWindow();
 }
 
 
 void Imgui::Draw(DirectX12* dx12Common) {
 
-	//開発用UIの処理。実際に開発用のUIを出す場合はここをゲーム固有の処理に置き換える
-	ImGui::ShowDemoWindow();
+	
 	//ImGuiの内部コマンドを生成する
 	ImGui::Render();
 	//描画用のDescriptorHeapの設定

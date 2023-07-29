@@ -12,7 +12,6 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	Triangle* triangle[10] = { new Triangle() };
 	Imgui* imgui = new Imgui();
 
-	
 
 	//winApp->GetInstance();
 	winApp->RegistrateWindowClass();
