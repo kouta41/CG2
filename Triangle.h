@@ -1,6 +1,6 @@
 #pragma once
 #include <Windows.h>
-#include"ConvertString.h"
+#include "Utility.h"
 
 #include<dxcapi.h>
 #include<d3d12.h>
@@ -45,7 +45,7 @@ private:
 	ID3D12Resource* wvpmResource_;
 	Transform transform_;
 	Transform cameraTransfrom_{};
-
+	ID3D12GraphicsCommandList* commandList_;
 	Matrix4x4* transformationMatrixData_;
 
 	Vector4 color = { 1.0f,0.0f,0.0f,1.0f };
@@ -61,7 +61,7 @@ public:
 
 	void Init(DirectX12* dx12Common);
 
-	void Draw(Vector4 triangleData[10], DirectX12* dx12Common);
+	void Draw(Vector4 triangleData[10]);
 
 	
 	void Release();

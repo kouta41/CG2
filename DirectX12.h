@@ -7,6 +7,7 @@
 #include <cassert> 
 #include <dxgidebug.h>
 
+#include "ConvertString.h"
 #include "Utility.h"
 
 #pragma comment(lib,"dxguid.lib")
@@ -37,23 +38,23 @@ private:
 	HANDLE fenceEvent_;
 	IDXGIDebug1* debug_;
 	HRESULT hr_;
+	HWND hwnd_;
 	DXGI_SWAP_CHAIN_DESC1 swapChainDesc{};
 	D3D12_RENDER_TARGET_VIEW_DESC rtvDesc{};
+	ID3D12Debug1* debugController_;
 
 public:
 
 	DirectX12();
 	~DirectX12();
 
-	void Init();
+	void Init(WinApp* winApp);
 
-	void Initdxcommand(WinApp* winApp);
+	void Update();
 
-	void Loadcommand();
+	void Draw();
 
-	void CreateFence();
-
-	void Release(WinApp* winApp);
+	void Release();
 
 
 	HRESULT Gethr_() { return hr_; }

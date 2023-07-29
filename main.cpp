@@ -6,10 +6,10 @@
 
 //windowsアプリでのエントリーポイント(main関数)
 int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
-	int kaunt = 10;
+	int count = 10;
 	WinApp* winApp = new WinApp(1280, 720, L"CG2");
 	DirectX12* dx12Common = new DirectX12();
-	//Triangle* triangle[10] = { new Triangle() };
+	Triangle* triangle[10] = { new Triangle() };
 	Imgui* imgui = new Imgui();
 
 	
@@ -21,19 +21,18 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	//ウィンドウを表示する
 	winApp->ShowAppWindow();
 
-	dx12Common->Init();
+	dx12Common->Init(winApp);
 
-	dx12Common->Initdxcommand(winApp);
 
 	
 
-	/*for (int i = 0; i < kaunt; i++) {
+	for (int i = 0; i < count; i++) {
 		triangle[i] = new Triangle();
 		triangle[i]->triangleData[0] = { -0.8f + (i * 0.1f),0.8f,0.0f,1.0f };
 		triangle[i]->triangleData[1] = { -0.7f + (i * 0.1f),0.9f,0.0f,1.0f };
 		triangle[i]->triangleData[2] = { -0.6f + (i * 0.1f),0.8f,0.0f,1.0f };
 		triangle[i]->Init(dx12Common);
-	}	*/
+	}	
 
 	imgui->Init(dx12Common, winApp);
 	
@@ -51,23 +50,21 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		else {
 			//ゲームの更新処理
 
-			dx12Common->Loadcommand();
+			dx12Common->Update();
 			imgui->Update();
 
-		/*	for (int i = 0; i < kaunt; i++)
+			for (int i = 0; i < count; i++)
 			{
-				triangle[i]->Draw(triangle[i]->triangleData, dx12Common);
-			}*/
+				triangle[i]->Draw(triangle[i]->triangleData);
+			}
 			imgui->Draw(dx12Common);
-
-
-			dx12Common->CreateFence();
+			dx12Common->Draw();
 		}
 	}
-		dx12Common->Release(winApp);
-		/*for (int i = 0; i < kaunt; i++)
+		dx12Common->Release();
+		for (int i = 0; i < count; i++)
 		{
 			triangle[i]->Release();
-		}*/
+		}
 	return 0;
 }

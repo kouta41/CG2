@@ -61,7 +61,7 @@ void Triangle::Init(DirectX12* dx12Common) {
 	//シリアライズしてバイナリにする
 	hr_ = D3D12SerializeRootSignature(&descriptionRootSignature, D3D_ROOT_SIGNATURE_VERSION_1, &signatureBlob_, &errorBlob_);
 	if (FAILED(hr_)) {
-		Function::Log(reinterpret_cast<char*>(errorBlob_->GetBufferPointer()));
+		Log(reinterpret_cast<char*>(errorBlob_->GetBufferPointer()));
 		assert(false);
 	}
 	//バイナリを元に生成
@@ -125,9 +125,11 @@ void Triangle::Init(DirectX12* dx12Common) {
 	hr_ = device_->CreateGraphicsPipelineState(&graphicsPipelineStateDesc, IID_PPV_ARGS(&graphicsPipelineState_));
 	assert(SUCCEEDED(hr_));
 
+	commandList_ = dx12Common->GetcommandList();
+
 }
 
-void Triangle::Draw(Vector4 triangleData[10], DirectX12* dx12Common) {
+void Triangle::Draw(Vector4 triangleData[10] ) {
 
 	materialResource_ = CreatBufferResource(device_, sizeof(Vector4) * 3);
 	//頂点バッファビューを作成する
@@ -205,19 +207,19 @@ void Triangle::Draw(Vector4 triangleData[10], DirectX12* dx12Common) {
 
 
 	//コマンド積む
-	dx12Common->GetcommandList()->RSSetViewports(1, &viewport_);
-	dx12Common->GetcommandList()->RSSetScissorRects(1, &scissorRect_);
+	commandList_->RSSetViewports(1, &viewport_);
+	commandList_->RSSetScissorRects(1, &scissorRect_);
 	//RootSignatureを設定。PSOに設定しているけど別途設定が必要
-	dx12Common->GetcommandList()->SetGraphicsRootSignature(rootSignature_);
-	dx12Common->GetcommandList()->SetPipelineState(graphicsPipelineState_);
-	dx12Common->GetcommandList()->IASetVertexBuffers(0, 1, &vertexBufferView_);
-//	dx12Common->GetcommandList()->IASetVertexBuffers(0, 1, &materialBufferView_);
+	commandList_->SetGraphicsRootSignature(rootSignature_);
+	commandList_->SetPipelineState(graphicsPipelineState_);
+	commandList_->IASetVertexBuffers(0, 1, &vertexBufferView_);
+//	commandList_->IASetVertexBuffers(0, 1, &materialBufferView_);
 	//形状を設定。PSOに設定しているものとはまたは別。同じものを設定すると考えておけばよい
-	dx12Common->GetcommandList()->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-	dx12Common->GetcommandList()->SetGraphicsRootConstantBufferView(0, materialResource_->GetGPUVirtualAddress());
-	dx12Common->GetcommandList()->SetGraphicsRootConstantBufferView(1, wvpResource_->GetGPUVirtualAddress());
+	commandList_->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	commandList_->SetGraphicsRootConstantBufferView(0, materialResource_->GetGPUVirtualAddress());
+	commandList_->SetGraphicsRootConstantBufferView(1, wvpResource_->GetGPUVirtualAddress());
 	//描画！（DrawCall/ドローコール）。３ちょうてんで１つのインスタンス。インスタンスについては今後
-	dx12Common->GetcommandList()->DrawInstanced(3, 1, 0, 0);
+	commandList_->DrawInstanced(3, 1, 0, 0);
 }
 
 void Triangle::Release() {

@@ -27,7 +27,7 @@ DirectX12::~DirectX12() {
 
 
 
-void DirectX12::Init() {
+void DirectX12::Init(WinApp* winApp) {
 	//DXGIファクトリーの生成
 	//HRESULTはWindows系のエラーコードであり、
 	//関数が成功したかどうかをSUCCEEDEDマクロで判定できる
@@ -47,7 +47,7 @@ void DirectX12::Init() {
 		//ソフトウェアアダプタでなければ採用
 		if (!(adapterDesc.Flags & DXGI_ADAPTER_FLAG3_SOFTWARE)) {
 			//採用したアダプタの情報をログに出力。wstringの方なので注意
-			Function::Log(ConvertString(std::format(L"Use Adapater:{}\n", adapterDesc.Description)));
+			Log(ConvertString(std::format(L"Use Adapater:{}\n", adapterDesc.Description)));
 			break;
 		}
 		useAdapter_ = nullptr;
@@ -65,13 +65,13 @@ void DirectX12::Init() {
 		//指定した機能レベルでデバイスを生成が生成できたかを確認
 		if (SUCCEEDED(hr_)) {
 			//生成できたのでログ出力を行ってループを抜ける
-			Function::Log(std::format("FeatureLevel :{}\n", featureLevelStrings[i]));
+			Log(std::format("FeatureLevel :{}\n", featureLevelStrings[i]));
 			break;
 		}
 	}
 	//デバイスの生成がうまくいかなかったので起動できない
 	assert(device_ != nullptr);
-	Function::Log("Complete create D3D12Device!!!\n");
+	Log("Complete create D3D12Device!!!\n");
 
 #ifdef _DEBUG
 	if (SUCCEEDED(device_->QueryInterface(IID_PPV_ARGS(&infoQueue_)))) {
@@ -98,9 +98,6 @@ void DirectX12::Init() {
 		infoQueue_->Release();
 	}
 #endif // DEBUG
-}
-
-void DirectX12::Initdxcommand(WinApp* winApp) {
 
 	//コマンドキューを生成する
 	D3D12_COMMAND_QUEUE_DESC commandQueueDesc{};
@@ -163,11 +160,15 @@ void DirectX12::Initdxcommand(WinApp* winApp) {
 	//FenceのSignalをもつためのイベントを作成する
 	fenceEvent_ = CreateEvent(NULL, FALSE, FALSE, NULL);
 	assert(fenceEvent_ != nullptr);
+
+
+	hwnd_ = winApp->Gethwnd_();
+	debugController_ = winApp->GetdebugController_();
 }
 
 
 
-void DirectX12::Loadcommand() {
+void DirectX12::Update() {
 
 	//これから書き込むバックバッファのインデックスを取得
 	UINT backBufferIndex = swapChain_->GetCurrentBackBufferIndex();
@@ -193,7 +194,7 @@ void DirectX12::Loadcommand() {
 	commandList_->ClearRenderTargetView(rtvHandles_[backBufferIndex], clearColor, 0, nullptr);	
 }
 
-void DirectX12::CreateFence() {
+void DirectX12::Draw() {
 	//画面に描く処理はすべて終わり、画面に映すので、状態を遷移
 	//今回はRenderTargetからPresentにする
 	barrier.Transition.StateBefore = D3D12_RESOURCE_STATE_RENDER_TARGET;
@@ -231,7 +232,7 @@ void DirectX12::CreateFence() {
 	assert(SUCCEEDED(hr_));
 }
 
-void DirectX12::Release(WinApp* winApp){
+void DirectX12::Release(){
 	CloseHandle(fenceEvent_);
 	fence_->Release();
 	rtvDescriptorHeap_->Release();
@@ -245,9 +246,9 @@ void DirectX12::Release(WinApp* winApp){
 	useAdapter_->Release();
 	dxgiFactory_->Release();
 #ifdef _DEBUG
-	winApp->GetdebugController_()->Release();
+	debugController_->Release();
 #endif // _DEBUG
-	CloseWindow(winApp->Gethwnd_());
+	CloseWindow(hwnd_);
 
 	if (SUCCEEDED(DXGIGetDebugInterface1(0, IID_PPV_ARGS(&debug_)))) {
 		debug_->ReportLiveObjects(DXGI_DEBUG_ALL, DXGI_DEBUG_RLO_ALL);
