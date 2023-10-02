@@ -33,5 +33,5 @@ void Input::Init(HINSTANCE hInstance, HWND hwnd) {
 
 ///更新
 void Input::Update() {
-
+	
 }
