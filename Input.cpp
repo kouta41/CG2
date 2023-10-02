@@ -17,7 +17,7 @@ void Input::Init(HINSTANCE hInstance, HWND hwnd) {
 	assert(SUCCEEDED(result));
 
 	//キーボードデバイス生成
-	ComPtr<IDirectInputDevice8> keyboard;
+	//ComPtr<IDirectInputDevice8> keyboard;
 	result = directInput->CreateDevice(GUID_SysKeyboard, &keyboard, NULL);
 	assert(SUCCEEDED(result));
 
@@ -33,5 +33,9 @@ void Input::Init(HINSTANCE hInstance, HWND hwnd) {
 
 ///更新
 void Input::Update() {
-	
+	//キーボード情報の取得開始
+	keyboard->Acquire();
+	//全キーの入力情報を取得する
+	BYTE key[256] = {};
+	keyboard->GetDeviceState(sizeof(key), key);
 }

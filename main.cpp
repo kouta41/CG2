@@ -26,7 +26,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 	dx12Common->Init(winApp);
 
-
+	input->Update();
 	
 
 	for (int i = 0; i < count; i++) {
