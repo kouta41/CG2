@@ -14,9 +14,9 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	Imgui* imgui = new Imgui();
 	Input* input = nullptr;
 	input = new Input();
-	input->Init(w.hInstance,hwnd);
+	input->Init(winApp->Getwc_().hInstance,winApp->Gethwnd_());
 	delete input;
-
+	
 	//winApp->GetInstance();
 	winApp->RegistrateWindowClass();
 	//
