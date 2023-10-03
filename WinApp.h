@@ -66,7 +66,7 @@ public:
 	bool ProcessMessage();
 
 	HWND Gethwnd_() { return this->hwnd_; }
-	HINSTANCE Gettwc_() { return wc_.hInstance; }
+	HINSTANCE Getwc_() { return this->wc_.hInstance; }
 
 	ID3D12Debug1* GetdebugController_() { return debugController_; }
 };

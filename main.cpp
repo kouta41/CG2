@@ -12,12 +12,11 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	DirectX12* dx12Common = new DirectX12();
 	Triangle* triangle[10] = { new Triangle() };
 	Imgui* imgui = new Imgui();
-	Input* input = nullptr;
+	Input* input = new Input();
 	input = new Input();
-	input->Init(winApp->Gettwc_(), winApp->Gethwnd_());
+	input->Init(winApp->Getwc_(), winApp->Gethwnd_());
 	input->Update();
 
-	delete input;
 
 	//winApp->GetInstance();
 	winApp->RegistrateWindowClass();
@@ -40,6 +39,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 	imgui->Init(dx12Common, winApp);
 	
+	delete input;
 
 	MSG msg{};
 	//ウインドウのXボタンが押されるまでループ
