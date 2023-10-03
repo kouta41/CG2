@@ -14,7 +14,9 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	Imgui* imgui = new Imgui();
 	Input* input = nullptr;
 	input = new Input();
-	input->Init(winApp->Getwc_().hInstance, winApp->Gethwnd_());
+	input->Init(winApp->Gettwc_(), winApp->Gethwnd_());
+	input->Update();
+
 	delete input;
 
 	//winApp->GetInstance();
@@ -26,7 +28,6 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 	dx12Common->Init(winApp);
 
-	input->Update();
 	
 
 	for (int i = 0; i < count; i++) {
