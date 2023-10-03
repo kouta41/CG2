@@ -12,10 +12,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	DirectX12* dx12Common = new DirectX12();
 	Triangle* triangle[10] = { new Triangle() };
 	Imgui* imgui = new Imgui();
-	Input* input = nullptr;
-	input = new Input();
-	input->Init(w.hInstance,hwnd);
-	delete input;
+	
 
 	//winApp->GetInstance();
 	winApp->RegistrateWindowClass();
