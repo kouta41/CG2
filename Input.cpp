@@ -1,5 +1,8 @@
 #include "Input.h"
 #include <cassert>
+#include <wrl.h>
+
+using namespace Microsoft::WRL;
 
 #define DIRECTINPUT_VERSION   0x0800 //DirectInputのバージョン指定
 #include<dinput.h>
@@ -12,8 +15,8 @@ void Input::Init(HINSTANCE hInstance, HWND hwnd) {
 	HRESULT result;
 
 	//DirectInputのインスタンス生成
-	ComPtr <IDirectInput8> directInput = nullptr;
-	result = DirectInput8Create(hInstance, DIRECTINPUT_HEADER_VERSION, IID_IDirectInputDevice8, (void**)&directInput, nullptr);
+	ComPtr<IDirectInput8> directInput = nullptr;
+	result = DirectInput8Create(hInstance, DIRECTINPUT_VERSION, IID_IDirectInputDevice8, (void**)&directInput, nullptr);
 	assert(SUCCEEDED(result));
 
 	//キーボードデバイス生成

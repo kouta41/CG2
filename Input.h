@@ -1,8 +1,6 @@
 #pragma once
-#include <wrl.h>
 #include <Windows.h>
 
-using namespace Microsoft::WRL;
 //入力
 class Input {
 
