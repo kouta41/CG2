@@ -1,8 +1,17 @@
 #pragma once
+#include <Windows.h>
 #include <d3d12.h>
 #include <cassert>
 #include <format>
 #include <dxcapi.h>
+#include <dxgi1_6.h>
+#include <cassert>
+#include <dxgidebug.h>
+#include <dxcapi.h>
+#include <cstdint>
+#include <string>
+#include <format>
+
 #include "ConvertString.h"
 #include "externals/DirectXTex/DirectXTex.h"
 
@@ -66,6 +75,16 @@ Matrix4x4 MakePerspectiveFovMatrix(float fovY, float aspectRatio, float nearClip
 //逆行(列
 Matrix4x4 Inverse(const Matrix4x4& m);
 
+void Log(const std::string& message);
 
+ IDxcBlob* CompileShader(
+	// CompilerするShaderファイルへのパス
+	const std::wstring& filePath,
+	// Compilerに使用するProfile
+	const wchar_t* profile,
+	// 初期化で生成したものを3つ
+	IDxcUtils* dxcUtils,
+	IDxcCompiler3* dxcCompiler,
+	IDxcIncludeHandler* includeHandler);
 
 

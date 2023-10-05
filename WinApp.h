@@ -1,70 +1,22 @@
 #pragma once
 #include <Windows.h>
-#include<string>
-#include"ImguiManege.h"
-#include<d3d12.h>
-#include<dxgi1_6.h>
+#include <cstdint>
+#include <d3d12.h>
 
-#pragma comment(lib,"d3d12.lib")
-#pragma comment(lib,"dxgi.lib")
-
-#include"imgui.h"
-#include"imgui_impl_dx12.h"
-#include"imgui_impl_win32.h"
-extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
-
+class DirectXCommon;
 
 class WinApp {
-
-private:
-	/*--ウィンドウクラスを登録する---*/
-	WNDCLASS wc_;
-
-	//クライアント領域サイズ
-	int32_t kClientWidth_;
-	int32_t kClientHeight_;
-
-	//windows Title
-	std::wstring title_;
-	//ウィンドウサイズを表す構造佁E
-	RECT wrc_;
-
-	//ウィンドウ
-	HWND hwnd_;
-
-	ID3D12Debug1* debugController_;
-
-
-
 public:
-
-	WinApp(
-		int width,
-		int height,
-		std::wstring title
-	);
-
+	WinApp(const wchar_t* title);
 	~WinApp();
 
-	//ウィンドウクラスを登録
-	void RegistrateWindowClass();
+	WNDCLASS wc{};
 
-	static LRESULT WindowProc(HWND hwnd,
-		UINT msg,
-		WPARAM wparam,
-		LPARAM lparam
-	);
+	// クライアント領域のサイズ
+	static const int32_t kClientWidth = 1280;
+	static const int32_t kClientHeight = 720;
 
-	//ウィンドウの生成
-	void CreateAppWindow();
-
-
-	//ウィンドウを表示する
-	void ShowAppWindow();
-
-	//メッセージの処理
-	bool ProcessMessage();
-
-	HWND Gethwnd_() const { return this->hwnd_; }
-
+	static LRESULT WindowProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
+	static inline HWND hwnd = nullptr;
+	static inline ID3D12Debug1* debugController = nullptr;
 };

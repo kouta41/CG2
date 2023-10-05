@@ -1,72 +1,134 @@
 #include <Windows.h>
+#include <cstdint>
+#include <string>
+#include <format>
+
 #include "WinApp.h"
-#include "Directx12.h"
+#include "Utility.h"
+#include "DirectX12.h"
+#include "Mesh.h"
 #include "Triangle.h"
 #include "ImguiManege.h"
-#include "Input.h"
+#include "externals/imgui/imgui.h"
 
-//windowsアプリでのエントリーポイント(main関数)
+
+#pragma comment(lib, "d3d12.lib")
+#pragma comment(lib, "dxgi.lib")
+#pragma comment(lib, "dxguid.lib")
+#pragma comment(lib, "dxcompiler.lib")
+
+
+
+// WIndowsアプリでのエントリーポイント(main関数)
 int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
+
 	CoInitializeEx(0, COINIT_MULTITHREADED);
-	int count = 10;
-	WinApp* winApp = new WinApp(1280, 720, L"CG2");
-	DirectX12* dx12Common = new DirectX12();
-	Triangle* triangle[10] = { new Triangle() };
-	Imgui* imgui = new Imgui();
-	
 
-	//winApp->GetInstance();
-	winApp->RegistrateWindowClass();
-	//
-	winApp->CreateAppWindow();
-	//ウィンドウを表示する
-	winApp->ShowAppWindow();
+	// 三角形の数
+	const int Max = 30;
 
-	dx12Common->Init(winApp);
+	Vector4 pos[Max][3];
+	for (int i = 1; i < Max; i++) {
+		// 左下
+		pos[i][0] = { -0.95f - (i * -0.07f),0.0f,0.0f,1.0f };
+		// 上
+		pos[i][1] = { -0.92f - (i * -0.07f),0.05f,0.0f,1.0f };
+		// 右下
+		pos[i][2] = { -0.89f - (i * -0.07f),0.0f,0.0f,1.0f };
+	}
 
+	// 左下
+	pos[0][0] = { -0.1f, 0.5f, 0.0f, 1.0f };
+	// 上
+	pos[0][1] = { 0.0f, 0.7f, 0.0f, 1.0f };
+	// 右下
+	pos[0][2] = { 0.1f, 0.5f, 0.0f, 1.0f };
 
-	
+	WinApp* winapp = new WinApp(L"CG2");
+	DirectXCommon* directX = new DirectXCommon();
+	Mesh* mesh = new Mesh();
+	Triangle* triangle[Max];
+	ImGuiManeger* imgui = new ImGuiManeger;
 
-	for (int i = 0; i < count; i++) {
-		triangle[i] = new Triangle();
-		triangle[i]->triangleData[0] = { -0.8f + (i * 0.1f),0.8f,0.0f,1.0f };
-		triangle[i]->triangleData[1] = { -0.7f + (i * 0.1f),0.9f,0.0f,1.0f };
-		triangle[i]->triangleData[2] = { -0.6f + (i * 0.1f),0.8f,0.0f,1.0f };
-		triangle[i]->Init(dx12Common);
-	}	
-
-	imgui->Init(dx12Common, winApp);
-	
+	directX->Initialize(winapp);
+	mesh->Initialize(directX);
 
 	MSG msg{};
-	//ウインドウのXボタンが押されるまでループ
-	while (winApp->ProcessMessage() == 0) {
 
+	for (int i = 0; i < Max; i++) {
+		triangle[i] = new Triangle();
+		triangle[i]->Initialize(directX, pos[i]);
+	}
 
-		//windowsにメッセージが来たら最優先で処理させる
+	Transform transform{ {1.0f, 1.0f, 1.0f}, {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 0.0f} };
+	Transform cameraTransform{ {1.0f, 1.0f, 1.0f}, {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, -5.0f} };
+
+	imgui->Initialize(winapp, directX);
+
+	// ウインドウの×ボタンが押されるまでループ
+	while (msg.message != WM_QUIT) {
+		// Windowにメッセージが来てたら最優先で処理させる
 		if (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE)) {
 			TranslateMessage(&msg);
 			DispatchMessage(&msg);
 		}
 		else {
-			//ゲームの更新処理
-
+			// ゲームの処理
 			imgui->Update();
-			dx12Common->PreView();
+			directX->Update();
+			mesh->Update(directX);
 
-			for (int i = 0; i < count; i++)
-			{
-				triangle[i]->Draw(triangle[i]->triangleData);
+
+			transform.rotate.y += 0.03f;
+
+			Matrix4x4 worldMatrix = MakeAffineMatrix(transform.scale, transform.rotate, transform.translate);
+			Matrix4x4 cameraMatrix = MakeAffineMatrix(cameraTransform.scale, cameraTransform.rotate, cameraTransform.translate);
+
+			Matrix4x4 viewMatrix = Inverse(cameraMatrix);
+			Matrix4x4 projectionMatrix = MakePerspectiveFovMatrix(0.45f, float(winapp->kClientWidth) / float(winapp->kClientHeight), 0.1f, 100.0f);
+			Matrix4x4 worldViewProjectionMatrix = Multiply(worldMatrix, Multiply(viewMatrix, projectionMatrix));
+
+			for (int i = 1; i < Max; i++) {
+				*triangle[i]->wvpData = worldViewProjectionMatrix;
+				triangle[i]->Draw(directX);
 			}
-			imgui->Draw();
-			dx12Common->PostView();
-		}
-	}
-		dx12Common->Release();
-		for (int i = 0; i < count; i++)
-		{
-			triangle[i]->Release();
+
+			triangle[0]->Draw(directX);
+
+			ImGui::Begin("Mesh Color");
+			ImGui::ColorEdit3("Mesh Color", &triangle[0]->materialData->x);
+			ImGui::End();
+
+			ImGui::Begin("Mesh Position");
+			ImGui::SliderFloat3("Mesh Pos", &transform.translate.x, -1.0f, 1.0f);
+			ImGui::End();
+
+			ImGui::Begin("Camera Position");
+			ImGui::SliderFloat3("Camera Pos", &cameraTransform.translate.x, -1.0f, 1.0f);
+			ImGui::SliderFloat3("Camera scale", &cameraTransform.scale.x, -1.0f, 1.0f);
+			ImGui::SliderFloat3("Camera rotate", &cameraTransform.rotate.x, -1.0f, 1.0f);
+			ImGui::End();
+
+
+			imgui->Draw(directX);
+
+			directX->Close();
 		}
 		CoUninitialize();
+	}
+
+	for (int i = 0; i < Max; i++) {
+		triangle[i]->Release();
+		delete triangle[i];
+	}
+
+	mesh->Release();
+	delete mesh;
+	imgui->Release();
+	directX->Release(winapp);
+
+	delete imgui;
+	delete directX;
+
 	return 0;
 }

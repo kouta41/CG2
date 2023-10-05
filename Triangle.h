@@ -1,75 +1,55 @@
 #pragma once
 #include <Windows.h>
+#include <d3d12.h>
+#include <dxgi1_6.h>
+#include <cassert>
+#include <cstdint>
 #include "Utility.h"
-#include "externals/DirectXTex/DirectXTex.h"
+#include "DirectX12.h"
+#include "Mesh.h"
 
-#include<dxcapi.h>
-#include<d3d12.h>
-#include<dxgi1_6.h>
-#include<cassert> 
-#include<dxgidebug.h>
-
-#pragma comment(lib,"dxguid.lib")
-#pragma comment(lib,"d3d12.lib")
-#pragma comment(lib,"dxgi.lib")
-#pragma comment(lib,"dxcompiler.lib")
-
-class DirectX12;
-
+#pragma comment(lib, "d3d12.lib")
+#pragma comment(lib, "dxgi.lib")
 
 class Triangle {
-private:
-
-	DirectX12* dx12Common_ = nullptr;
-	IDxcCompiler3* dxcCompiler_;
-	IDxcIncludeHandler* includeHandler_;
-	D3D12_VIEWPORT viewport_{};
-	D3D12_RECT scissorRect_{};
-	HRESULT hr_;
-	
-	D3D12_VERTEX_BUFFER_VIEW vertexBufferView_{};
-
-	Matrix4x4* wvpData_;
-	Vector4* vertexData_;
-	Vector4* materialData_;
-	ID3D12Resource* materialResource_;
-	ID3D12Resource* vertexResource_;
-	ID3D12Resource* wvpResource_;
-	ID3D12Resource* wvpmResource_;
-	ID3D12Resource* intermediateResource_ = nullptr;
-	Transform transform_;
-	Transform cameraTransfrom_{};
-	D3D12_GPU_DESCRIPTOR_HANDLE textureSrvHandleGPU;
-	Matrix4x4* transformationMatrixData_;
-
-	Vector4 color = {1.0f,0.0f,0.0f,1.0f};
-
-	ID3D12Resource* CreatBufferResource(size_t sizeInBytes);
-	VertexData* vertexData = nullptr;
-	Matrix4x4 ViewMatrix;
-	ID3D12Resource* textureResource = nullptr;
-
-	DirectX::ScratchImage ImageFileOpen(const std::string& filePath);
-	void MakeVertexBufferView();
-	ID3D12Resource* CreateTextureResource(ID3D12Device* device, const DirectX::TexMetadata& metadata);
-	ID3D12Resource* UploadTextureData(ID3D12Resource* texture, const DirectX::ScratchImage& mipImages);
 public:
-	Triangle();
-	~Triangle();
 
-	
-	Vector4 triangleData[10];
-
-	void Init(DirectX12* dx12Common);
-
-	void Draw(Vector4 triangleData[10]);
-
-	
+	// 初期化
+	void Initialize(DirectXCommon* dir_, Vector4* pos);
+	// 読み込み
+	void Update();
+	// 描画
+	void Draw(DirectXCommon* dir_);
+	// 解放
 	void Release();
 
-	void LoadTexture(const std::string& filePath);
+	void CreateVertexResource(DirectXCommon* dir_, Vector4* pos);
+	void CreateMaterialResource(DirectXCommon* dir_);
+	void CreateWVPResource(DirectXCommon* dir_);
 
-	HRESULT Gethr_() { return hr_; }
+	void UploadTextureData(ID3D12Resource* texture, const DirectX::ScratchImage& mipImages);
+
+	ID3D12Resource* CreateTextureResource(ID3D12Device* device, const DirectX::TexMetadata& metadata);
+	ID3D12Resource* CreateBufferResource(ID3D12Device* device, size_t sizeInbytes);
+	DirectX::ScratchImage LoadTexture(const std::string& filePath);
+
+public:
+
+	D3D12_VERTEX_BUFFER_VIEW vertexBufferView{};
+	D3D12_VERTEX_BUFFER_VIEW materialBufferView{};
+
+	ID3D12Resource* vertexResource;
+	ID3D12Resource* materialResource;
+	ID3D12Resource* wvpResource;
+
+	VertexData* vertexData;
+	Vector4* materialData;
+	Matrix4x4* wvpData;
+
+	ID3D12Resource* textureResource;
+
+	D3D12_CPU_DESCRIPTOR_HANDLE textureSrvHandleCPU;
+	D3D12_GPU_DESCRIPTOR_HANDLE textureSrvHandleGPU;
+
+	static inline HRESULT hr_;
 };
-
-
