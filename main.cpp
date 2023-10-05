@@ -1,7 +1,4 @@
 #include <Windows.h>
-#include <cstdint>
-#include <string>
-#include <format>
 
 #include "WinApp.h"
 #include "Utility.h"
@@ -9,15 +6,6 @@
 #include "Mesh.h"
 #include "Triangle.h"
 #include "ImguiManege.h"
-#include "externals/imgui/imgui.h"
-
-
-#pragma comment(lib, "d3d12.lib")
-#pragma comment(lib, "dxgi.lib")
-#pragma comment(lib, "dxguid.lib")
-#pragma comment(lib, "dxcompiler.lib")
-
-
 
 // WIndowsアプリでのエントリーポイント(main関数)
 int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
@@ -51,7 +39,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	ImGuiManeger* imgui = new ImGuiManeger;
 
 	directX->Initialize(winapp);
-	mesh->Initialize(directX);
+	mesh->Initialize(directX,winapp);
 
 	MSG msg{};
 
@@ -85,18 +73,18 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			Matrix4x4 cameraMatrix = MakeAffineMatrix(cameraTransform.scale, cameraTransform.rotate, cameraTransform.translate);
 
 			Matrix4x4 viewMatrix = Inverse(cameraMatrix);
-			Matrix4x4 projectionMatrix = MakePerspectiveFovMatrix(0.45f, float(winapp->kClientWidth) / float(winapp->kClientHeight), 0.1f, 100.0f);
+			Matrix4x4 projectionMatrix = MakePerspectiveFovMatrix(0.45f, float(winapp->GetkClientWidth()) / float(winapp->GetkClientHeight()), 0.1f, 100.0f);
 			Matrix4x4 worldViewProjectionMatrix = Multiply(worldMatrix, Multiply(viewMatrix, projectionMatrix));
 
 			for (int i = 1; i < Max; i++) {
-				*triangle[i]->wvpData = worldViewProjectionMatrix;
+				*triangle[i]->GetwvpData() = worldViewProjectionMatrix;
 				triangle[i]->Draw(directX);
 			}
 
 			triangle[0]->Draw(directX);
 
 			ImGui::Begin("Mesh Color");
-			ImGui::ColorEdit3("Mesh Color", &triangle[0]->materialData->x);
+			ImGui::ColorEdit3("Mesh Color", &triangle[0]->GetmaterialData()->x);
 			ImGui::End();
 
 			ImGui::Begin("Mesh Position");

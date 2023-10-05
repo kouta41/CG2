@@ -15,7 +15,7 @@
 
 class Mesh {
 public:
-	void Initialize(DirectXCommon* dir_);
+	void Initialize(DirectXCommon* dir_, WinApp* window);
 
 	void CreatePso(DirectXCommon* dir_);
 
@@ -56,5 +56,5 @@ public:
 
 	static inline HRESULT hr_;
 
-	static WinApp* window_;
+	WinApp* window_;
 };

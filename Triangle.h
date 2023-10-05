@@ -33,7 +33,10 @@ public:
 	ID3D12Resource* CreateBufferResource(ID3D12Device* device, size_t sizeInbytes);
 	DirectX::ScratchImage LoadTexture(const std::string& filePath);
 
-public:
+	Matrix4x4* GetwvpData() { return wvpData; }
+	Vector4* GetmaterialData() { return materialData; }
+
+private:
 
 	D3D12_VERTEX_BUFFER_VIEW vertexBufferView{};
 	D3D12_VERTEX_BUFFER_VIEW materialBufferView{};

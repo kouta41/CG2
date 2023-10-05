@@ -11,12 +11,18 @@ public:
 	~WinApp();
 
 	WNDCLASS wc{};
-
-	// クライアント領域のサイズ
-	static const int32_t kClientWidth = 1280;
-	static const int32_t kClientHeight = 720;
-
 	static LRESULT WindowProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
-	static inline HWND hwnd = nullptr;
-	static inline ID3D12Debug1* debugController = nullptr;
+
+	int32_t GetkClientWidth() { return kClientWidth; }
+	int32_t GetkClientHeight() { return kClientHeight; }
+	HWND Gethwnd() { return hwnd; }
+
+private:
+	// クライアント領域のサイズ
+	int32_t kClientWidth = 1280;
+	int32_t kClientHeight = 720;
+
+	HWND hwnd = nullptr;
+	ID3D12Debug1* debugController = nullptr;
+
 };

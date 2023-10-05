@@ -107,7 +107,7 @@ void DirectXCommon::Initialize(WinApp* winApp_) {
 	swapChainDesc.BufferCount = 2;/// ダブルバッファ
 	swapChainDesc.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD;// モニタに写したら中身を破棄
 	// コマンドキュー、ウインドウハンドル、設定を渡して生成する
-	hr_ = dxgiFactory_->CreateSwapChainForHwnd(commandQueue_, winApp_->hwnd, &swapChainDesc, nullptr, nullptr, reinterpret_cast<IDXGISwapChain1**>(&swapChain_));
+	hr_ = dxgiFactory_->CreateSwapChainForHwnd(commandQueue_, winApp_->Gethwnd(), &swapChainDesc, nullptr, nullptr, reinterpret_cast<IDXGISwapChain1**>(&swapChain_));
 	assert(SUCCEEDED(hr_));
 
 	// RTV用のヒープでディスクリプタの数は2。RTVはShader内で触るものではないので、ShaderVisibleはfalse
@@ -238,7 +238,7 @@ void DirectXCommon::Release(WinApp* winApp_) {
 #ifdef _DEBUG
 	winApp_->debugController->Release();
 #endif
-	CloseWindow(winApp_->hwnd);
+	CloseWindow(winApp_->Gethwnd());
 
 	// リソースリークチェック
 	IDXGIDebug1* debug;

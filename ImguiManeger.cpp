@@ -5,7 +5,7 @@ void ImGuiManeger::Initialize(WinApp* winApp_, DirectXCommon* dir_) {
 	IMGUI_CHECKVERSION();
 	ImGui::CreateContext();
 	ImGui::StyleColorsDark();
-	ImGui_ImplWin32_Init(winApp_->hwnd);
+	ImGui_ImplWin32_Init(winApp_->Gethwnd());
 	ImGui_ImplDX12_Init(dir_->GetDevice(),
 		dir_->swapChainDesc.BufferCount,
 		dir_->rtvDesc.Format,
