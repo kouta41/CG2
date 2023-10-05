@@ -4,28 +4,21 @@
 #include"ImguiManege.h"
 
 Triangle::Triangle() {
-	dxcUtils_ = nullptr;
 	dxcCompiler_ = nullptr;
-	errorBlob_ = nullptr;
 	includeHandler_ = nullptr;
-	signatureBlob_ = nullptr;
-	rootSignature_ = nullptr;
-	device_ = nullptr;
-	graphicsPipelineState_ = nullptr;
 	vertexData_;
-	materialDate_;
+	materialData_;
 	viewport_;
 	scissorRect_;
 	vertexBufferView_;
-	vertexShaderBlob_;
-	pixelShaderBlob_;
 	triangleData[10];
-	wvpDate_ = nullptr;
+	wvpData_ = nullptr;
 	wvpResource_ = nullptr;
 	wvpmResource_ = nullptr;
 	transform_={ {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f} };
 	cameraTransfrom_ = { {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},{0.0f,0.0f,-5.0f} };
 	transformationMatrixData_ = nullptr;
+	
 }
 
 Triangle::~Triangle() {
@@ -33,193 +26,65 @@ Triangle::~Triangle() {
 }
 
 void Triangle::Init(DirectX12* dx12Common) {
-	//dxcCompilerを初期化
-	hr_ = DxcCreateInstance(CLSID_DxcUtils, IID_PPV_ARGS(&dxcUtils_));
-	assert(SUCCEEDED(hr_));
-	hr_ = DxcCreateInstance(CLSID_DxcCompiler, IID_PPV_ARGS(&dxcCompiler_));
-	assert(SUCCEEDED(hr_));
+	
+	
+	dx12Common_ = dx12Common;
 
-	//現時点でincludeはしないが、includeに対応するための設定を行っておく
-	hr_ = dxcUtils_->CreateDefaultIncludeHandler(&includeHandler_);
-	assert(SUCCEEDED(hr_));
-
-
-	//RootSignature作成
-	D3D12_ROOT_SIGNATURE_DESC descriptionRootSignature{};
-	descriptionRootSignature.Flags = D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT;
-
-	//RootParameter作成。複数設定できるので配列。今回は結果1つだけなので長さ1の配列
-	D3D12_ROOT_PARAMETER rootParmeters[2] = {};
-	rootParmeters[0].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV; //CBVを使う
-	rootParmeters[0].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL; //PixelShaderで使う
-	rootParmeters[0].Descriptor.ShaderRegister = 0;//レジスタ番号0とバインド
-	rootParmeters[1].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV; //CBVを使う
-	rootParmeters[1].ShaderVisibility = D3D12_SHADER_VISIBILITY_VERTEX; //PixelShaderで使う
-	rootParmeters[1].Descriptor.ShaderRegister = 0;//レジスタ番号0とバインド
-	descriptionRootSignature.pParameters = rootParmeters;//ルートパラメータ配列へのポインタ
-	descriptionRootSignature.NumParameters = _countof(rootParmeters);//配列の長さ
-	//シリアライズしてバイナリにする
-	hr_ = D3D12SerializeRootSignature(&descriptionRootSignature, D3D_ROOT_SIGNATURE_VERSION_1, &signatureBlob_, &errorBlob_);
-	if (FAILED(hr_)) {
-		Log(reinterpret_cast<char*>(errorBlob_->GetBufferPointer()));
-		assert(false);
-	}
-	//バイナリを元に生成
-	device_ = dx12Common->Getdevice();
-	hr_ = device_->CreateRootSignature(0, signatureBlob_->GetBufferPointer(),
-		signatureBlob_->GetBufferSize(), IID_PPV_ARGS(&rootSignature_));
-	assert(SUCCEEDED(hr_));
-
-
-	//InputLayout
-	D3D12_INPUT_ELEMENT_DESC inputElementDescs[1] = {};
-	inputElementDescs[0].SemanticName = "POSITION";
-	inputElementDescs[0].SemanticIndex = 0;
-	inputElementDescs[0].Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
-	inputElementDescs[0].AlignedByteOffset = D3D12_APPEND_ALIGNED_ELEMENT;
-	D3D12_INPUT_LAYOUT_DESC inputLayoutDesc{};
-	inputLayoutDesc.pInputElementDescs = inputElementDescs;
-	inputLayoutDesc.NumElements = _countof(inputElementDescs);
-
-
-	//BlendStateの設定
-	D3D12_BLEND_DESC blendDesc{};
-	//すべての色要素を書き込む
-	blendDesc.RenderTarget[0].RenderTargetWriteMask =
-		D3D12_COLOR_WRITE_ENABLE_ALL;
-
-	//ResiterzerStateの設定
-	D3D12_RASTERIZER_DESC rasterizerDesc{};
-	//裏面（時計回り）を表示しない
-	rasterizerDesc.CullMode = D3D12_CULL_MODE_BACK;
-	//三角形の中を塗りつぶす
-	rasterizerDesc.FillMode = D3D12_FILL_MODE_SOLID;
-
-
-	//Shaderをコンパイルする
-	vertexShaderBlob_ = CompileShader(L"Object3d.VS.hlsl", L"vs_6_0", dxcUtils_, dxcCompiler_, includeHandler_);
-	assert(vertexShaderBlob_ != nullptr);
-
-	pixelShaderBlob_ = CompileShader(L"Object3d.PS.hlsl", L"ps_6_0", dxcUtils_, dxcCompiler_, includeHandler_);
-	assert(pixelShaderBlob_ != nullptr);
-
-
-	D3D12_GRAPHICS_PIPELINE_STATE_DESC graphicsPipelineStateDesc{};
-	graphicsPipelineStateDesc.pRootSignature = rootSignature_;//RootSignature
-	graphicsPipelineStateDesc.InputLayout = inputLayoutDesc;//InputLayout
-	graphicsPipelineStateDesc.VS = { vertexShaderBlob_->GetBufferPointer(),
-	vertexShaderBlob_->GetBufferSize() };//VertexShader
-	graphicsPipelineStateDesc.PS = { pixelShaderBlob_->GetBufferPointer(),
-	pixelShaderBlob_->GetBufferSize() };//PixelShader
-	graphicsPipelineStateDesc.BlendState = blendDesc;//BlendState
-	graphicsPipelineStateDesc.RasterizerState = rasterizerDesc;//RasterizerState
-	//書き込むRTVの情報
-	graphicsPipelineStateDesc.NumRenderTargets = 1;
-	graphicsPipelineStateDesc.RTVFormats[0] = DXGI_FORMAT_R8G8B8A8_UNORM_SRGB;
-	//利用するトポロジ（形状）のタイプ。三角形
-	graphicsPipelineStateDesc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
-	//どのように画面に色を打ち込むのかの設定（気にしなくてよい）
-	graphicsPipelineStateDesc.SampleDesc.Count = 1;
-	graphicsPipelineStateDesc.SampleMask = D3D12_DEFAULT_SAMPLE_MASK;
-	//実際に生成
-	hr_ = device_->CreateGraphicsPipelineState(&graphicsPipelineStateDesc, IID_PPV_ARGS(&graphicsPipelineState_));
-	assert(SUCCEEDED(hr_));
-
-	commandList_ = dx12Common->GetcommandList();
-
+	vertexResource_ = CreatBufferResource(sizeof(VertexData) * 3);
+	materialResource_ = CreatBufferResource(sizeof(Vector4) * 3);
+	wvpResource_ = CreatBufferResource(sizeof(Matrix4x4));
+	MakeVertexBufferView();
 }
 
 void Triangle::Draw(Vector4 triangleData[10] ) {
-
-	materialResource_ = CreatBufferResource(device_, sizeof(Vector4) * 3);
-	//頂点バッファビューを作成する
-	//リソースの先頭のアドレスから使う
-	materialBufferView_.BufferLocation = materialResource_->GetGPUVirtualAddress();
-	//リソースの先頭のアドレスは頂点３つぶんのサイズ
-	materialBufferView_.SizeInBytes = sizeof(Vector4);
-	//1頂点当たりのサイズ
-	materialBufferView_.StrideInBytes = sizeof(Vector4);
-
-	//頂点リソースにデータを書き込む
-	//書き込むためのアドレスを取得
-	materialResource_->Map(0, nullptr, reinterpret_cast<void**>(&materialDate_));
-
-	*materialDate_ = color;
-	ImGui::Begin("Player pos");
-	ImGui::ColorEdit3("color",&color.x);
-	ImGui::End();
-	vertexResource_ = CreatBufferResource(device_, sizeof(Vector4) * 3);
-	//頂点バッファビューを作成する
-	//リソースの先頭のアドレスから使う
-	vertexBufferView_.BufferLocation = vertexResource_->GetGPUVirtualAddress();
-	//リソースの先頭のアドレスは頂点３つぶんのサイズ
-	vertexBufferView_.SizeInBytes = sizeof(Vector4) * 3;
-	//1頂点当たりのサイズ
-	vertexBufferView_.StrideInBytes = sizeof(Vector4);
-
-	//頂点リソースにデータを書き込む
-	//書き込むためのアドレスを取得
-	vertexResource_->Map(0, nullptr, reinterpret_cast<void**>(&vertexData_));
-
+	///---------------------------------------------------------------------//
 	//左下
-	vertexData_[0] = triangleData[0];
+	vertexData[0].position = { -0.5f,-0.5f,0.0f,1.0f };
+	vertexData[0].texcoord = { 0.0f,1.0f };
 	//上
-	vertexData_[1] = triangleData[1];
+	vertexData[1].position = { 0.0f,0.5f,0.0f,1.0f };
+	vertexData[1].texcoord = { 0.5f,0.0f, };
 	//右下
-	vertexData_[2] = triangleData[2];
+	vertexData[2].position = { 0.5f,-0.5f,0.0f,1.0f };
+	vertexData[2].texcoord = { 1.0f,1.0f };
 
+	///---------------------------------------------------------------------///
+
+	materialResource_->Map(0, nullptr, reinterpret_cast<void**>(&materialData_));
+	*materialData_ = color;
 
 	//WVP用のリソースを作る。matrix4x4 一つ分サイズ分を用意する
-	wvpResource_ = CreatBufferResource(device_, sizeof(Matrix4x4));
 	//データを書き込むためのアドレスを取得
-	wvpResource_->Map(0, nullptr, reinterpret_cast<void**>(&wvpDate_));
-	transform_.rotate.y += 0.03f;
 	Matrix4x4 WorldMatrix = MakeAffineMatrix(transform_.scale, transform_.rotate, transform_.translate);
+	wvpResource_->Map(0, nullptr, reinterpret_cast<void**>(&wvpData_));
 	//単位行列を書き込んでおく
-	*wvpDate_ = WorldMatrix;
+	*wvpData_ = Multiply(WorldMatrix, ViewMatrix);
 
-
-	wvpmResource_ = CreatBufferResource(device_, sizeof(Matrix4x4));
-	wvpmResource_->Map(0, nullptr, reinterpret_cast<void**>(&transformationMatrixData_));
-	Matrix4x4 worldMatrix = MakeAffineMatrix(transform_.scale, transform_.rotate, transform_.translate);
+	/*Matrix4x4 worldMatrix = MakeAffineMatrix(transform_.scale, transform_.rotate, transform_.translate);
 	Matrix4x4 cameraMatrix = MakeAffineMatrix(cameraTransfrom_.scale, cameraTransfrom_.rotate, cameraTransfrom_.translate);
 	Matrix4x4 viewMatrix = Inverse(cameraMatrix);
 	Matrix4x4 projectionMatrix = MakePerspectiveFovMatrix(0.45f, 1280 / 720, 0.1f, 100.0f);
 	Matrix4x4 worldViewProjectionMatrix = Multiply(worldMatrix, Multiply(viewMatrix, projectionMatrix));
-	*transformationMatrixData_ = worldViewProjectionMatrix;
+	*transformationMatrixData_ = worldViewProjectionMatrix;*/
 
 
-	//ビューポート
-	//クライアント領域のサイズと一緒にして画面全体に表示
-	viewport_.Width = 1280;
-	viewport_.Height = 720;
-	viewport_.TopLeftX = 0;
-	viewport_.TopLeftY = 0;
-	viewport_.MinDepth = 0.0f;
-	viewport_.MaxDepth = 1.0f;
-
-	//シザー短形	D3D12_RECT scissorRect{};
-	//基本的にビューポートと同じ短形が構成されるようにする
-	scissorRect_.left = 0;
-	scissorRect_.right = 1280;
-	scissorRect_.top = 0;
-	scissorRect_.bottom = 720;
+	ImGui::Begin("Player pos");
+	ImGui::ColorEdit3("color", &color.x);
+	ImGui::End();
 
 
 	//コマンド積む
-	commandList_->RSSetViewports(1, &viewport_);
-	commandList_->RSSetScissorRects(1, &scissorRect_);
 	//RootSignatureを設定。PSOに設定しているけど別途設定が必要
-	commandList_->SetGraphicsRootSignature(rootSignature_);
-	commandList_->SetPipelineState(graphicsPipelineState_);
-	commandList_->IASetVertexBuffers(0, 1, &vertexBufferView_);
+	dx12Common_->GetcommandList()->IASetVertexBuffers(0, 1, &vertexBufferView_);
 //	commandList_->IASetVertexBuffers(0, 1, &materialBufferView_);
 	//形状を設定。PSOに設定しているものとはまたは別。同じものを設定すると考えておけばよい
-	commandList_->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-	commandList_->SetGraphicsRootConstantBufferView(0, materialResource_->GetGPUVirtualAddress());
-	commandList_->SetGraphicsRootConstantBufferView(1, wvpResource_->GetGPUVirtualAddress());
+	dx12Common_->GetcommandList()->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	dx12Common_->GetcommandList()->SetGraphicsRootConstantBufferView(0, materialResource_->GetGPUVirtualAddress());
+	dx12Common_->GetcommandList()->SetGraphicsRootConstantBufferView(1, wvpResource_->GetGPUVirtualAddress());
+	dx12Common_->GetcommandList()->SetGraphicsRootDescriptorTable(2, textureSrvHandleGPU);
+
 	//描画！（DrawCall/ドローコール）。３ちょうてんで１つのインスタンス。インスタンスについては今後
-	commandList_->DrawInstanced(3, 1, 0, 0);
+	dx12Common_->GetcommandList()->DrawInstanced(3, 1, 0, 0);
 }
 
 void Triangle::Release() {
@@ -227,18 +92,114 @@ void Triangle::Release() {
 	vertexResource_->Release();
 	materialResource_->Release();
 	wvpResource_->Release();
-
-	graphicsPipelineState_->Release();
-	signatureBlob_->Release();
-	if (errorBlob_) {
-		errorBlob_->Release();
-	}
-	rootSignature_->Release();
-	pixelShaderBlob_->Release();
-	vertexShaderBlob_->Release();
+	textureResource->Release();
+	intermediateResource_->Release();
 }
 
-ID3D12Resource* Triangle::CreatBufferResource(ID3D12Device* device_, size_t sizeInBytes) {
+void Triangle::LoadTexture(const std::string& filePath) {
+	//Textureを読んで転送する
+	DirectX::ScratchImage mipImages = ImageFileOpen(filePath);
+	const DirectX::TexMetadata& metdata = mipImages.GetMetadata();
+	textureResource = CreateTextureResource(dx12Common_->Getdevice(), metdata);
+	intermediateResource_ = UploadTextureData(textureResource, mipImages);
+	//metDataを基にSRVの設定
+	D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc{};
+	srvDesc.Format = metdata.format;
+	srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+	srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
+	srvDesc.Texture2D.MipLevels = UINT(metdata.mipLevels);
+	//SRVを作成するDescriptorHeapの場所を決める
+	D3D12_CPU_DESCRIPTOR_HANDLE textureSrvHandleCPU = dx12Common_->GetsrvDescriptorHeap_()->GetCPUDescriptorHandleForHeapStart();
+	D3D12_GPU_DESCRIPTOR_HANDLE textureSrvHandleGPU = dx12Common_->GetsrvDescriptorHeap_()->GetGPUDescriptorHandleForHeapStart();
+
+	//先頭はImGuiが使っているのでその次に使う
+	textureSrvHandleCPU.ptr += dx12Common_->Getdevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+	textureSrvHandleGPU.ptr += dx12Common_->Getdevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+	//SRVの生成
+	dx12Common_->Getdevice()->CreateShaderResourceView(textureResource, &srvDesc, textureSrvHandleCPU);
+
+
+}
+
+DirectX::ScratchImage Triangle::ImageFileOpen(const std::string& filePath) {
+	//テクスチャファイルを読み込んでプログラムで扱えるようにする
+	DirectX::ScratchImage image{};
+	std::wstring filePathW = ConvertString(filePath);
+	 hr_ = DirectX::LoadFromWICFile(filePathW.c_str(), DirectX::WIC_FLAGS_FORCE_SRGB, nullptr, image);
+	assert(SUCCEEDED(hr_));
+
+	//ミニマップの作成
+	DirectX::ScratchImage mipImages{};
+	hr_ = DirectX::GenerateMipMaps(image.GetImages(), image.GetImageCount(), image.GetMetadata(), DirectX::TEX_FILTER_SRGB, 0, mipImages);
+	assert(SUCCEEDED(hr_));
+
+	//ミニマップ付きのデータを返す
+	return mipImages;
+}
+
+ID3D12Resource* Triangle::CreateTextureResource(ID3D12Device* device, const DirectX::TexMetadata& metadata) {
+	//metadataを基にResourceの設定
+	D3D12_RESOURCE_DESC resourceDesc{};
+	resourceDesc.Width = UINT(metadata.width);//textureの幅
+	resourceDesc.Height = UINT(metadata.height);//Textureの高さ
+	resourceDesc.MipLevels = UINT(metadata.mipLevels);//mipmapの数
+	resourceDesc.DepthOrArraySize = UINT16(metadata.arraySize);//奥行き　or　配列textureの配列数
+	resourceDesc.Format = metadata.format;//TextureのFormat
+	resourceDesc.SampleDesc.Count = 1;//サンプリングカウント。1固定。
+	resourceDesc.Dimension = D3D12_RESOURCE_DIMENSION(metadata.dimension);//Textureの次元数。普段使っているのは2次元
+
+	//利用するHeapの設定。非常に特殊な運用。02_04exで一般的なケースがある
+	D3D12_HEAP_PROPERTIES heapProperties{};
+	heapProperties.Type = D3D12_HEAP_TYPE_CUSTOM;//細かい設定を行う
+	heapProperties.CPUPageProperty = D3D12_CPU_PAGE_PROPERTY_WRITE_BACK;//WriteBackポリシーでCPUアクセス可能
+	heapProperties.MemoryPoolPreference = D3D12_MEMORY_POOL_L0;//プロセッサの近くに配置
+
+	//Resoureの生成
+	ID3D12Resource* resource = nullptr;
+	HRESULT hr = device->CreateCommittedResource(
+		&heapProperties,
+		D3D12_HEAP_FLAG_NONE,
+		&resourceDesc,
+		D3D12_RESOURCE_STATE_GENERIC_READ,
+		nullptr,
+		IID_PPV_ARGS(&resource));
+	assert(SUCCEEDED(hr));
+
+	return resource;
+}
+ID3D12Resource* Triangle::UploadTextureData(ID3D12Resource* texture, const DirectX::ScratchImage& mipImages) {
+	std::vector<D3D12_SUBRESOURCE_DATA>subresources;
+	DirectX::PrepareUpload(dx12Common_->Getdevice(), mipImages.GetImages(), mipImages.GetImageCount(), mipImages.GetMetadata(), subresources);
+	uint64_t intermediateSize = GetRequiredIntermediateSize(texture, 0, UINT(subresources.size()));
+	ID3D12Resource* intermediateResource = CreatBufferResource(intermediateSize);
+	UpdateSubresources(dx12Common_->GetcommandList(), texture, intermediateResource, 0, 0, UINT(subresources.size()), subresources.data());
+	//Tetureへの転送後は利用できるようにD3D12_RESOURCE_STATE_COPY_DESTからD3D12_RESOURCE_STATE_GENERIC_READへResourceStateを変更する
+	D3D12_RESOURCE_BARRIER barrier{};
+	barrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
+	barrier.Flags = D3D12_RESOURCE_BARRIER_FLAG_NONE;
+	barrier.Transition.pResource = texture;
+	barrier.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
+	barrier.Transition.StateBefore = D3D12_RESOURCE_STATE_COPY_DEST;
+	barrier.Transition.StateAfter = D3D12_RESOURCE_STATE_GENERIC_READ;
+	dx12Common_->GetcommandList()->ResourceBarrier(1, &barrier);
+	return intermediateResource;
+
+}
+
+void Triangle::MakeVertexBufferView() {
+	//リソースの先頭のアドレスから使う
+	vertexBufferView_.BufferLocation = vertexResource_->GetGPUVirtualAddress();
+	//リソースの先頭のアドレスは頂点３つぶんのサイズ
+	vertexBufferView_.SizeInBytes = sizeof(VertexData) * 3;
+	//1頂点当たりのサイズ
+	vertexBufferView_.StrideInBytes = sizeof(VertexData);
+	//頂点リソースにデータを書き込む
+	//書き込むためのアドレスを取得
+	vertexResource_->Map(0, nullptr, reinterpret_cast<void**>(&vertexData));
+}
+
+ID3D12Resource* Triangle::CreatBufferResource( size_t sizeInBytes) {
+	ID3D12Resource* Resource_ = nullptr;
 	//頂点リソース用のヒープの設定
 	D3D12_HEAP_PROPERTIES uploadHeapProperties{};
 	uploadHeapProperties.Type = D3D12_HEAP_TYPE_UPLOAD;//UploadHeapを使う
@@ -255,11 +216,13 @@ ID3D12Resource* Triangle::CreatBufferResource(ID3D12Device* device_, size_t size
 	//バッファの場合はこれらにする決まり
 	ResourceDesc.Layout = D3D12_TEXTURE_LAYOUT_ROW_MAJOR;
 	//実際に頂点リソースを作る
-	ID3D12Resource* Resource_ = nullptr;
-	hr_ = device_->CreateCommittedResource(&uploadHeapProperties, D3D12_HEAP_FLAG_NONE, &ResourceDesc,
+	hr_ = dx12Common_->Getdevice()->CreateCommittedResource(&uploadHeapProperties, D3D12_HEAP_FLAG_NONE, &ResourceDesc,
 		D3D12_RESOURCE_STATE_GENERIC_READ, nullptr, IID_PPV_ARGS(&Resource_));
 	assert(SUCCEEDED(hr_));
 
 	return Resource_;
 
 }
+
+
+

@@ -65,7 +65,6 @@ public:
 	//メッセージの処理
 	bool ProcessMessage();
 
-	HWND Gethwnd_() { return this->hwnd_; }
+	HWND Gethwnd_() const { return this->hwnd_; }
 
-	ID3D12Debug1* GetdebugController_() { return debugController_; }
 };

@@ -4,14 +4,14 @@
 #include <format>
 #include <dxcapi.h>
 #include "ConvertString.h"
+#include "externals/DirectXTex/DirectXTex.h"
 
 
-ID3D12DescriptorHeap* CreatDescriptorHeap(
-	ID3D12Device* device, 
-	D3D12_DESCRIPTOR_HEAP_TYPE heapType,
-	UINT numDescriptors, 
-	bool shaderVisible
-);
+
+struct Vector2 final {
+	float x;
+	float y;
+};
 
 struct Vector3 final {
 	float x;
@@ -25,6 +25,12 @@ struct Vector4 final {
 	float z;
 	float w;
 };
+
+struct VertexData final {
+	Vector4 position;
+	Vector2 texcoord;
+};
+
 
 struct Transform {
 	Vector3 scale;
@@ -60,12 +66,6 @@ Matrix4x4 MakePerspectiveFovMatrix(float fovY, float aspectRatio, float nearClip
 //逆行(列
 Matrix4x4 Inverse(const Matrix4x4& m);
 
-IDxcBlob* CompileShader(
-	//CompilerするShaderファイルへのパス
-	const std::wstring& filePath,
-	//Compilerに使用するprofile
-	const wchar_t* profile,
-	//初期化で生成したものを３つ
-	IDxcUtils* dxcUtils,
-	IDxcCompiler3* dxcCompiler,
-	IDxcIncludeHandler* includeHandler);
+
+
+

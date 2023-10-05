@@ -7,6 +7,7 @@
 
 //windowsアプリでのエントリーポイント(main関数)
 int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
+	CoInitializeEx(0, COINIT_MULTITHREADED);
 	int count = 10;
 	WinApp* winApp = new WinApp(1280, 720, L"CG2");
 	DirectX12* dx12Common = new DirectX12();
@@ -50,15 +51,15 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		else {
 			//ゲームの更新処理
 
-			dx12Common->Update();
 			imgui->Update();
+			dx12Common->PreView();
 
 			for (int i = 0; i < count; i++)
 			{
 				triangle[i]->Draw(triangle[i]->triangleData);
 			}
-			imgui->Draw(dx12Common);
-			dx12Common->Draw();
+			imgui->Draw();
+			dx12Common->PostView();
 		}
 	}
 		dx12Common->Release();
@@ -66,5 +67,6 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		{
 			triangle[i]->Release();
 		}
+		CoUninitialize();
 	return 0;
 }
