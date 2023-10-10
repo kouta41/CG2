@@ -54,5 +54,5 @@ private:
 	D3D12_CPU_DESCRIPTOR_HANDLE textureSrvHandleCPU;
 	D3D12_GPU_DESCRIPTOR_HANDLE textureSrvHandleGPU;
 
-	static inline HRESULT hr_;
+	HRESULT hr_;
 };

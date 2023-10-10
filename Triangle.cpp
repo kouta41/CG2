@@ -11,17 +11,17 @@ void Triangle::Update() {
 }
 
 void Triangle::Draw(DirectXCommon* dir_) {
-	dir_->GetCommandList()->IASetVertexBuffers(0, 1, &vertexBufferView);
+	dir_->GetCommandList_()->IASetVertexBuffers(0, 1, &vertexBufferView);
 	// 形状を設定。PSOに設定しているものとはまた別。同じものを設定すると考えておけば良い
-	dir_->GetCommandList()->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	dir_->GetCommandList_()->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	// マテリアルCBufferの場所を設定
-	dir_->GetCommandList()->SetGraphicsRootConstantBufferView(0, materialResource->GetGPUVirtualAddress());
+	dir_->GetCommandList_()->SetGraphicsRootConstantBufferView(0, materialResource->GetGPUVirtualAddress());
 	// wvp用のCBufferの場所を設定
-	dir_->GetCommandList()->SetGraphicsRootConstantBufferView(1, wvpResource->GetGPUVirtualAddress());
+	dir_->GetCommandList_()->SetGraphicsRootConstantBufferView(1, wvpResource->GetGPUVirtualAddress());
 	// SRVのDescriptorTableの先頭を設定。2はrootParameter[2]である。
-	dir_->GetCommandList()->SetGraphicsRootDescriptorTable(2, textureSrvHandleGPU);
+	dir_->GetCommandList_()->SetGraphicsRootDescriptorTable(2, textureSrvHandleGPU);
 	// 描画(DrawCall/ドローコール)。3頂点で1つのインスタンス。
-	dir_->GetCommandList()->DrawInstanced(3, 1, 0, 0);
+	dir_->GetCommandList_()->DrawInstanced(3, 1, 0, 0);
 }
 
 void Triangle::Release() {
@@ -79,8 +79,8 @@ void Triangle::CreateVertexResource(DirectXCommon* dir_, Vector4* pos) {
 	srvDesc.Texture2D.MipLevels = UINT(metadata.mipLevels);
 
 	// SRVを作成するDescriptorHeapの場所を決める
-	textureSrvHandleCPU = dir_->srvDescriptorHeap_->GetCPUDescriptorHandleForHeapStart();
-	textureSrvHandleGPU = dir_->srvDescriptorHeap_->GetGPUDescriptorHandleForHeapStart();
+	textureSrvHandleCPU = dir_->GetsrvDescriptorHeap_()->GetCPUDescriptorHandleForHeapStart();
+	textureSrvHandleGPU = dir_->GetsrvDescriptorHeap_()->GetGPUDescriptorHandleForHeapStart();
 
 	// 先頭はImGuiが使っているのでその次を使う
 	textureSrvHandleCPU.ptr += dir_->GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);

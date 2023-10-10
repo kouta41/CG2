@@ -26,7 +26,7 @@ public:
 
 	void Release();
 
-public:
+private:
 	IDxcUtils* dxcUtils = nullptr;
 	IDxcCompiler3* dxcCompiler = nullptr;
 	IDxcIncludeHandler* includeHandler = nullptr;
@@ -54,7 +54,7 @@ public:
 	D3D12_VIEWPORT viewport{};
 	D3D12_RECT scissorRect{};
 
-	static inline HRESULT hr_;
+	HRESULT hr_;
 
 	WinApp* window_;
 };

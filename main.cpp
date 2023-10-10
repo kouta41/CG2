@@ -110,11 +110,12 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		delete triangle[i];
 	}
 
-	mesh->Release();
-	delete mesh;
+	
 	imgui->Release();
 	directX->Release(winapp);
+	mesh->Release();
 
+	delete mesh;
 	delete imgui;
 	delete directX;
 

@@ -140,6 +140,8 @@ void DirectXCommon::Initialize(WinApp* winApp_) {
 	device_->CreateRenderTargetView(swapChainResources[1], &rtvDesc, rtvHandles[1]);
 
 	DirectXCommon::Fence();
+
+
 }
 
 void DirectXCommon::Fence() {
@@ -180,6 +182,8 @@ void DirectXCommon::Update() {
 	// 描画用のDescriptorHeapの設定
 	ID3D12DescriptorHeap* descriptorHeaps[] = { srvDescriptorHeap_ };
 	commandList_->SetDescriptorHeaps(1, descriptorHeaps);
+
+
 }
 
 void DirectXCommon::Close() {
@@ -248,6 +252,7 @@ void DirectXCommon::Release(WinApp* winApp_) {
 		debug->ReportLiveObjects(DXGI_DEBUG_D3D12, DXGI_DEBUG_RLO_ALL);
 		debug->Release();
 	}
+
 }
 
 // DescriptorHeap関数
@@ -264,3 +269,6 @@ ID3D12DescriptorHeap* DirectXCommon::CreateDescriptorHeap(ID3D12Device* device, 
 	assert(SUCCEEDED(hr));
 	return descriptorHeap;
 }
+
+
+

@@ -4,8 +4,9 @@
 void Mesh::Initialize(DirectXCommon* dir_, WinApp* window) {
 
 	window_ = window;
-	// dxcCompilerを初期化
 
+
+	// dxcCompilerを初期化
 	hr_ = DxcCreateInstance(CLSID_DxcUtils, IID_PPV_ARGS(&dxcUtils));
 	assert(SUCCEEDED(hr_));
 	hr_ = DxcCreateInstance(CLSID_DxcCompiler, IID_PPV_ARGS(&dxcCompiler));
@@ -16,9 +17,9 @@ void Mesh::Initialize(DirectXCommon* dir_, WinApp* window) {
 	hr_ = dxcUtils->CreateDefaultIncludeHandler(&includeHandler);
 	assert(SUCCEEDED(hr_));
 
-	Mesh::CreatePso(dir_);
-	Mesh::Viewport();
-	Mesh::Scissor();
+	CreatePso(dir_);
+	Viewport();
+	Scissor();
 }
 
 void Mesh::CreatePso(DirectXCommon* dir_) {
@@ -132,11 +133,11 @@ void Mesh::CreatePso(DirectXCommon* dir_) {
 
 void Mesh::Update(DirectXCommon* dir_) {
 	// コマンドを積む
-	dir_->GetCommandList()->RSSetViewports(1, &viewport);
-	dir_->GetCommandList()->RSSetScissorRects(1, &scissorRect);
+	dir_->GetCommandList_()->RSSetViewports(1, &viewport);
+	dir_->GetCommandList_()->RSSetScissorRects(1, &scissorRect);
 	// RootSignatureを設定。PSOに設定しているけど別途設定が必要
-	dir_->GetCommandList()->SetGraphicsRootSignature(rootSignature);
-	dir_->GetCommandList()->SetPipelineState(graphicsPipelineState);
+	dir_->GetCommandList_()->SetGraphicsRootSignature(rootSignature);
+	dir_->GetCommandList_()->SetPipelineState(graphicsPipelineState);
 }
 
 void Mesh::Viewport() {

@@ -1,16 +1,17 @@
 #pragma once
+#include <Windows.h>
 
 #include <d3d12.h>
 #include <dxgi1_6.h>
 #include <dxgidebug.h>
+#include <dxcapi.h>
 #include <cassert>
 #include <string>
 #include <format>
 #include <cstdint>
-#include <Windows.h>
 #include "WinApp.h"
 #include "ConvertString.h"
-#include "Mesh.h"
+#include "Utility.h"
 
 #pragma comment(lib, "d3d12.lib")
 #pragma comment(lib, "dxgi.lib")
@@ -29,14 +30,23 @@ public:
 	void Fence();
 	void Close();
 
+
+	
+
 	ID3D12DescriptorHeap* CreateDescriptorHeap(ID3D12Device* device, D3D12_DESCRIPTOR_HEAP_TYPE heapType, UINT numDescriptors, bool shaderVisible);
 
-
 	// Accessor
-	ID3D12GraphicsCommandList* GetCommandList() { return commandList_; }
+	ID3D12GraphicsCommandList* GetCommandList_() { return commandList_; }
 	ID3D12Device* GetDevice() { return device_; }
+	DXGI_SWAP_CHAIN_DESC1 GetswapChainDesc() { return swapChainDesc; }
+	D3D12_RENDER_TARGET_VIEW_DESC GetrtvDesc() { return rtvDesc; }
+	ID3D12DescriptorHeap* GetsrvDescriptorHeap_() { return srvDescriptorHeap_; }
 
-public:
+
+private:
+
+	WinApp* window_;
+
 	IDXGIFactory7* dxgiFactory_ = nullptr;
 	ID3D12Device* device_ = nullptr;
 	IDXGIAdapter4* useAdapter_ = nullptr;
@@ -54,7 +64,7 @@ public:
 	ID3D12Fence* fence = nullptr;
 	uint64_t fenceValue = 0;
 	HANDLE fenceEvent = 0;
-	static inline HRESULT hr_;
+	HRESULT hr_;
 
-	//static inline HWND hwnd = nullptr;
+
 };
