@@ -26,11 +26,11 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	}
 
 	// 左下
-	pos[0][0] = { -0.1f, 0.5f, 0.0f, 1.0f };
+	pos[0][0] = { -0.5f, -0.5f, 0.0f, 1.0f };
 	// 上
-	pos[0][1] = { 0.0f, 0.7f, 0.0f, 1.0f };
+	pos[0][1] = { 0.0f, 0.5f, 0.0f, 1.0f };
 	// 右下
-	pos[0][2] = { 0.1f, 0.5f, 0.0f, 1.0f };
+	pos[0][2] = { 0.5f, -0.5f, 0.0f, 1.0f };
 
 	WinApp* winapp = new WinApp(L"CG2");
 	DirectXCommon* directX = new DirectXCommon();
@@ -45,7 +45,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 	for (int i = 0; i < Max; i++) {
 		triangle[i] = new Triangle();
-		triangle[i]->Initialize(directX, pos[i]);
+		triangle[i]->Initialize(directX, pos[i],winapp);
 	}
 
 	Transform transform{ {1.0f, 1.0f, 1.0f}, {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 0.0f} };
