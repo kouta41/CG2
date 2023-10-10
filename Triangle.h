@@ -27,6 +27,8 @@ public:
 	void CreateVertexResource(DirectXCommon* dir_, Vector4* pos);
 	void CreateMaterialResource(DirectXCommon* dir_);
 	void CreateWVPResource(DirectXCommon* dir_);
+	void Create2DSpriteResource(DirectXCommon* dir_);
+
 
 	void UploadTextureData(ID3D12Resource* texture, const DirectX::ScratchImage& mipImages);
 
@@ -50,12 +52,15 @@ private:
 	ID3D12Resource* materialResource;
 	ID3D12Resource* wvpResource;
 
+	ID3D12Resource* textureResource;
+	ID3D12Resource* depthStencilResource;
+
+	ID3D12Resource* vertexResourceSprite;
+
 	VertexData* vertexData;
 	Vector4* materialData;
 	Matrix4x4* wvpData;
 
-	ID3D12Resource* textureResource;
-	ID3D12Resource* depthStencilResource;
 
 	D3D12_CPU_DESCRIPTOR_HANDLE textureSrvHandleCPU;
 	D3D12_GPU_DESCRIPTOR_HANDLE textureSrvHandleGPU;

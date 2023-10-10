@@ -4,6 +4,7 @@ void Triangle::Initialize(DirectXCommon* dir_, Vector4* pos,WinApp* window) {
 	window_ = window;
 
 	Triangle::CreateVertexResource(dir_, pos);
+	Triangle::Create2DSpriteResource(dir_);
 	Triangle::CreateMaterialResource(dir_);
 	Triangle::CreateWVPResource(dir_);
 }
@@ -53,19 +54,6 @@ void Triangle::CreateVertexResource(DirectXCommon* dir_, Vector4* pos) {
 	vertexData = nullptr;
 	// 書き込むためのアドレスを取得
 	vertexResource->Map(0, nullptr, reinterpret_cast<void**>(&vertexData));
-	//// 左下
-	//vertexData[0] = { -0.1f, -0.1f, 0.0f, 1.0f };
-	//// 上
-	//vertexData[1] = { 0.0f, 0.1f, 0.0f, 1.0f };
-	//// 右上
-	//vertexData[2] = { 0.1f, -0.1f, 0.0f, 1.0f };
-
-	// 左下
-	//pos[0][0] = { -0.1f, 0.5f, 0.0f, 1.0f };
-	// 上
-	//pos[0][1] = { 0.0f, 0.7f, 0.0f, 1.0f };
-	// 右下
-	//pos[0][2] = { 0.1f, 0.5f, 0.0f, 1.0f };
 
 	// 左下
 	vertexData[0].position = pos[0];
@@ -93,6 +81,8 @@ void Triangle::CreateVertexResource(DirectXCommon* dir_, Vector4* pos) {
 	wvpResource = CreateBufferResource(dir_->GetDevice(), sizeof(Matrix4x4));
 	//データを書き込むためのアドレスを取得
 	wvpResource->Map(0, nullptr, reinterpret_cast<void**>(&wvpData));
+
+
 
 
 	//DepthStencilTextureをウィンドウのサイズで作成
@@ -127,6 +117,17 @@ void Triangle::CreateVertexResource(DirectXCommon* dir_, Vector4* pos) {
 	dsvDesc.ViewDimension = D3D12_DSV_DIMENSION_TEXTURE2D;
 	//DSVHeapの先頭にDSVを作る
 	dir_->GetDevice()->CreateDepthStencilView(depthStencilResource, &dsvDesc, dir_->GetdsvDescriptorHeap_()->GetCPUDescriptorHandleForHeapStart());
+}
+
+void Triangle::Create2DSpriteResource(DirectXCommon* dir_) {
+	//Sprite用の頂点リソースを作る
+	vertexResourceSprite = CreateBufferResource(dir_->GetDevice(), sizeof(VertexData) * 6);
+
+	//頂点バッファビューを作成する
+	D3D12_VERTEX_BUFFER_VIEW vertexBufferViewSprite{};
+	//リソースの先頭のアドレスから使う
+	vertexBufferViewSprite.BufferLocation=
+
 }
 
 void Triangle::CreateMaterialResource(DirectXCommon* dir_) {
