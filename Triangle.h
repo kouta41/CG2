@@ -1,5 +1,6 @@
 #pragma once
 #include <Windows.h>
+#include <numbers>
 #include <d3d12.h>
 #include <dxgi1_6.h>
 #include <cassert>
@@ -22,7 +23,8 @@ public:
 	void Update();
 	// 描画
 	void Draw(DirectXCommon* dir_);
-	void SpriteDraw(DirectXCommon* dir_);
+	void DrawSprite(DirectXCommon* dir_);
+	void DrawSphere(DirectXCommon* dir_);
 
 	// 解放
 	void Release();
@@ -31,6 +33,7 @@ public:
 	void CreateMaterialResource(DirectXCommon* dir_);
 	void CreateWVPResource(DirectXCommon* dir_);
 	void Create2DSpriteResource(DirectXCommon* dir_);
+	void CreateSphereResoure(DirectXCommon* dir_);
 
 
 	void UploadTextureData(ID3D12Resource* texture, const DirectX::ScratchImage& mipImages);
@@ -47,35 +50,72 @@ public:
 private:
 	WinApp* window_ = nullptr;
 
-	D3D12_VERTEX_BUFFER_VIEW vertexBufferView{};
-	D3D12_VERTEX_BUFFER_VIEW materialBufferView{};
-	D3D12_VERTEX_BUFFER_VIEW vertexBufferViewSprite{};
+	
 
 	D3D12_DEPTH_STENCIL_VIEW_DESC dsvDesc{};
 
-	ID3D12Resource* vertexResource;
-	ID3D12Resource* materialResource;
-	ID3D12Resource* wvpResource;
 
-	ID3D12Resource* textureResource;
 	ID3D12Resource* depthStencilResource;
 
-	ID3D12Resource* vertexResourceSprite;
-	ID3D12Resource* transformationMatrixResourceSprite;
 
-	VertexData* vertexData;
-	VertexData* vertexDataSprite;
-	Vector4* materialData;
-	Matrix4x4* wvpData;
-	Matrix4x4* transformationMatrixDataSprite;
+#pragma region TriAngle
+	//バーテックスリソース
+	ID3D12Resource* vertexResource = nullptr;
+	//頂点データ
+	VertexData* vertexData = nullptr;
+	//バーテックスバッファビュー
+	D3D12_VERTEX_BUFFER_VIEW vertexBufferView{};
+	D3D12_VERTEX_BUFFER_VIEW materialBufferView{};
 
+	//マテリアルリソース
+	ID3D12Resource* materialResource = nullptr;
+	//色データ
+	Vector4* materialData = nullptr;
+	//WVPリソース
+	ID3D12Resource* wvpResource = nullptr;
+	//WVPデータ
+	Matrix4x4* wvpData = nullptr;
+	//テクスチャデータ
+	ID3D12Resource* textureResource = nullptr;
+#pragma endregion 三角形
 
+#pragma region sprite
+	//Sprite用頂点データ
+	ID3D12Resource* vertexResourceSprite = nullptr;
+	//Sprite用頂点データ
+	VertexData* vertexDataSprite = nullptr;
+	//Sprite用バーテックスバッファビュー
+	D3D12_VERTEX_BUFFER_VIEW vertexBufferViewSprite{};
+	//Sprite用WVPリソース
+	ID3D12Resource* transformationMatrixResourceSprite = nullptr;
+	//Sprite用WVPデータ
+	Matrix4x4* transformationMatrixDataSprite = nullptr;
+#pragma endregion スプライト
+
+#pragma region Sphere
+	const int kSubdivision = 16;
+	//Sphere用頂点データ
+	ID3D12Resource* vertexResourceSphere = nullptr;
+	//Sphere用頂点データ
+	VertexData* vertexDataSphere = nullptr;
+	//Sphere用バーテックスバッファビュー
+	D3D12_VERTEX_BUFFER_VIEW vertexBufferViewSphere{};
+	//Sphere用WVPリソース
+	ID3D12Resource* transformationMatrixResourceSphere = nullptr;
+	//Sphere用WVPデータ
+	Matrix4x4* transformationMatrixDataSphere = nullptr;
+#pragma endregion 球
+
+	//descriptorHandle
 	D3D12_CPU_DESCRIPTOR_HANDLE textureSrvHandleCPU;
 	D3D12_GPU_DESCRIPTOR_HANDLE textureSrvHandleGPU;
 
 	HRESULT hr_;
-
+	Sphere sphere{
+				{0.0f,0.0f,0.0f},
+				16
+	};
 	Transform transform_={ {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f} };
 	Transform transformSprite_ = { {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f} };
-
+	Transform transformSphere = { {0.1f,0.1f,0.1f},{0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f}, };
 };

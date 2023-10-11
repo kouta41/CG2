@@ -83,7 +83,11 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 			triangle[0]->Draw(directX);
 
-			triangle[0]->SpriteDraw(directX);
+			triangle[0]->DrawSprite(directX);
+
+			triangle[0]->DrawSphere(directX);
+			
+
 
 			ImGui::Begin("Mesh Color");
 			ImGui::ColorEdit3("Mesh Color", &triangle[0]->GetmaterialData()->x);

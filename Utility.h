@@ -47,8 +47,13 @@ struct Transform {
 	Vector3 translate;
 };
 
-struct Matrix4x4 {
+struct Matrix4x4 final {
 	float m[4][4];
+};
+
+struct Sphere final {
+	Vector3 center;//中心点
+	float radius;//半径
 };
 
 Matrix4x4 MakeIdentity4x4();
