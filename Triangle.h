@@ -8,6 +8,7 @@
 #include "DirectX12.h"
 #include "Mesh.h"
 #include "WinApp.h"
+#include "ImguiManege.h"
 
 #pragma comment(lib, "d3d12.lib")
 #pragma comment(lib, "dxgi.lib")
