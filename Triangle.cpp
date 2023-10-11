@@ -56,7 +56,6 @@ void Triangle::SpriteDraw(DirectXCommon* dir_) {
 	dir_->GetCommandList_()->DrawInstanced(6, 1, 0, 0);
 
 	ImGui::Begin("SpriteDraw");
-	ImGui::ColorEdit3("colour", *transformationMatrixDataSprite->m);
 	ImGui::SliderFloat3("SpriteDraw", &transformSprite_.translate.x, -50.0f, 50.0f);
 	ImGui::End();
 
