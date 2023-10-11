@@ -18,6 +18,9 @@ void Triangle::Draw(DirectXCommon* dir_) {
 	//単位行列を書き込んでおく
 	*wvpData = WorldMatrix;
 
+	
+
+
 	dir_->GetCommandList_()->IASetVertexBuffers(0, 1, &vertexBufferView);
 	// 形状を設定。PSOに設定しているものとはまた別。同じものを設定すると考えておけば良い
 	dir_->GetCommandList_()->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
@@ -29,13 +32,36 @@ void Triangle::Draw(DirectXCommon* dir_) {
 	dir_->GetCommandList_()->SetGraphicsRootDescriptorTable(2, textureSrvHandleGPU);
 	// 描画(DrawCall/ドローコール)。3頂点で1つのインスタンス。
 	dir_->GetCommandList_()->DrawInstanced(6, 1, 0, 0);
+	
+	
 }
 
+void Triangle::SpriteDraw(DirectXCommon* dir_) {
+
+	//Sprite用のworldViewProjectionMatrixを作る
+	Matrix4x4 worldMatrixSprite = MakeAffineMatrix(transformSprite_.scale, transformSprite_.rotate, transformSprite_.translate);
+	Matrix4x4 viewMatrixSprite = MakeIdentity4x4();
+	Matrix4x4 projectionMatrixSprite = MakeOrthographicMatrix(0.0f, 0.0f, float(window_->GetkClientWidth()), float(window_->GetkClientHeight()), 0.0f, 100.0f);
+	Matrix4x4 worldViewProjectionMatrixSprite = Multiply(worldMatrixSprite, Multiply(viewMatrixSprite, projectionMatrixSprite));
+	*transformationMatrixDataSprite = worldViewProjectionMatrixSprite;
+
+	//Spriteの描画。変更が必要なものだけ変更
+	dir_->GetCommandList_()->IASetVertexBuffers(0, 1, &vertexBufferViewSprite);
+//	dir_->GetCommandList_()->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+//	dir_->GetCommandList_()->SetGraphicsRootConstantBufferView(0, materialResource->GetGPUVirtualAddress());
+	//TransfoormationMatrixCBufferの場所を設定
+	dir_->GetCommandList_()->SetGraphicsRootConstantBufferView(1, transformationMatrixResourceSprite->GetGPUVirtualAddress());
+//	dir_->GetCommandList_()->SetGraphicsRootDescriptorTable(2, textureSrvHandleGPU);
+	// 描画(DrawCall/ドローコール)。3頂点で1つのインスタンス。
+	dir_->GetCommandList_()->DrawInstanced(6, 1, 0, 0);
+
+}
 void Triangle::Release() {
 	vertexResource->Release();
-	materialResource->Release();
 	wvpResource->Release();
 	textureResource->Release();
+
+	transformationMatrixResourceSprite->Release();
 }
 
 void Triangle::CreateVertexResource(DirectXCommon* dir_, Vector4* pos) {
@@ -124,9 +150,39 @@ void Triangle::Create2DSpriteResource(DirectXCommon* dir_) {
 	vertexResourceSprite = CreateBufferResource(dir_->GetDevice(), sizeof(VertexData) * 6);
 
 	//頂点バッファビューを作成する
-	D3D12_VERTEX_BUFFER_VIEW vertexBufferViewSprite{};
 	//リソースの先頭のアドレスから使う
-	vertexBufferViewSprite.BufferLocation=
+	vertexBufferViewSprite.BufferLocation = vertexResourceSprite->GetGPUVirtualAddress();
+	//使用するリソースのサイズは頂点6つ分のサイズ
+	vertexBufferViewSprite.SizeInBytes = sizeof(VertexData) * 6;
+	//1頂点当たりのサイズ
+	vertexBufferViewSprite.StrideInBytes = sizeof(VertexData);
+
+	//頂点データを設定
+	vertexResourceSprite->Map(0, nullptr, reinterpret_cast<void**>(&vertexDataSprite));
+	//1枚目の三角形
+	vertexDataSprite[0].position = { 0.0f,360.0f,0.0f,1.0f };//左下
+	vertexDataSprite[0].texcoord = { 0.0f,1.0f };
+	vertexDataSprite[1].position = { 0.0f,0.0f,0.0f,1.0f };//左上
+	vertexDataSprite[1].texcoord = { 0.0f,0.0f };
+	vertexDataSprite[2].position = { 640.0f,360.0f,0.0f,1.0f };//右下
+	vertexDataSprite[2].texcoord = { 1.0f,1.0f };
+	//2枚目の三角形
+	vertexDataSprite[3].position = { 0.0f,0.0f,0.0f,1.0f };//左上
+	vertexDataSprite[3].texcoord = { 0.0f,0.0f };
+	vertexDataSprite[4].position = { 640.0f,0.0f,0.0f,1.0f };//右上
+	vertexDataSprite[4].texcoord = { 1.0f,0.0f };
+	vertexDataSprite[5].position = { 640.0f,360.0f,0.0f,1.0f };//右下
+	vertexDataSprite[5].texcoord = { 1.0f,1.0f };
+
+	//Sprite用のTransformationMatrix用のリソースを作る。Matrix4x4 1つ分のサイズを用意する
+	transformationMatrixResourceSprite = CreateBufferResource(dir_->GetDevice(), sizeof(Matrix4x4));
+	//データを書き込む
+	//書き込むためのアドレスを取得
+	transformationMatrixResourceSprite->Map(0, nullptr, reinterpret_cast<void**>(&transformationMatrixDataSprite));
+	//単位行列を書き込んでおく
+	*transformationMatrixDataSprite = MakeIdentity4x4();
+
+	
 
 }
 
@@ -155,7 +211,6 @@ void Triangle::CreateWVPResource(DirectXCommon* dir_) {
 	// WVP用のリソースを作る。Matrix4x4 1つ分のサイズを用意する
 	wvpResource = CreateBufferResource(dir_->GetDevice(), sizeof(Matrix4x4));
 	// データを書き込む
-
 	// 書き込むためのアドレスを取得
 	wvpResource->Map(0, nullptr, reinterpret_cast<void**>(&wvpData));
 	// 単位行列を書き込んでおく

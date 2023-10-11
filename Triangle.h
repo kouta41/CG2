@@ -21,6 +21,8 @@ public:
 	void Update();
 	// 描画
 	void Draw(DirectXCommon* dir_);
+	void SpriteDraw(DirectXCommon* dir_);
+
 	// 解放
 	void Release();
 
@@ -46,6 +48,8 @@ private:
 
 	D3D12_VERTEX_BUFFER_VIEW vertexBufferView{};
 	D3D12_VERTEX_BUFFER_VIEW materialBufferView{};
+	D3D12_VERTEX_BUFFER_VIEW vertexBufferViewSprite{};
+
 	D3D12_DEPTH_STENCIL_VIEW_DESC dsvDesc{};
 
 	ID3D12Resource* vertexResource;
@@ -56,10 +60,13 @@ private:
 	ID3D12Resource* depthStencilResource;
 
 	ID3D12Resource* vertexResourceSprite;
+	ID3D12Resource* transformationMatrixResourceSprite;
 
 	VertexData* vertexData;
+	VertexData* vertexDataSprite;
 	Vector4* materialData;
 	Matrix4x4* wvpData;
+	Matrix4x4* transformationMatrixDataSprite;
 
 
 	D3D12_CPU_DESCRIPTOR_HANDLE textureSrvHandleCPU;
@@ -68,4 +75,6 @@ private:
 	HRESULT hr_;
 
 	Transform transform_={ {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f} };
+	Transform transformSprite_ = { {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f} };
+
 };
