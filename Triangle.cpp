@@ -12,7 +12,8 @@ void Triangle::Update() {
 }
 
 void Triangle::Draw(DirectXCommon* dir_) {
-	transform_.rotate.y += 0.01f;
+
+	//transform_.rotate.y += 0.03f;
 	Matrix4x4 WorldMatrix = MakeAffineMatrix(transform_.scale, transform_.rotate, transform_.translate);
 	//単位行列を書き込んでおく
 	*wvpData = WorldMatrix;
@@ -53,6 +54,7 @@ void Triangle::CreateVertexResource(DirectXCommon* dir_, Vector4* pos) {
 	vertexData = nullptr;
 	// 書き込むためのアドレスを取得
 	vertexResource->Map(0, nullptr, reinterpret_cast<void**>(&vertexData));
+
 	//// 左下
 	//vertexData[0] = { -0.1f, -0.1f, 0.0f, 1.0f };
 	//// 上
@@ -79,15 +81,18 @@ void Triangle::CreateVertexResource(DirectXCommon* dir_, Vector4* pos) {
 	vertexData[2].texcoord = { 1.0f, 1.0f };
 
 	// 左下2
-	vertexData[3].position = { -0.5f,-0.5f,0.5f,1.0f };
+	vertexData[3].position = pos[0];
 	vertexData[3].texcoord = { 0.0f, 1.0f };
 	// 上2
-	vertexData[4].position = { 0.0f,0.0f,0.0f,1.0f };
+	vertexData[4].position = pos[1];
 	vertexData[4].texcoord = { 0.5f, 0.0f };
 
 	// 右上2
-	vertexData[5].position = { 0.5f,-0.5f,-0.5f,1.0f };
+	vertexData[5].position = pos[2];
 	vertexData[5].texcoord = { 1.0f, 1.0f };
+
+	
+
 
 	//WVP用のリソースを作る。matrix4x4 一つ分サイズ分を用意する
 	wvpResource = CreateBufferResource(dir_->GetDevice(), sizeof(Matrix4x4));
@@ -95,8 +100,7 @@ void Triangle::CreateVertexResource(DirectXCommon* dir_, Vector4* pos) {
 	wvpResource->Map(0, nullptr, reinterpret_cast<void**>(&wvpData));
 
 
-	//DepthStencilTextureをウィンドウのサイズで作成
-	depthStencilResource = CreateDepthStencilTextureResource(dir_->GetDevice(), window_->GetkClientWidth(), window_->GetkClientHeight());
+	
 
 	// Textureを読んで転送する
 	DirectX::ScratchImage mipImages = LoadTexture("resources/uvChecker.png");
@@ -122,11 +126,8 @@ void Triangle::CreateVertexResource(DirectXCommon* dir_, Vector4* pos) {
 	// SRVの生成
 	dir_->GetDevice()->CreateShaderResourceView(textureResource, &srvDesc, textureSrvHandleCPU);
 
-	//DSVの設定
-	dsvDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
-	dsvDesc.ViewDimension = D3D12_DSV_DIMENSION_TEXTURE2D;
-	//DSVHeapの先頭にDSVを作る
-	dir_->GetDevice()->CreateDepthStencilView(depthStencilResource, &dsvDesc, dir_->GetdsvDescriptorHeap_()->GetCPUDescriptorHandleForHeapStart());
+
+	
 }
 
 void Triangle::CreateMaterialResource(DirectXCommon* dir_) {
@@ -250,43 +251,7 @@ ID3D12Resource* Triangle::CreateTextureResource(ID3D12Device* device, const Dire
 	return resource;
 }
 
-ID3D12Resource* Triangle::CreateDepthStencilTextureResource(ID3D12Device* device, int32_t width, int32_t height) {
-	// 生成するResourceの設定
-	D3D12_RESOURCE_DESC resourceDesc{};
-	resourceDesc.Width = width; // textureの幅
-	resourceDesc.Height = height; // textureの高さ
-	resourceDesc.MipLevels = 1; // mipmapの数
-	resourceDesc.DepthOrArraySize = 1; // 奥行 or 配列textureの配列数
-	resourceDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT; //DepthStencilとして利用可能なフォーマット
-	resourceDesc.SampleDesc.Count = 1; // サンプリングカウント。1固定。
-	resourceDesc.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D;//2次元
-	resourceDesc.Flags = D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL;//DepthStencilとして使う通知
 
-	//利用するHeapの設定
-	D3D12_HEAP_PROPERTIES heapProperties{};
-	heapProperties.Type = D3D12_HEAP_TYPE_DEFAULT;//VRAM上に作る
-
-	//深度値のクリア設定
-	D3D12_CLEAR_VALUE depthClearValue{};
-	depthClearValue.DepthStencil.Depth = 1.0f;//1.0f(最大値)でクリア
-	depthClearValue.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;//フォーマット。Resourceと合わせる
-
-	// Resourceの生成
-	ID3D12Resource* resource = nullptr;
-
-	hr_ = device->CreateCommittedResource(
-		&heapProperties, // Heapの設定
-		D3D12_HEAP_FLAG_NONE, // Heapの特殊な設定。特になし
-		&resourceDesc, // Resourceの設定
-		D3D12_RESOURCE_STATE_DEPTH_WRITE, // 深度値を書き込む状態にしておく
-		&depthClearValue, // Clear最適値
-		IID_PPV_ARGS(&resource)); // 作成するResourceポインタへのポインタ
-
-	assert(SUCCEEDED(hr_));
-
-	return resource;
-
-}
 DirectX::ScratchImage Triangle::LoadTexture(const std::string& filePath) {
 
 	// テクスチャファイルを読んでプログラムで扱えるようにする

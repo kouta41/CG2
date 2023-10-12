@@ -32,6 +32,14 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	// 右下
 	pos[0][2] = { 0.5f, -0.5f, 0.0f, 1.0f };
 
+
+	// 左下2
+	pos[1][0] = { -0.5f, -0.5f, 0.5f, 1.0f };
+	// 上2
+	pos[1][1] = { 0.0f, 0.0f, 0.0f, 1.0f };
+	// 右下2
+	pos[1][2] = { 0.5f, -0.5f, -0.5f, 1.0f };
+
 	WinApp* winapp = new WinApp(L"CG2");
 	DirectXCommon* directX = new DirectXCommon();
 	Mesh* mesh = new Mesh();
@@ -52,6 +60,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	Transform cameraTransform{ {1.0f, 1.0f, 1.0f}, {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, -5.0f} };
 
 	imgui->Initialize(winapp, directX);
+
 
 	// ウインドウの×ボタンが押されるまでループ
 	while (msg.message != WM_QUIT) {
@@ -82,6 +91,14 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			}
 
 			triangle[0]->Draw(directX);
+
+
+			ImGui::Begin("vertexData");
+			ImGui::SliderFloat3("vertexData", &triangle[0]->transform_.translate.x, -1.0f, 1.0f);
+			ImGui::SliderFloat3("vertexData1", &triangle[1]->transform_.translate.x, -1.0f, 1.0f);
+
+			ImGui::End();
+
 
 			ImGui::Begin("Mesh Color");
 			ImGui::ColorEdit3("Mesh Color", &triangle[0]->GetmaterialData()->x);

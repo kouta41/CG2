@@ -32,7 +32,7 @@ public:
 
 
 	
-
+	ID3D12Resource* CreateDepthStencilTextureResource(ID3D12Device* device, int32_t width, int32_t height);
 	ID3D12DescriptorHeap* CreateDescriptorHeap(ID3D12Device* device, D3D12_DESCRIPTOR_HEAP_TYPE heapType, UINT numDescriptors, bool shaderVisible);
 
 	// Accessor
@@ -68,6 +68,8 @@ private:
 	uint64_t fenceValue = 0;
 	HANDLE fenceEvent = 0;
 	HRESULT hr_;
+	ID3D12Resource* depthStencilResource;
+	D3D12_DEPTH_STENCIL_VIEW_DESC dsvDesc{};
 
 
 };
