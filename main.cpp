@@ -32,6 +32,15 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	// 右下
 	pos[0][2] = { 0.5f, -0.5f, 0.0f, 1.0f };
 
+
+	// 左下2
+	pos[1][0] = { -0.5f, -0.5f, 0.0f, 1.0f };
+	// 上2
+	pos[1][1] = { 0.0f, 0.0f, 0.0f, 1.0f };
+	// 右下2
+	pos[1][2] = { 0.5f, -0.5f, 0.0f, 1.0f };
+
+
 	WinApp* winapp = new WinApp(L"CG2");
 	DirectXCommon* directX = new DirectXCommon();
 	Mesh* mesh = new Mesh();
@@ -88,8 +97,13 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			triangle[0]->DrawSphere(directX);
 			
 
+			ImGui::Begin("vertexData");
+			ImGui::SliderFloat3("vertexData", &triangle[0]->transform_.translate.x, -1.0f, 1.0f);
+			ImGui::SliderFloat3("vertexData1", &triangle[1]->transform_.translate.x, -1.0f, 1.0f);
 
-			ImGui::Begin("Mesh Color");
+			ImGui::End();
+
+			/*ImGui::Begin("Mesh Color");
 			ImGui::ColorEdit3("Mesh Color", &triangle[0]->GetmaterialData()->x);
 			ImGui::End();
 
@@ -101,7 +115,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			ImGui::SliderFloat3("Camera Pos", &cameraTransform.translate.x, -1.0f, 1.0f);
 			ImGui::SliderFloat3("Camera scale", &cameraTransform.scale.x, -1.0f, 1.0f);
 			ImGui::SliderFloat3("Camera rotate", &cameraTransform.rotate.x, -1.0f, 1.0f);
-			ImGui::End();
+			ImGui::End();*/
 
 
 			imgui->Draw(directX);

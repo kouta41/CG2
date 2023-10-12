@@ -45,7 +45,8 @@ public:
 
 	Matrix4x4* GetwvpData() { return wvpData; }
 	Vector4* GetmaterialData() { return materialData; }
-	ID3D12Resource* GetdepthStencilResource;
+
+	Transform transform_ = { {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f} };
 
 private:
 	WinApp* window_ = nullptr;
@@ -115,7 +116,7 @@ private:
 				{0.0f,0.0f,0.0f},
 				16
 	};
-	Transform transform_={ {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f} };
+	//Transform transform_={ {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f} };
 	Transform transformSprite_ = { {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f} };
 	Transform transformSphere = { {0.1f,0.1f,0.1f},{0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f}, };
 };

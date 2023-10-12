@@ -14,7 +14,7 @@ void Triangle::Update() {
 }
 
 void Triangle::Draw(DirectXCommon* dir_) {
-	transform_.rotate.y += 0.01f;
+//	transform_.rotate.y += 0.01f;
 	Matrix4x4 WorldMatrix = MakeAffineMatrix(transform_.scale, transform_.rotate, transform_.translate);
 	//単位行列を書き込んでおく
 	*wvpData = WorldMatrix;
@@ -122,15 +122,16 @@ void Triangle::CreateVertexResource(DirectXCommon* dir_, Vector4* pos) {
 	vertexData[2].texcoord = { 1.0f, 1.0f };
 
 	// 左下2
-	vertexData[3].position = { -0.5f,-0.5f,0.5f,1.0f };
+	vertexData[3].position = pos[0];
 	vertexData[3].texcoord = { 0.0f, 1.0f };
 	// 上2
-	vertexData[4].position = { 0.0f,0.0f,0.0f,1.0f };
+	vertexData[4].position = pos[1];
 	vertexData[4].texcoord = { 0.5f, 0.0f };
 
 	// 右上2
-	vertexData[5].position = { 0.5f,-0.5f,-0.5f,1.0f };
+	vertexData[5].position = pos[2];
 	vertexData[5].texcoord = { 1.0f, 1.0f };
+
 
 	//WVP用のリソースを作る。matrix4x4 一つ分サイズ分を用意する
 	wvpResource = CreateBufferResource(dir_->GetDevice(), sizeof(Matrix4x4));
