@@ -34,7 +34,7 @@ public:
 	void CreateWVPResource(DirectXCommon* dir_);
 	void Create2DSpriteResource(DirectXCommon* dir_);
 	void CreateSphereResoure(DirectXCommon* dir_);
-
+	void LoadTexture(DirectXCommon* dir_);
 
 	void UploadTextureData(ID3D12Resource* texture, const DirectX::ScratchImage& mipImages);
 
@@ -110,6 +110,13 @@ private:
 	//descriptorHandle
 	D3D12_CPU_DESCRIPTOR_HANDLE textureSrvHandleCPU;
 	D3D12_GPU_DESCRIPTOR_HANDLE textureSrvHandleGPU;
+
+
+	D3D12_CPU_DESCRIPTOR_HANDLE textureSrvHandleCPU2;
+	D3D12_GPU_DESCRIPTOR_HANDLE textureSrvHandleGPU2;
+
+	//textureの切り替え
+	bool useMonsterBall = true;
 
 	HRESULT hr_;
 	Sphere sphere{

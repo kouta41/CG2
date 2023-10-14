@@ -3,6 +3,7 @@
 void Triangle::Initialize(DirectXCommon* dir_, Vector4* pos,WinApp* window) {
 	window_ = window;
 
+	Triangle::LoadTexture(dir_);
 	Triangle::CreateVertexResource(dir_, pos);
 	Triangle::Create2DSpriteResource(dir_);
 	Triangle::CreateSphereResoure(dir_);
@@ -46,11 +47,10 @@ void Triangle::DrawSprite(DirectXCommon* dir_) {
 
 	//Spriteの描画。変更が必要なものだけ変更
 	dir_->GetCommandList_()->IASetVertexBuffers(0, 1, &vertexBufferViewSprite);
-//	dir_->GetCommandList_()->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-//	dir_->GetCommandList_()->SetGraphicsRootConstantBufferView(0, materialResource->GetGPUVirtualAddress());
 	//TransfoormationMatrixCBufferの場所を設定
 	dir_->GetCommandList_()->SetGraphicsRootConstantBufferView(1, transformationMatrixResourceSprite->GetGPUVirtualAddress());
-//	dir_->GetCommandList_()->SetGraphicsRootDescriptorTable(2, textureSrvHandleGPU);
+	// SRVのDescriptorTableの先頭を設定。2はrootParameter[2]である。
+	dir_->GetCommandList_()->SetGraphicsRootDescriptorTable(2, textureSrvHandleGPU);
 	// 描画(DrawCall/ドローコール)。3頂点で1つのインスタンス。
 	dir_->GetCommandList_()->DrawInstanced(6, 1, 0, 0);
 
@@ -72,13 +72,14 @@ void Triangle::DrawSphere(DirectXCommon* dir_) {
 	dir_->GetCommandList_()->IASetVertexBuffers(0, 1, &vertexBufferViewSphere);
 	//WVP
 	dir_->GetCommandList_()->SetGraphicsRootConstantBufferView(1, transformationMatrixResourceSphere->GetGPUVirtualAddress());
-	dir_->GetCommandList_()->SetGraphicsRootDescriptorTable(2, textureSrvHandleGPU);
+	dir_->GetCommandList_()->SetGraphicsRootDescriptorTable(2, useMonsterBall ? textureSrvHandleGPU : textureSrvHandleGPU2);
 	dir_->GetCommandList_()->DrawInstanced(kSubdivision * kSubdivision * 6, 1, 0, 0);
 
 	ImGui::Begin("Sphere");
 	ImGui::SliderFloat3("ScaleSphere", &transformSphere.scale.x, 0.1f, 30, "%.3f");
 	ImGui::SliderFloat3("RotateSphere", &transformSphere.rotate.x, -7, 7, "%.3f");
 	ImGui::SliderFloat3("TranslateSphere",&transformSphere.translate.x, -10, 10, "%.3f");
+	ImGui::Checkbox("useMonsterBall", &useMonsterBall);
 	ImGui::End();
 }
 
@@ -144,35 +145,6 @@ void Triangle::CreateVertexResource(DirectXCommon* dir_, Vector4* pos) {
 	//DepthStencilTextureをウィンドウのサイズで作成
 	depthStencilResource = CreateDepthStencilTextureResource(dir_->GetDevice(), window_->GetkClientWidth(), window_->GetkClientHeight());
 
-	// Textureを読んで転送する
-	DirectX::ScratchImage mipImages = LoadTexture("resources/uvChecker.png");
-	const DirectX::TexMetadata& metadata = mipImages.GetMetadata();
-	textureResource = CreateTextureResource(dir_->GetDevice(), metadata);
-	UploadTextureData(textureResource, mipImages);
-
-	// metaDataを基にSRVの設定
-	D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc{};
-	srvDesc.Format = metadata.format;
-	srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
-	srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D; // 2Dテクスチャ
-	srvDesc.Texture2D.MipLevels = UINT(metadata.mipLevels);
-
-	// SRVを作成するDescriptorHeapの場所を決める
-	textureSrvHandleCPU = dir_->GetsrvDescriptorHeap_()->GetCPUDescriptorHandleForHeapStart();
-	textureSrvHandleGPU = dir_->GetsrvDescriptorHeap_()->GetGPUDescriptorHandleForHeapStart();
-
-	// 先頭はImGuiが使っているのでその次を使う
-	textureSrvHandleCPU.ptr += dir_->GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-	textureSrvHandleGPU.ptr += dir_->GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-
-	// SRVの生成
-	dir_->GetDevice()->CreateShaderResourceView(textureResource, &srvDesc, textureSrvHandleCPU);
-
-	//DSVの設定
-	dsvDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
-	dsvDesc.ViewDimension = D3D12_DSV_DIMENSION_TEXTURE2D;
-	//DSVHeapの先頭にDSVを作る
-	dir_->GetDevice()->CreateDepthStencilView(depthStencilResource, &dsvDesc, dir_->GetdsvDescriptorHeap_()->GetCPUDescriptorHandleForHeapStart());
 }
 
 void Triangle::Create2DSpriteResource(DirectXCommon* dir_) {
@@ -286,6 +258,67 @@ void Triangle::CreateSphereResoure(DirectXCommon* dir_) {
 
 }
 
+void Triangle::LoadTexture(DirectXCommon* dir_) {
+
+	// Textureを読んで転送する(1枚目)
+	DirectX::ScratchImage mipImages = LoadTexture("resources/uvChecker.png");
+	const DirectX::TexMetadata& metadata = mipImages.GetMetadata();
+	textureResource = CreateTextureResource(dir_->GetDevice(), metadata);
+	UploadTextureData(textureResource, mipImages);
+
+	// metaDataを基にSRVの設定
+	D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc{};
+	srvDesc.Format = metadata.format;
+	srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+	srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D; // 2Dテクスチャ
+	srvDesc.Texture2D.MipLevels = UINT(metadata.mipLevels);
+
+	// SRVを作成するDescriptorHeapの場所を決める
+	textureSrvHandleCPU = dir_->GetsrvDescriptorHeap_()->GetCPUDescriptorHandleForHeapStart();
+	textureSrvHandleGPU = dir_->GetsrvDescriptorHeap_()->GetGPUDescriptorHandleForHeapStart();
+
+	// 先頭はImGuiが使っているのでその次を使う
+	textureSrvHandleCPU.ptr += dir_->GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+	textureSrvHandleGPU.ptr += dir_->GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+
+	// SRVの生成
+	dir_->GetDevice()->CreateShaderResourceView(textureResource, &srvDesc, textureSrvHandleCPU);
+
+	//DSVの設定
+	dsvDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
+	dsvDesc.ViewDimension = D3D12_DSV_DIMENSION_TEXTURE2D;
+	//DSVHeapの先頭にDSVを作る
+	dir_->GetDevice()->CreateDepthStencilView(depthStencilResource, &dsvDesc, dir_->GetdsvDescriptorHeap_()->GetCPUDescriptorHandleForHeapStart());
+
+	//DescriptorSizeを取得しておく
+	const uint32_t desriptorSizeSRV = dir_->GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+	const uint32_t desriptorSizeRTV = dir_->GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
+	const uint32_t desriptorSizeDSV = dir_->GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_DSV);
+
+	GetCPUDescriptorHandle(dir_->GetrtvDescriptorHeap_(), desriptorSizeRTV, 0);
+
+
+
+	//二枚目のTextureを読んで転送する
+	DirectX::ScratchImage mipImages2 = LoadTexture("resources/monsterBall.png");
+	const DirectX::TexMetadata& metadata2 = mipImages2.GetMetadata();
+	ID3D12Resource* textureResoure2 = CreateTextureResource(dir_->GetDevice(), metadata2);
+	UploadTextureData(textureResoure2, mipImages2);
+
+	//meataDataを基にSRVの設定
+	D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc2{};
+	srvDesc2.Format = metadata2.format;
+	srvDesc2.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+	srvDesc2.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
+	srvDesc2.Texture2D.MipLevels = UINT(metadata2.mipLevels);
+
+	//SRVを作成するDescriptorHeapの場所に決める
+	textureSrvHandleCPU2 = GetCPUDescriptorHandle(dir_->GetsrvDescriptorHeap_(), desriptorSizeSRV, 2);
+	textureSrvHandleGPU2 = GetGPUDescriptorHandle(dir_->GetsrvDescriptorHeap_(), desriptorSizeSRV, 2);
+	//SRVを生成
+	dir_->GetDevice()->CreateShaderResourceView(textureResoure2, &srvDesc2, textureSrvHandleCPU2);
+
+}
 
 void Triangle::CreateMaterialResource(DirectXCommon* dir_) {
 	//// マテリアル用のリソースを作る。今回はcolor1つ分のサイズを用意する

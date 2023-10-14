@@ -42,6 +42,7 @@ public:
 	D3D12_RENDER_TARGET_VIEW_DESC GetrtvDesc() { return rtvDesc; }
 	ID3D12DescriptorHeap* GetsrvDescriptorHeap_() { return srvDescriptorHeap_; }
 	ID3D12DescriptorHeap* GetdsvDescriptorHeap_() { return dsvDescriptorHeap_; }
+	ID3D12DescriptorHeap* GetrtvDescriptorHeap_() { return 	rtvDescriptorHeap_; }
 
 
 private:

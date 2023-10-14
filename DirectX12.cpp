@@ -143,6 +143,7 @@ void DirectXCommon::Initialize(WinApp* winApp_) {
 
 	dsvHandle = dsvDescriptorHeap_->GetCPUDescriptorHandleForHeapStart();
 
+
 	DirectXCommon::Fence();
 
 
