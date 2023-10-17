@@ -72,7 +72,7 @@ void Triangle::DrawSprite(DirectXCommon* dir_) {
 }
 
 void Triangle::DrawSphere(DirectXCommon* dir_) {
-
+	transformSphere.rotate.y-=0.1f;
 	//書き込むためのアドレスを取得
 	transformationMatrixResourceSphere->Map(0, nullptr, reinterpret_cast<void**>(&transformationMatrixDataSphere));
 	Matrix4x4 worldMatrixSphere = MakeAffineMatrix(transformSphere.scale, transformSphere.rotate, transformSphere.translate);
@@ -304,7 +304,7 @@ void Triangle::CreateSphereResoure(DirectXCommon* dir_) {
 
 	//ライティングをする
 	materialDataSphere->enableLighting = true;
-	materialDataSphere->color = { 1.0f,0.0f,0.0f,1.0f };
+	materialDataSphere->color = { 1.0f,1.0f,1.0f,1.0f};
 
 	transformationMatrixResourceSphere = CreateBufferResource(dir_->GetDevice(),sizeof(Matrix4x4));
 	
