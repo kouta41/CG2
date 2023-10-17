@@ -17,9 +17,9 @@ class Mesh {
 public:
 	void Initialize(DirectXCommon* dir_, WinApp* window);
 
-	void CreatePso(DirectXCommon* dir_);
+	void CreatePso();
 
-	void Update(DirectXCommon* dir_);
+	void Update();
 
 	void Viewport();
 	void Scissor();
@@ -27,6 +27,8 @@ public:
 	void Release();
 
 private:
+	DirectXCommon* dir_ = nullptr;
+
 	IDxcUtils* dxcUtils = nullptr;
 	IDxcCompiler3* dxcCompiler = nullptr;
 	IDxcIncludeHandler* includeHandler = nullptr;
@@ -44,12 +46,12 @@ private:
 	D3D12_VERTEX_BUFFER_VIEW vertexBufferView{};
 	D3D12_VERTEX_BUFFER_VIEW materialBufferView{};
 
-	D3D12_ROOT_PARAMETER rootParameters[3] = {};
+	D3D12_ROOT_PARAMETER rootParameters[4] = {};
 
 	D3D12_DESCRIPTOR_RANGE descriptorRange[1] = {};
 
 	D3D12_STATIC_SAMPLER_DESC staticSamplers[1] = {};
-	D3D12_INPUT_ELEMENT_DESC inputElementDescs[2] = {};
+	D3D12_INPUT_ELEMENT_DESC inputElementDescs[3] = {};
 
 	D3D12_VIEWPORT viewport{};
 	D3D12_RECT scissorRect{};
