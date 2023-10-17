@@ -79,6 +79,7 @@ void Triangle::DrawSphere(DirectXCommon* dir_) {
 	transformationMatrixDataSphere->WVP = worldMatrixSphere;
 	transformationMatrixDataSphere->World = MakeIdentity4x4();
 
+
 	dir_->GetCommandList_()->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	//色用のCBufferの場所を特定
 //	dir_->GetCommandList_()->SetGraphicsRootConstantBufferView(0, materialResource->GetGPUVirtualAddress());
@@ -89,6 +90,8 @@ void Triangle::DrawSphere(DirectXCommon* dir_) {
 	//WVP
 	dir_->GetCommandList_()->SetGraphicsRootConstantBufferView(1, transformationMatrixResourceSphere->GetGPUVirtualAddress());
 	dir_->GetCommandList_()->SetGraphicsRootDescriptorTable(2, useMonsterBall ? textureSrvHandleGPU : textureSrvHandleGPU2);
+	//Light
+	dir_->GetCommandList_()->SetGraphicsRootConstantBufferView(3, directionalLightResource->GetGPUVirtualAddress());
 	dir_->GetCommandList_()->DrawInstanced(kSubdivision * kSubdivision * 6, 1, 0, 0);
 
 	ImGui::Begin("Sphere");
@@ -96,7 +99,12 @@ void Triangle::DrawSphere(DirectXCommon* dir_) {
 	ImGui::SliderFloat3("RotateSphere", &transformSphere.rotate.x, -7, 7, "%.3f");
 	ImGui::SliderFloat3("TranslateSphere",&transformSphere.translate.x, -1, 1, "%.3f");
 	ImGui::Checkbox("useMonsterBall", &useMonsterBall);
+	ImGui::SliderFloat3("color", &directionalLightData->color.x, -10.0f, 10.0f);
+	ImGui::SliderFloat3("direction", &directionalLightData->direction.x, -10.0f, 10.0f);
+	ImGui::SliderFloat("intensity", &directionalLightData->intensity, -10.0f, 10.0f);
 	ImGui::End();
+
+	
 }
 
 
@@ -296,6 +304,7 @@ void Triangle::CreateSphereResoure(DirectXCommon* dir_) {
 
 	//ライティングをする
 	materialDataSphere->enableLighting = true;
+	materialDataSphere->color = { 1.0f,0.0f,0.0f,1.0f };
 
 	transformationMatrixResourceSphere = CreateBufferResource(dir_->GetDevice(),sizeof(Matrix4x4));
 	
