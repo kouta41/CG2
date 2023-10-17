@@ -72,7 +72,7 @@ void Triangle::DrawSprite(DirectXCommon* dir_) {
 }
 
 void Triangle::DrawSphere(DirectXCommon* dir_) {
-	transformSphere.rotate.y-=0.1f;
+	//transformSphere.rotate.y-=0.1f;
 	//書き込むためのアドレスを取得
 	transformationMatrixResourceSphere->Map(0, nullptr, reinterpret_cast<void**>(&transformationMatrixDataSphere));
 	Matrix4x4 worldMatrixSphere = MakeAffineMatrix(transformSphere.scale, transformSphere.rotate, transformSphere.translate);
@@ -104,7 +104,18 @@ void Triangle::DrawSphere(DirectXCommon* dir_) {
 	ImGui::SliderFloat("intensity", &directionalLightData->intensity, -10.0f, 10.0f);
 	ImGui::End();
 
-	
+	ImGui::Begin("Light");
+	float ImGuidirectionalLightColor[Vector3D] = { directionalLightData->color.x,directionalLightData->color.y ,directionalLightData->color.z };
+	ImGui::SliderFloat3("LightColor", ImGuidirectionalLightColor, 0, 1, "%.3f");
+	directionalLightData->color.x = ImGuidirectionalLightColor[x];
+	directionalLightData->color.y = ImGuidirectionalLightColor[y];
+	directionalLightData->color.z = ImGuidirectionalLightColor[z];
+	float ImGuidirectionalLightdirection[Vector3D] = { directionalLightData->direction.x,directionalLightData->direction.y,directionalLightData->direction.z };
+	ImGui::SliderFloat3("Lightpotision", ImGuidirectionalLightdirection, -1, 1, "%.3f");
+	directionalLightData->direction.x = ImGuidirectionalLightdirection[x];
+	directionalLightData->direction.y = ImGuidirectionalLightdirection[y];
+	directionalLightData->direction.z = ImGuidirectionalLightdirection[z];
+	ImGui::End();
 }
 
 

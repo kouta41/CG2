@@ -27,7 +27,12 @@ struct Vector3 final {
 	float y;
 	float z;
 };
-
+enum NumberVector3 {
+	x,
+	y,
+	z,
+	Vector3D,
+};
 struct Vector4 final {
 	float x;
 	float y;
