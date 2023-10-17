@@ -3,12 +3,22 @@
 void Triangle::Initialize(DirectXCommon* dir_, Vector4* pos,WinApp* window) {
 	window_ = window;
 
-	Triangle::LoadTexture(dir_);
 	Triangle::CreateVertexResource(dir_, pos);
 	Triangle::Create2DSpriteResource(dir_);
 	Triangle::CreateSphereResoure(dir_);
+
+#pragma region Light
+	directionalLightResource = CreateBufferResource(dir_->GetDevice(),sizeof(DirectionalLight));
+	directionalLightResource->Map(0, nullptr, reinterpret_cast<void**>(&directionalLightData));
+	directionalLightData->color = { 1.0f,1.0f,1.0f,1.0f };
+	directionalLightData->direction = { 0.0f,-1.0f,0.0f };
+	directionalLightData->intensity = 1.0f;
+#pragma endregion ライト
+
+
 	Triangle::CreateMaterialResource(dir_);
 	Triangle::CreateWVPResource(dir_);
+	Triangle::LoadTexture(dir_);
 }
 
 void Triangle::Update() {
@@ -47,6 +57,7 @@ void Triangle::DrawSprite(DirectXCommon* dir_) {
 
 	//Spriteの描画。変更が必要なものだけ変更
 	dir_->GetCommandList_()->IASetVertexBuffers(0, 1, &vertexBufferViewSprite);
+
 	//TransfoormationMatrixCBufferの場所を設定
 	dir_->GetCommandList_()->SetGraphicsRootConstantBufferView(1, transformationMatrixResourceSprite->GetGPUVirtualAddress());
 	// SRVのDescriptorTableの先頭を設定。2はrootParameter[2]である。
@@ -61,13 +72,18 @@ void Triangle::DrawSprite(DirectXCommon* dir_) {
 }
 
 void Triangle::DrawSphere(DirectXCommon* dir_) {
-	//単位行列を書き込んでおく
+
+	//書き込むためのアドレスを取得
+	transformationMatrixResourceSphere->Map(0, nullptr, reinterpret_cast<void**>(&transformationMatrixDataSphere));
 	Matrix4x4 worldMatrixSphere = MakeAffineMatrix(transformSphere.scale, transformSphere.rotate, transformSphere.translate);
-	*transformationMatrixDataSphere = worldMatrixSphere;
+	transformationMatrixDataSphere->WVP = worldMatrixSphere;
+	transformationMatrixDataSphere->World = MakeIdentity4x4();
 
 	dir_->GetCommandList_()->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	//色用のCBufferの場所を特定
-	dir_->GetCommandList_()->SetGraphicsRootConstantBufferView(0, materialResource->GetGPUVirtualAddress());
+//	dir_->GetCommandList_()->SetGraphicsRootConstantBufferView(0, materialResource->GetGPUVirtualAddress());
+	dir_->GetCommandList_()->SetGraphicsRootConstantBufferView(0, materialResourceSphere->GetGPUVirtualAddress());
+
 	//頂点
 	dir_->GetCommandList_()->IASetVertexBuffers(0, 1, &vertexBufferViewSphere);
 	//WVP
@@ -78,7 +94,7 @@ void Triangle::DrawSphere(DirectXCommon* dir_) {
 	ImGui::Begin("Sphere");
 	ImGui::SliderFloat3("ScaleSphere", &transformSphere.scale.x, 0.1f, 30, "%.3f");
 	ImGui::SliderFloat3("RotateSphere", &transformSphere.rotate.x, -7, 7, "%.3f");
-	ImGui::SliderFloat3("TranslateSphere",&transformSphere.translate.x, -10, 10, "%.3f");
+	ImGui::SliderFloat3("TranslateSphere",&transformSphere.translate.x, -1, 1, "%.3f");
 	ImGui::Checkbox("useMonsterBall", &useMonsterBall);
 	ImGui::End();
 }
@@ -92,6 +108,8 @@ void Triangle::Release() {
 	transformationMatrixResourceSprite->Release();
 	vertexResourceSphere->Release();
 	transformationMatrixResourceSphere->Release();
+	materialResourceSphere->Release();
+	directionalLightResource->Release();
 }
 
 void Triangle::CreateVertexResource(DirectXCommon* dir_, Vector4* pos) {
@@ -194,6 +212,7 @@ void Triangle::CreateSphereResoure(DirectXCommon* dir_) {
 	//1頂点あたりのアドレス
 	vertexBufferViewSphere.StrideInBytes = sizeof(VertexData);
 
+
 	//頂点データを設定
 	vertexResourceSphere->Map(0, nullptr, reinterpret_cast<void**>(&vertexDataSphere));
 	//経度分割の1つ分の角度　φ 横
@@ -215,18 +234,27 @@ void Triangle::CreateSphereResoure(DirectXCommon* dir_) {
 			vertexDataSphere[start].position.z = cos(lat) * sin(lon) + sphere.center.z;
 			vertexDataSphere[start].position.w = 1.0f;
 			vertexDataSphere[start].texcoord = { u ,v + uvLength };
+			vertexDataSphere[start].normal.x = vertexDataSphere[start].position.x;
+			vertexDataSphere[start].normal.y = vertexDataSphere[start].position.y;
+			vertexDataSphere[start].normal.z = vertexDataSphere[start].position.z;
 			//点B(左上)
 			vertexDataSphere[start + 1].position.x = cos(lat + kLatEvery) * cos(lon) + sphere.center.x;
 			vertexDataSphere[start + 1].position.y = sin(lat + kLatEvery) + sphere.center.y;
 			vertexDataSphere[start + 1].position.z = cos(lat + kLatEvery) * sin(lon) + sphere.center.z;
 			vertexDataSphere[start + 1].position.w = 1.0f;
 			vertexDataSphere[start + 1].texcoord = { u,v };
+			vertexDataSphere[start + 1].normal.x = vertexDataSphere[start + 1].position.x;
+			vertexDataSphere[start + 1].normal.y = vertexDataSphere[start + 1].position.y;
+			vertexDataSphere[start + 1].normal.z = vertexDataSphere[start + 1].position.z;
 			//点C(右下)
 			vertexDataSphere[start + 2].position.x = cos(lat) * cos(lon + kLonEvery) + sphere.center.x;
 			vertexDataSphere[start + 2].position.y = sin(lat) + sphere.center.y;
 			vertexDataSphere[start + 2].position.z = cos(lat) * sin(lon + kLonEvery) + sphere.center.z;
 			vertexDataSphere[start + 2].position.w = 1.0f;
 			vertexDataSphere[start + 2].texcoord = { u + uvLength,v + uvLength };
+			vertexDataSphere[start + 2].normal.x = vertexDataSphere[start + 2].position.x;
+			vertexDataSphere[start + 2].normal.y = vertexDataSphere[start + 2].position.y;
+			vertexDataSphere[start + 2].normal.z = vertexDataSphere[start + 2].position.z;
 #pragma endregion 1枚目
 #pragma region TriAngle 2
 			//点D(右上)
@@ -235,25 +263,42 @@ void Triangle::CreateSphereResoure(DirectXCommon* dir_) {
 			vertexDataSphere[start + 3].position.z = cos(lat + kLatEvery) * sin(lon + kLonEvery) + sphere.center.z;
 			vertexDataSphere[start + 3].position.w = 1.0f;
 			vertexDataSphere[start + 3].texcoord = { u + uvLength,v };
+			vertexDataSphere[start + 3].normal.x = vertexDataSphere[start + 3].position.x;
+			vertexDataSphere[start + 3].normal.y = vertexDataSphere[start + 3].position.y;
+			vertexDataSphere[start + 3].normal.z = vertexDataSphere[start + 3].position.z;
 			//点C(右下)
 			vertexDataSphere[start + 4].position.x = cos(lat) * cos(lon + kLonEvery) + sphere.center.x;
 			vertexDataSphere[start + 4].position.y = sin(lat) + sphere.center.y;
 			vertexDataSphere[start + 4].position.z = cos(lat) * sin(lon + kLonEvery) + sphere.center.z;
 			vertexDataSphere[start + 4].position.w = 1.0f;
 			vertexDataSphere[start + 4].texcoord = { u + uvLength,v + uvLength };
+			vertexDataSphere[start + 4].normal.x = vertexDataSphere[start + 4].position.x;
+			vertexDataSphere[start + 4].normal.y = vertexDataSphere[start + 4].position.y;
+			vertexDataSphere[start + 4].normal.z = vertexDataSphere[start + 4].position.z;
 			//点B(左上)
 			vertexDataSphere[start + 5].position.x = cos(lat + kLatEvery) * cos(lon) + sphere.center.x;
 			vertexDataSphere[start + 5].position.y = sin(lat + kLatEvery) + sphere.center.y;
 			vertexDataSphere[start + 5].position.z = cos(lat + kLatEvery) * sin(lon) + sphere.center.z;
 			vertexDataSphere[start + 5].position.w = 1.0f;
 			vertexDataSphere[start + 5].texcoord = { u,v };
+			vertexDataSphere[start + 5].normal.x = vertexDataSphere[start + 5].position.x;
+			vertexDataSphere[start + 5].normal.y = vertexDataSphere[start + 5].position.y;
+			vertexDataSphere[start + 5].normal.z = vertexDataSphere[start + 5].position.z;
+
 
 #pragma endregion 2枚目
 		}
 	}
+	vertexDataSphere[0].normal = { 0.0f,0.0f,-1.0f };
+
+	materialResourceSphere = CreateBufferResource(dir_->GetDevice(),sizeof(Material));
+	materialResourceSphere->Map(0, nullptr, reinterpret_cast<void**>(&materialDataSphere));
+
+	//ライティングをする
+	materialDataSphere->enableLighting = true;
+
 	transformationMatrixResourceSphere = CreateBufferResource(dir_->GetDevice(),sizeof(Matrix4x4));
-	//書き込むためのアドレスを取得
-	transformationMatrixResourceSphere->Map(0, nullptr, reinterpret_cast<void**>(&transformationMatrixDataSphere));
+	
 	
 
 }
@@ -307,6 +352,7 @@ void Triangle::LoadTexture(DirectXCommon* dir_) {
 
 	//meataDataを基にSRVの設定
 	D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc2{};
+	srvDesc2.Format = metadata2.format;
 	srvDesc2.Format = metadata2.format;
 	srvDesc2.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
 	srvDesc2.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;

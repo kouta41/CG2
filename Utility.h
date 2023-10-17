@@ -38,6 +38,7 @@ struct Vector4 final {
 struct VertexData final {
 	Vector4 position;
 	Vector2 texcoord;
+	Vector3 normal;
 };
 
 
@@ -54,6 +55,26 @@ struct Matrix4x4 final {
 struct Sphere final {
 	Vector3 center;//中心点
 	float radius;//半径
+};
+
+
+
+struct Material final {
+	Vector4 color;
+	int32_t enableLighting;
+};
+
+struct TransformationMatrix
+{
+	Matrix4x4 WVP;
+	Matrix4x4 World;
+};
+
+struct DirectionalLight
+{
+	Vector4 color; //ライトの色
+	Vector3 direction; //ライトの向き
+	float intensity; //ライトの輝度
 };
 
 Matrix4x4 MakeIdentity4x4();

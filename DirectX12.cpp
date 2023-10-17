@@ -141,7 +141,6 @@ void DirectXCommon::Initialize(WinApp* winApp_) {
 	// 2つ目を作る
 	device_->CreateRenderTargetView(swapChainResources[1], &rtvDesc, rtvHandles[1]);
 
-	dsvHandle = dsvDescriptorHeap_->GetCPUDescriptorHandleForHeapStart();
 
 
 	DirectXCommon::Fence();
@@ -179,7 +178,9 @@ void DirectXCommon::Update() {
 	commandList_->ResourceBarrier(1, &barrier);
 
 	// 描画先のRTVを設定する
-	//commandList_->OMSetRenderTargets(1, &rtvHandles[backBufferIndex], false, nullptr);
+	commandList_->OMSetRenderTargets(1, &rtvHandles[backBufferIndex], false, nullptr);
+	dsvHandle = dsvDescriptorHeap_->GetCPUDescriptorHandleForHeapStart();
+
 	commandList_->OMSetRenderTargets(1, &rtvHandles[backBufferIndex], false, &dsvHandle);
 	// 指定した色で画面全体をクリアする
 	float clearColor[] = { 0.1f, 0.25f, 0.5f, 1.0f };

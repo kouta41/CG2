@@ -101,11 +101,20 @@ private:
 	VertexData* vertexDataSphere = nullptr;
 	//Sphere用バーテックスバッファビュー
 	D3D12_VERTEX_BUFFER_VIEW vertexBufferViewSphere{};
+	//マテリアルリソース
+	ID3D12Resource* materialResourceSphere = nullptr;
+	//色データ
+	Material* materialDataSphere = nullptr;
 	//Sphere用WVPリソース
 	ID3D12Resource* transformationMatrixResourceSphere = nullptr;
 	//Sphere用WVPデータ
-	Matrix4x4* transformationMatrixDataSphere = nullptr;
+	TransformationMatrix* transformationMatrixDataSphere = nullptr;
 #pragma endregion 球
+
+#pragma region Light
+	ID3D12Resource* directionalLightResource = nullptr;
+	DirectionalLight* directionalLightData = nullptr;
+#pragma endregion ライト
 
 	//descriptorHandle
 	D3D12_CPU_DESCRIPTOR_HANDLE textureSrvHandleCPU;
