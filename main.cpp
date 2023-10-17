@@ -34,11 +34,11 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 
 	// 左下2
-	pos[1][0] = { -0.5f, -0.5f, 0.5f, 1.0f };
+	pos[1][0] = { -0.5f, -0.5f, 0.0f, 1.0f };
 	// 上2
 	pos[1][1] = { 0.0f, 0.0f, 0.0f, 1.0f };
 	// 右下2
-	pos[1][2] = { 0.5f, -0.5f, -0.5f, 1.0f };
+	pos[1][2] = { 0.5f, -0.5f, 0.0f, 1.0f };
 
 
 	WinApp* winapp = new WinApp(L"CG2");
