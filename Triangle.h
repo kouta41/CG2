@@ -10,6 +10,8 @@
 #include "Mesh.h"
 #include "WinApp.h"
 #include "ImguiManege.h"
+#include"externals/DirectXTex/DirectXTex.h"
+#include "externals/DirectXTex/d3dx12.h"
 
 #pragma comment(lib, "d3d12.lib")
 #pragma comment(lib, "dxgi.lib")
@@ -22,9 +24,9 @@ public:
 	// 読み込み
 	void Update();
 	// 描画
-	void Draw(DirectXCommon* dir_);
-	void DrawSprite(DirectXCommon* dir_);
-	void DrawSphere(DirectXCommon* dir_);
+	void Draw(DirectXCommon* dir_, const int Index);
+	void DrawSprite(DirectXCommon* dir_, const int Index);
+	void DrawSphere(DirectXCommon* dir_, const int UV, const int Ball);
 
 	// 解放
 	void Release();
@@ -34,13 +36,14 @@ public:
 	void CreateWVPResource(DirectXCommon* dir_);
 	void Create2DSpriteResource(DirectXCommon* dir_);
 	void CreateSphereResoure(DirectXCommon* dir_);
-	void LoadTexture(DirectXCommon* dir_);
+	int UpLoadTexture(DirectXCommon* dir_, const std::string& filePath);
 
-	void UploadTextureData(ID3D12Resource* texture, const DirectX::ScratchImage& mipImages);
+	ID3D12Resource* UploadTextureData(ID3D12Resource* texture, const DirectX::ScratchImage& mipImages, DirectXCommon* dir_);
 
 	ID3D12Resource* CreateTextureResource(ID3D12Device* device, const DirectX::TexMetadata& metadata);
 	ID3D12Resource* CreateBufferResource(ID3D12Device* device, size_t sizeInbytes);
 	ID3D12Resource* CreateDepthStencilTextureResource(ID3D12Device* device, int32_t width, int32_t height);
+
 	DirectX::ScratchImage LoadTexture(const std::string& filePath);
 
 	Matrix4x4* GetwvpData() { return wvpData; }
@@ -55,8 +58,11 @@ private:
 
 	D3D12_DEPTH_STENCIL_VIEW_DESC dsvDesc{};
 
-
+	int Index = 0;
 	ID3D12Resource* depthStencilResource;
+	static const int kMaxTexture = 2;
+	bool IsusedTextureIndex[kMaxTexture];
+
 
 
 #pragma region TriAngle
@@ -76,11 +82,13 @@ private:
 	ID3D12Resource* wvpResource = nullptr;
 	//WVPデータ
 	Matrix4x4* wvpData = nullptr;
-	//テクスチャデータ
-	ID3D12Resource* textureResource = nullptr;
 #pragma endregion 三角形
 
 #pragma region sprite
+	static const int kMaxSprite = 444;
+	static const int kMaxSpriteVertex = kMaxSprite * 6;
+	bool IsusedSpriteIndex[kMaxSprite];
+	int SpriteIndex;
 	//Sprite用頂点データ
 	ID3D12Resource* vertexResourceSprite = nullptr;
 	//Sprite用頂点データ
@@ -91,6 +99,11 @@ private:
 	ID3D12Resource* transformationMatrixResourceSprite = nullptr;
 	//Sprite用WVPデータ
 	Matrix4x4* transformationMatrixDataSprite = nullptr;
+	//Index用のデータ
+	ID3D12Resource* indexResourceSprite = nullptr;
+	D3D12_INDEX_BUFFER_VIEW indexBufferViewSprite{};
+	//Indexリソースデータ
+	uint32_t* indexDataSprite = nullptr;
 #pragma endregion スプライト
 
 #pragma region Sphere
@@ -115,14 +128,18 @@ private:
 	ID3D12Resource* directionalLightResource = nullptr;
 	DirectionalLight* directionalLightData = nullptr;
 #pragma endregion ライト
-
+	//テクスチャデータ
+	ID3D12Resource* textureResource[kMaxTexture] = { nullptr };
+	//中間リソース
+	ID3D12Resource* intermediateResource[kMaxTexture];
 	//descriptorHandle
-	D3D12_CPU_DESCRIPTOR_HANDLE textureSrvHandleCPU;
-	D3D12_GPU_DESCRIPTOR_HANDLE textureSrvHandleGPU;
+	D3D12_CPU_DESCRIPTOR_HANDLE textureSrvHandleCPU[kMaxTexture];
+	D3D12_GPU_DESCRIPTOR_HANDLE textureSrvHandleGPU[kMaxTexture];
 
-
-	D3D12_CPU_DESCRIPTOR_HANDLE textureSrvHandleCPU2;
-	D3D12_GPU_DESCRIPTOR_HANDLE textureSrvHandleGPU2;
+	uint32_t descriptorSizeSRV;
+	uint32_t descriptorSizeRTV;
+	uint32_t descriptorSizeDSV;
+	
 
 	//textureの切り替え
 	bool useMonsterBall = true;

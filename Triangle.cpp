@@ -1,4 +1,5 @@
 #include "Triangle.h"
+#include "externals/DirectXTex/d3dx12.h"
 
 void Triangle::Initialize(DirectXCommon* dir_, Vector4* pos,WinApp* window) {
 	window_ = window;
@@ -18,13 +19,12 @@ void Triangle::Initialize(DirectXCommon* dir_, Vector4* pos,WinApp* window) {
 
 	Triangle::CreateMaterialResource(dir_);
 	Triangle::CreateWVPResource(dir_);
-	Triangle::LoadTexture(dir_);
 }
 
 void Triangle::Update() {
 }
 
-void Triangle::Draw(DirectXCommon* dir_) {
+void Triangle::Draw(DirectXCommon* dir_, const int Index) {
 //	transform_.rotate.y += 0.01f;
 	Matrix4x4 WorldMatrix = MakeAffineMatrix(transform_.scale, transform_.rotate, transform_.translate);
 	//単位行列を書き込んでおく
@@ -39,14 +39,14 @@ void Triangle::Draw(DirectXCommon* dir_) {
 	// wvp用のCBufferの場所を設定
 	dir_->GetCommandList_()->SetGraphicsRootConstantBufferView(1, wvpResource->GetGPUVirtualAddress());
 	// SRVのDescriptorTableの先頭を設定。2はrootParameter[2]である。
-	dir_->GetCommandList_()->SetGraphicsRootDescriptorTable(2, textureSrvHandleGPU);
+	dir_->GetCommandList_()->SetGraphicsRootDescriptorTable(2, textureSrvHandleGPU[Index]);
 	// 描画(DrawCall/ドローコール)。3頂点で1つのインスタンス。
 	dir_->GetCommandList_()->DrawInstanced(6, 1, 0, 0);
 	
 	
 }
 
-void Triangle::DrawSprite(DirectXCommon* dir_) {
+void Triangle::DrawSprite(DirectXCommon* dir_, const int Index) {
 
 	//Sprite用のworldViewProjectionMatrixを作る
 	Matrix4x4 worldMatrixSprite = MakeAffineMatrix(transformSprite_.scale, transformSprite_.rotate, transformSprite_.translate);
@@ -55,15 +55,20 @@ void Triangle::DrawSprite(DirectXCommon* dir_) {
 	Matrix4x4 worldViewProjectionMatrixSprite = Multiply(worldMatrixSprite, Multiply(viewMatrixSprite, projectionMatrixSprite));
 	*transformationMatrixDataSprite = worldViewProjectionMatrixSprite;
 
+	dir_->GetCommandList_()->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
 	//Spriteの描画。変更が必要なものだけ変更
 	dir_->GetCommandList_()->IASetVertexBuffers(0, 1, &vertexBufferViewSprite);
+	dir_->GetCommandList_()->IASetIndexBuffer(&indexBufferViewSprite);
 
 	//TransfoormationMatrixCBufferの場所を設定
 	dir_->GetCommandList_()->SetGraphicsRootConstantBufferView(1, transformationMatrixResourceSprite->GetGPUVirtualAddress());
 	// SRVのDescriptorTableの先頭を設定。2はrootParameter[2]である。
-	dir_->GetCommandList_()->SetGraphicsRootDescriptorTable(2, textureSrvHandleGPU);
+	dir_->GetCommandList_()->SetGraphicsRootDescriptorTable(2, textureSrvHandleGPU[Index]);
 	// 描画(DrawCall/ドローコール)。3頂点で1つのインスタンス。
-	dir_->GetCommandList_()->DrawInstanced(6, 1, 0, 0);
+	//dir_->GetCommandList_()->DrawInstanced(6, 1, 0, 0);
+	dir_->GetCommandList_()->DrawIndexedInstanced(SpriteIndex + 6, 1, 0, 0, 0);
+
 
 	ImGui::Begin("SpriteDraw");
 	ImGui::SliderFloat3("SpriteDraw", &transformSprite_.translate.x, -1000.0f, 1000.0f);
@@ -71,7 +76,7 @@ void Triangle::DrawSprite(DirectXCommon* dir_) {
 
 }
 
-void Triangle::DrawSphere(DirectXCommon* dir_) {
+void Triangle::DrawSphere(DirectXCommon* dir_, const int UV, const int Ball) {
 	//transformSphere.rotate.y-=0.1f;
 	//書き込むためのアドレスを取得
 	transformationMatrixResourceSphere->Map(0, nullptr, reinterpret_cast<void**>(&transformationMatrixDataSphere));
@@ -81,15 +86,14 @@ void Triangle::DrawSphere(DirectXCommon* dir_) {
 
 
 	dir_->GetCommandList_()->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	//頂点
+	dir_->GetCommandList_()->IASetVertexBuffers(0, 1, &vertexBufferViewSphere);
 	//色用のCBufferの場所を特定
 //	dir_->GetCommandList_()->SetGraphicsRootConstantBufferView(0, materialResource->GetGPUVirtualAddress());
 	dir_->GetCommandList_()->SetGraphicsRootConstantBufferView(0, materialResourceSphere->GetGPUVirtualAddress());
-
-	//頂点
-	dir_->GetCommandList_()->IASetVertexBuffers(0, 1, &vertexBufferViewSphere);
 	//WVP
 	dir_->GetCommandList_()->SetGraphicsRootConstantBufferView(1, transformationMatrixResourceSphere->GetGPUVirtualAddress());
-	dir_->GetCommandList_()->SetGraphicsRootDescriptorTable(2, useMonsterBall ? textureSrvHandleGPU : textureSrvHandleGPU2);
+	dir_->GetCommandList_()->SetGraphicsRootDescriptorTable(2, useMonsterBall ? textureSrvHandleGPU[UV] : textureSrvHandleGPU[Ball]);
 	//Light
 	dir_->GetCommandList_()->SetGraphicsRootConstantBufferView(3, directionalLightResource->GetGPUVirtualAddress());
 	dir_->GetCommandList_()->DrawInstanced(kSubdivision * kSubdivision * 6, 1, 0, 0);
@@ -122,16 +126,23 @@ void Triangle::DrawSphere(DirectXCommon* dir_) {
 void Triangle::Release() {
 	vertexResource->Release();
 	wvpResource->Release();
-	textureResource->Release();
-	vertexResourceSprite->Release();
+	for (int i = 0; i < kMaxTexture; ++i) {
+		if (IsusedTextureIndex[i] == true) {
+			textureResource[i]->Release();
+			intermediateResource[i]->Release();
+		}
+	}
+	//vertexResourceSprite->Release();
 	transformationMatrixResourceSprite->Release();
 	vertexResourceSphere->Release();
 	transformationMatrixResourceSphere->Release();
 	materialResourceSphere->Release();
 	directionalLightResource->Release();
+	indexResourceSprite->Release();
 }
 
 void Triangle::CreateVertexResource(DirectXCommon* dir_, Vector4* pos) {
+	
 	// 頂点用のリソースを作る。今回はcolor1つ分のサイズを用意する
 	vertexResource = CreateBufferResource(dir_->GetDevice(), sizeof(VertexData) * 6);
 	// 頂点バッファビューを作成する
@@ -185,6 +196,34 @@ void Triangle::CreateVertexResource(DirectXCommon* dir_, Vector4* pos) {
 }
 
 void Triangle::Create2DSpriteResource(DirectXCommon* dir_) {
+
+	indexResourceSprite = CreateBufferResource(dir_->GetDevice(), sizeof(uint32_t) * 6);
+	//リソースの先頭からアドレスから使う
+	indexBufferViewSprite.BufferLocation = indexResourceSprite->GetGPUVirtualAddress();
+	//使用するリソースのサイズはインデックスの6つ分のサイズ
+	indexBufferViewSprite.SizeInBytes = sizeof(uint32_t) * 6;
+	//インデックスのはuint32とする
+	indexBufferViewSprite.Format = DXGI_FORMAT_R32_UINT;
+
+#pragma region 
+	 SpriteIndex = kMaxSpriteVertex + 1;
+	for (int i = 0; i < kMaxSprite; ++i) {
+		if (IsusedSpriteIndex[i] == false) {
+			SpriteIndex = (i * 6);
+			IsusedSpriteIndex[i] = true;
+			break;
+		}
+	}
+	if (SpriteIndex < 0) {
+		//0より少ない
+		assert(false);
+	}
+	if (kMaxSpriteVertex < SpriteIndex) {
+		//MaxSpriteより多い
+		assert(false);
+	}
+#pragma endregion 位置決め
+
 	//Sprite用の頂点リソースを作る
 	vertexResourceSprite = CreateBufferResource(dir_->GetDevice(), sizeof(VertexData) * 6);
 
@@ -212,6 +251,18 @@ void Triangle::Create2DSpriteResource(DirectXCommon* dir_) {
 	vertexDataSprite[4].texcoord = { 1.0f,0.0f };
 	vertexDataSprite[5].position = { 640.0f,360.0f,0.0f,1.0f };//右下
 	vertexDataSprite[5].texcoord = { 1.0f,1.0f };
+
+	//インデックスリソースにデータを書き込む
+	indexResourceSprite->Map(0, nullptr, reinterpret_cast<void**>(&indexDataSprite));
+
+	//三角形1枚目
+	indexDataSprite[0] = 0;
+	indexDataSprite[ 1] = 1;
+	indexDataSprite[2] = 2;
+	//三角形2枚目
+	indexDataSprite[3] = 3;
+	indexDataSprite[4] = 2;
+	indexDataSprite[5] = 1;
 
 	//Sprite用のTransformationMatrix用のリソースを作る。Matrix4x4 1つ分のサイズを用意する
 	transformationMatrixResourceSprite = CreateBufferResource(dir_->GetDevice(), sizeof(Matrix4x4));
@@ -323,67 +374,46 @@ void Triangle::CreateSphereResoure(DirectXCommon* dir_) {
 
 }
 
-void Triangle::LoadTexture(DirectXCommon* dir_) {
+int Triangle::UpLoadTexture(DirectXCommon* dir_, const std::string& filePath) {
 
-	// Textureを読んで転送する(1枚目)
-	DirectX::ScratchImage mipImages = LoadTexture("resources/uvChecker.png");
+	int SpriteIndex = kMaxTexture + 1;
+	for (int i = 0; i < kMaxTexture; ++i) {
+		if (IsusedTextureIndex[i] == false) {
+			SpriteIndex = i;
+			IsusedTextureIndex[i] = true;
+			break;
+		}
+	}
+	if (SpriteIndex < 0) {
+		//0より少ない
+		assert(false);
+	}
+	if (kMaxTexture < SpriteIndex) {
+		//MaxSpriteより多い
+		assert(false);
+	}
+	
+	//Textureを読んで転送する
+	DirectX::ScratchImage mipImages = LoadTexture(filePath);
 	const DirectX::TexMetadata& metadata = mipImages.GetMetadata();
-	textureResource = CreateTextureResource(dir_->GetDevice(), metadata);
-	UploadTextureData(textureResource, mipImages);
-
-	// metaDataを基にSRVの設定
+	textureResource[SpriteIndex] = CreateTextureResource(dir_->GetDevice(), metadata);
+	intermediateResource[SpriteIndex] = UploadTextureData(textureResource[SpriteIndex], mipImages,dir_);
+	//metadataを基にSRVの設定
 	D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc{};
 	srvDesc.Format = metadata.format;
 	srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
-	srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D; // 2Dテクスチャ
+	srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
 	srvDesc.Texture2D.MipLevels = UINT(metadata.mipLevels);
 
-	// SRVを作成するDescriptorHeapの場所を決める
-	textureSrvHandleCPU = dir_->GetsrvDescriptorHeap_()->GetCPUDescriptorHandleForHeapStart();
-	textureSrvHandleGPU = dir_->GetsrvDescriptorHeap_()->GetGPUDescriptorHandleForHeapStart();
-
-	// 先頭はImGuiが使っているのでその次を使う
-	textureSrvHandleCPU.ptr += dir_->GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-	textureSrvHandleGPU.ptr += dir_->GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-
-	// SRVの生成
-	dir_->GetDevice()->CreateShaderResourceView(textureResource, &srvDesc, textureSrvHandleCPU);
-
-	//DSVの設定
-	dsvDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
-	dsvDesc.ViewDimension = D3D12_DSV_DIMENSION_TEXTURE2D;
-	//DSVHeapの先頭にDSVを作る
-	dir_->GetDevice()->CreateDepthStencilView(depthStencilResource, &dsvDesc, dir_->GetdsvDescriptorHeap_()->GetCPUDescriptorHandleForHeapStart());
-
-	//DescriptorSizeを取得しておく
-	const uint32_t desriptorSizeSRV = dir_->GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-	const uint32_t desriptorSizeRTV = dir_->GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
-	const uint32_t desriptorSizeDSV = dir_->GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_DSV);
-
-	GetCPUDescriptorHandle(dir_->GetrtvDescriptorHeap_(), desriptorSizeRTV, 0);
-
-
-
-	//二枚目のTextureを読んで転送する
-	DirectX::ScratchImage mipImages2 = LoadTexture("resources/monsterBall.png");
-	const DirectX::TexMetadata& metadata2 = mipImages2.GetMetadata();
-	ID3D12Resource* textureResoure2 = CreateTextureResource(dir_->GetDevice(), metadata2);
-	UploadTextureData(textureResoure2, mipImages2);
-
-	//meataDataを基にSRVの設定
-	D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc2{};
-	srvDesc2.Format = metadata2.format;
-	srvDesc2.Format = metadata2.format;
-	srvDesc2.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
-	srvDesc2.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
-	srvDesc2.Texture2D.MipLevels = UINT(metadata2.mipLevels);
-
-	//SRVを作成するDescriptorHeapの場所に決める
-	textureSrvHandleCPU2 = GetCPUDescriptorHandle(dir_->GetsrvDescriptorHeap_(), desriptorSizeSRV, 2);
-	textureSrvHandleGPU2 = GetGPUDescriptorHandle(dir_->GetsrvDescriptorHeap_(), desriptorSizeSRV, 2);
-	//SRVを生成
-	dir_->GetDevice()->CreateShaderResourceView(textureResoure2, &srvDesc2, textureSrvHandleCPU2);
-
+	//SRVを作成するDescriptorHeapの場所を決める
+	textureSrvHandleCPU[SpriteIndex] = GetCPUDescriptorHandle(dir_->GetsrvDescriptorHeap_(), descriptorSizeSRV, SpriteIndex);
+	textureSrvHandleGPU[SpriteIndex] = GetGPUDescriptorHandle(dir_->GetsrvDescriptorHeap_(), descriptorSizeSRV, SpriteIndex);
+	//先頭はImGuiが使っているので次のを使う
+	textureSrvHandleCPU[SpriteIndex].ptr += dir_->GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+	textureSrvHandleGPU[SpriteIndex].ptr += dir_->GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+	//SRVの作成
+	dir_->GetDevice()->CreateShaderResourceView(textureResource[SpriteIndex], &srvDesc, textureSrvHandleCPU[SpriteIndex]);
+	return SpriteIndex;
 }
 
 void Triangle::CreateMaterialResource(DirectXCommon* dir_) {
@@ -417,25 +447,24 @@ void Triangle::CreateWVPResource(DirectXCommon* dir_) {
 	*wvpData = MakeIdentity4x4();
 }
 
-void Triangle::UploadTextureData(ID3D12Resource* texture, const DirectX::ScratchImage& mipImages)
+ID3D12Resource* Triangle::UploadTextureData(ID3D12Resource* texture, const DirectX::ScratchImage& mipImages, DirectXCommon* dir_)
 {
-	// meta情報を取得
-	const DirectX::TexMetadata& metadata = mipImages.GetMetadata();
-	// Mipmapについて
-	for (size_t mipLevel = 0; mipLevel < metadata.mipLevels; ++mipLevel) {
-		// MipMapLevelを指示して各Imageを取得
-		const DirectX::Image* img = mipImages.GetImage(mipLevel, 0, 0);
-		// Textureに転送
-		HRESULT hr = texture->WriteToSubresource(
-			UINT(mipLevel),
-			nullptr,
-			img->pixels,
-			UINT(img->rowPitch),
-			UINT(img->slicePitch)
-		);
+	std::vector<D3D12_SUBRESOURCE_DATA>subresources;
+	DirectX::PrepareUpload(dir_->GetDevice(), mipImages.GetImages(), mipImages.GetImageCount(), mipImages.GetMetadata(), subresources);
+	uint64_t intermediateSize = GetRequiredIntermediateSize(texture, 0, UINT(subresources.size()));
+	ID3D12Resource* intermediateResource = CreateBufferResource(dir_->GetDevice(), intermediateSize);
+	UpdateSubresources(dir_->GetCommandList_(), texture, intermediateResource, 0, 0, UINT(subresources.size()), subresources.data());
+	//Tetureへの転送後は利用できるようにD3D12_RESOURCE_STATE_COPY_DESTからD3D12_RESOURCE_STATE_GENERIC_READへResourceStateを変更する
+	D3D12_RESOURCE_BARRIER barrier{};
+	barrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
+	barrier.Flags = D3D12_RESOURCE_BARRIER_FLAG_NONE;
+	barrier.Transition.pResource = texture;
+	barrier.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
+	barrier.Transition.StateBefore = D3D12_RESOURCE_STATE_COPY_DEST;
+	barrier.Transition.StateAfter = D3D12_RESOURCE_STATE_GENERIC_READ;
+	dir_->GetCommandList_()->ResourceBarrier(1, &barrier);
+	return intermediateResource;
 
-		assert(SUCCEEDED(hr));
-	}
 }
 
 ID3D12Resource* Triangle::CreateBufferResource(ID3D12Device* device, size_t sizeInbytes) {
@@ -474,35 +503,29 @@ ID3D12Resource* Triangle::CreateBufferResource(ID3D12Device* device, size_t size
 // textureResource
 ID3D12Resource* Triangle::CreateTextureResource(ID3D12Device* device, const DirectX::TexMetadata& metadata)
 {
-	// metadataを基にResourceの設定
+	//metadataを基にResourceの設定
 	D3D12_RESOURCE_DESC resourceDesc{};
-	resourceDesc.Width = UINT(metadata.width); // textureの幅
-	resourceDesc.Height = UINT(metadata.height); // textureの高さ
-	resourceDesc.MipLevels = UINT16(metadata.mipLevels); // mipmapの数
-	resourceDesc.DepthOrArraySize = UINT16(metadata.arraySize); // 奥行 or 配列textureの配列数
-	resourceDesc.Format = metadata.format; // textureのformat
-	resourceDesc.SampleDesc.Count = 1; // サンプリングカウント。1固定。
-	resourceDesc.Dimension = D3D12_RESOURCE_DIMENSION(metadata.dimension); // textureの次元数。普段使っているのは2次元
-
-	// 利用するHeapの設定。非常に特殊な運用。02_04exで一般的なケース番がある
+	resourceDesc.Width = UINT(metadata.width);
+	resourceDesc.Height = UINT(metadata.height);
+	resourceDesc.MipLevels = UINT16(metadata.mipLevels);
+	resourceDesc.DepthOrArraySize = UINT16(metadata.arraySize);
+	resourceDesc.Format = metadata.format;
+	resourceDesc.SampleDesc.Count = 1;
+	resourceDesc.Dimension = D3D12_RESOURCE_DIMENSION(metadata.dimension);
+	//利用するheapの設定
 	D3D12_HEAP_PROPERTIES heapProperties{};
-	heapProperties.Type = D3D12_HEAP_TYPE_CUSTOM;
-	heapProperties.CPUPageProperty = D3D12_CPU_PAGE_PROPERTY_WRITE_BACK;
-	heapProperties.MemoryPoolPreference = D3D12_MEMORY_POOL_L0;
+	heapProperties.Type = D3D12_HEAP_TYPE_DEFAULT;//細かい設定を行う
 
-	// Resourceの生成
+	//Resourceの生成
 	ID3D12Resource* resource = nullptr;
-
 	hr_ = device->CreateCommittedResource(
-		&heapProperties, // Heapの設定
-		D3D12_HEAP_FLAG_NONE, // Heapの特殊な設定。特になし
-		&resourceDesc, // Resourceの設定
-		D3D12_RESOURCE_STATE_GENERIC_READ, // 初回のResourceState。Textureは基本読むだけ
-		nullptr, // Clear最適値。使わないのでnullptr
-		IID_PPV_ARGS(&resource)); // 作成するResourceポインタへのポインタ
-
-	assert(SUCCEEDED(hr_));
-
+		&heapProperties,//Heapの設定
+		D3D12_HEAP_FLAG_NONE,//Heapの特殊な設定
+		&resourceDesc,//Resourceの設定
+		D3D12_RESOURCE_STATE_COPY_DEST,//初回のResourceState　Textureは基本読むだけ
+		nullptr,//Clear最適値　使わないためnullptr
+		IID_PPV_ARGS(&resource)//作成するResourceポインタへのポインタ
+	);
 	return resource;
 }
 
@@ -545,18 +568,16 @@ ID3D12Resource* Triangle::CreateDepthStencilTextureResource(ID3D12Device* device
 }
 DirectX::ScratchImage Triangle::LoadTexture(const std::string& filePath) {
 
-	// テクスチャファイルを読んでプログラムで扱えるようにする
+	//テクスチャファイルを読み込みプログラムで扱えるようにする
 	DirectX::ScratchImage image{};
-	std::wstring filePathW = ConvertString(filePath);;
-	HRESULT hr = DirectX::LoadFromWICFile(filePathW.c_str(), DirectX::WIC_FLAGS_FORCE_SRGB, nullptr, image);
+	std::wstring filePathW = ConvertString(filePath);
+	hr_ = DirectX::LoadFromWICFile(filePathW.c_str(), DirectX::WIC_FLAGS_FORCE_SRGB, nullptr, image);
 	assert(SUCCEEDED(hr));
+	//ミップマップの作成
+	DirectX::ScratchImage mipImage{};
+	hr_ = DirectX::GenerateMipMaps(image.GetImages(), image.GetImageCount(), image.GetMetadata(), DirectX::TEX_FILTER_SRGB, 0, mipImage);
 
-	// ミップマップの作成
-	DirectX::ScratchImage mipImages{};
-	hr = DirectX::GenerateMipMaps(image.GetImages(), image.GetImageCount(), image.GetMetadata(), DirectX::TEX_FILTER_SRGB, 0, mipImages);
-	assert(SUCCEEDED(hr));
-
-	return mipImages;
+	return mipImage;
 }
 
 

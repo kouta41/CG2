@@ -15,6 +15,10 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	// 三角形の数
 	const int Max = 30;
 
+	//texture
+	int UV;
+	int Ball;
+
 	Vector4 pos[Max][3];
 	for (int i = 1; i < Max; i++) {
 		// 左下
@@ -52,16 +56,23 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 	MSG msg{};
 
-	for (int i = 0; i < Max; i++) {
-		triangle[i] = new Triangle();
-		triangle[i]->Initialize(directX, pos[i],winapp);
-	}
+	
 
 	Transform transform{ {1.0f, 1.0f, 1.0f}, {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 0.0f} };
 	Transform cameraTransform{ {1.0f, 1.0f, 1.0f}, {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, -5.0f} };
 
 	imgui->Initialize(winapp, directX);
 
+	for (int i = 0; i < Max; i++) {
+		triangle[i] = new Triangle();
+		triangle[i]->Initialize(directX, pos[i], winapp);
+		
+	}
+	
+	for (int i = 0; i < Max; i++) {
+		UV = triangle[i]->UpLoadTexture(directX, "resources/uvChecker.png");
+		Ball = triangle[i]->UpLoadTexture(directX, "resources/monsterBall.png");
+	}
 	// ウインドウの×ボタンが押されるまでループ
 	while (msg.message != WM_QUIT) {
 		// Windowにメッセージが来てたら最優先で処理させる
@@ -87,14 +98,15 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 			for (int i = 1; i < Max; i++) {
 				*triangle[i]->GetwvpData() = worldViewProjectionMatrix;
-				triangle[i]->Draw(directX);
+				triangle[i]->Draw(directX,UV);
 			}
 
-			triangle[0]->Draw(directX);
+			triangle[0]->Draw(directX,UV);
+			triangle[1]->Draw(directX, UV);
 
-			triangle[0]->DrawSprite(directX);
+			triangle[0]->DrawSprite(directX,UV);
 
-			triangle[0]->DrawSphere(directX);
+			triangle[0]->DrawSphere(directX, UV,Ball);
 			
 
 			ImGui::Begin("vertexData");
