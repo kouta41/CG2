@@ -393,6 +393,7 @@ int Triangle::UpLoadTexture(DirectXCommon* dir_, const std::string& filePath) {
 		assert(false);
 	}
 	
+	///-----------------------------------ここから
 	//Textureを読んで転送する
 	DirectX::ScratchImage mipImages = LoadTexture(filePath);
 	const DirectX::TexMetadata& metadata = mipImages.GetMetadata();
