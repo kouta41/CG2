@@ -87,6 +87,10 @@ struct DirectionalLight
 	float intensity; //ライトの輝度
 };
 
+
+struct ModelData {
+	std::vector<VertexData> vertices;
+};
 Matrix4x4 MakeIdentity4x4();
 
 // ベクトル変換
@@ -125,6 +129,7 @@ void Log(const std::string& message);
 	IDxcCompiler3* dxcCompiler,
 	IDxcIncludeHandler* includeHandler);
 
+ ModelData LoadObjFile(const std::string& directoryPath, const std::string& filename);
 
  D3D12_CPU_DESCRIPTOR_HANDLE GetCPUDescriptorHandle(ID3D12DescriptorHeap* descriptorHeap, uint32_t descriptorSize, uint32_t index);
 

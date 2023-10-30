@@ -370,6 +370,11 @@ IDxcBlob* CompileShader(const std::wstring& filePath, const wchar_t* profile, ID
 }
 
 
+ModelData LoadObjFile(const std::string& directoryPath, const std::string& filename) {
+
+
+}
+
 D3D12_CPU_DESCRIPTOR_HANDLE GetCPUDescriptorHandle(ID3D12DescriptorHeap* descriptorHeap, uint32_t descriptorSize, uint32_t index) {
 	D3D12_CPU_DESCRIPTOR_HANDLE handleCPU = descriptorHeap->GetCPUDescriptorHandleForHeapStart();
 	handleCPU.ptr += (descriptorSize * index);
