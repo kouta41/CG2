@@ -56,6 +56,9 @@ struct Transform {
 struct Matrix4x4 final {
 	float m[4][4];
 };
+struct Matrix3x3 final {
+	float m[3][3];
+};
 
 struct Sphere final {
 	Vector3 center;//中心点
@@ -64,9 +67,11 @@ struct Sphere final {
 
 
 
-struct Material final {
+struct Material final{
 	Vector4 color;
 	int32_t enableLighting;
+	float padding[3];
+	Matrix4x4 uvTransform;
 };
 
 struct TransformationMatrix

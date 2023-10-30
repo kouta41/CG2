@@ -3,6 +3,8 @@ struct Material
 {
     float32_t4 color; //元の色
     int32_t enableLighting; //ライトのフラグ
+    float32_t4x4 uvTransfrom;
+
 };
 struct DirectionalLight
 {
@@ -21,8 +23,10 @@ struct PixelShaderOutput
  
 PixelShaderOutput main(VertexShaderOutput input)
 {
-    PixelShaderOutput output;
-    float32_t4 textureColor = gTexture.Sample(gSampler, input.texcoord);
+    PixelShaderOutput output;    
+    float3 transformeUV = mul(float32_t4(input.texcoord, 0.0f,1.0f), gMaterial.uvTransfrom);
+    float32_t4 textureColor = gTexture.Sample(gSampler, transformeUV.xy);
+    
     if (gMaterial.enableLighting != 0)
     { //Lightingする場合
         float NdotL = dot(normalize(input.normal), -gDirectionalLight.direction);

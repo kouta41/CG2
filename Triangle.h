@@ -44,7 +44,7 @@ public:
 	DirectX::ScratchImage LoadTexture(const std::string& filePath);
 
 	Matrix4x4* GetwvpData() { return wvpData; }
-	Vector4* GetmaterialData() { return materialData; }
+	//Vector4* GetmaterialData() { return materialData; }
 
 	Transform transform_ = { {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f} };
 
@@ -71,7 +71,9 @@ private:
 	//マテリアルリソース
 	ID3D12Resource* materialResource = nullptr;
 	//色データ
-	Vector4* materialData = nullptr;
+	//Vector4* materialData = nullptr;
+	Material* materialData = nullptr;
+
 	//WVPリソース
 	ID3D12Resource* wvpResource = nullptr;
 	//WVPデータ
@@ -83,20 +85,25 @@ private:
 #pragma region sprite
 	//Sprite用頂点データ
 	ID3D12Resource* vertexResourceSprite = nullptr;
-	//Sprite用Indexデータ
-	ID3D12Resource* indexResourceSprite = nullptr;
 	//Sprite用頂点データ
 	VertexData* vertexDataSprite = nullptr;
 	//Sprite用バーテックスバッファビュー
 	D3D12_VERTEX_BUFFER_VIEW vertexBufferViewSprite{};
-	//Sprite用indexバーテックスバッファビュー
-	D3D12_INDEX_BUFFER_VIEW indexBufferViewSprite{};
+	//マテリアルリソース
+	ID3D12Resource* materialResourceSprite = nullptr;
+	//色データ
+	Material* materialDataSprite = nullptr;
 	//Sprite用WVPリソース
 	ID3D12Resource* transformationMatrixResourceSprite = nullptr;
-	//インデックスリソース
-	uint32_t* indexDataSprite = nullptr;
 	//Sprite用WVPデータ
-	Matrix4x4* transformationMatrixDataSprite = nullptr;
+	TransformationMatrix* transformationMatrixDataSprite = nullptr;
+	//Index用
+	ID3D12Resource* indexResourceSprite = nullptr;
+	//Index用頂点データ
+	uint32_t* indexDataSprite = nullptr;
+	//Index用バッファビュー
+	D3D12_INDEX_BUFFER_VIEW indexBufferViewSprite{};
+
 #pragma endregion スプライト
 
 #pragma region Sphere
@@ -139,6 +146,13 @@ private:
 				16
 	};
 	//Transform transform_={ {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f} };
+	Transform uvTranformTriAngle{
+		{1.0f,1.0f,1.0f},
+		{0.0f,0.0f,0.0f},
+		{0.0f,0.0f,0.0f}
+	};
+
 	Transform transformSprite_ = { {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f} };
+	Transform uvtransformSprite_ = { {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f} };
 	Transform transformSphere = { {0.1f,0.1f,0.1f},{0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f}, };
 };
