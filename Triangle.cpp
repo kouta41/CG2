@@ -57,13 +57,16 @@ void Triangle::DrawSprite(DirectXCommon* dir_) {
 
 	//Spriteの描画。変更が必要なものだけ変更
 	dir_->GetCommandList_()->IASetVertexBuffers(0, 1, &vertexBufferViewSprite);
-
+	dir_->GetCommandList_()->IASetIndexBuffer(&indexBufferViewSprite);
 	//TransfoormationMatrixCBufferの場所を設定
 	dir_->GetCommandList_()->SetGraphicsRootConstantBufferView(1, transformationMatrixResourceSprite->GetGPUVirtualAddress());
 	// SRVのDescriptorTableの先頭を設定。2はrootParameter[2]である。
 	dir_->GetCommandList_()->SetGraphicsRootDescriptorTable(2, textureSrvHandleGPU);
 	// 描画(DrawCall/ドローコール)。3頂点で1つのインスタンス。
 	dir_->GetCommandList_()->DrawInstanced(6, 1, 0, 0);
+	// 描画(DrawCall/ドローコール)。6個のインデックスを使用し1つのいインスタンスを描画
+	dir_->GetCommandList_()->DrawIndexedInstanced(6, 1, 0, 0, 0);
+
 
 	ImGui::Begin("SpriteDraw");
 	ImGui::SliderFloat3("SpriteDraw", &transformSprite_.translate.x, -1000.0f, 1000.0f);
@@ -195,6 +198,23 @@ void Triangle::Create2DSpriteResource(DirectXCommon* dir_) {
 	vertexBufferViewSprite.SizeInBytes = sizeof(VertexData) * 6;
 	//1頂点当たりのサイズ
 	vertexBufferViewSprite.StrideInBytes = sizeof(VertexData);
+
+
+
+	//Sprite用のindexリソースを作る
+	indexResourceSprite = CreateBufferResource(dir_->GetDevice(), sizeof(uint32_t) * 6);
+
+	//リソースの先頭のアドレスから使う
+	indexBufferViewSprite.BufferLocation = indexResourceSprite->GetGPUVirtualAddress();
+	//使用するリソースのサイズは頂点6つ分のサイズ
+	indexBufferViewSprite.SizeInBytes = sizeof(uint32_t) * 6;
+	//インデックスはuint32_tとする
+	indexBufferViewSprite.Format = DXGI_FORMAT_R32_UINT;
+
+	//インデックスリソースにデータを書き込む
+	indexResourceSprite->Map(0,nullptr, reinterpret_cast<void**>(&indexDataSprite));
+	indexDataSprite[0] = 0;		indexDataSprite[1] = 1;		indexDataSprite[2] = 2;
+	indexDataSprite[3] = 1;		indexDataSprite[4] = 3;		indexDataSprite[5] = 2;
 
 	//頂点データを設定
 	vertexResourceSprite->Map(0, nullptr, reinterpret_cast<void**>(&vertexDataSprite));
