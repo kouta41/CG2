@@ -42,7 +42,7 @@ void Triangle::Initialize(DirectXCommon* dir_, Vector4* pos,WinApp* window) {
 	// 単位行列を書き込んでおく
 	wvpDataObj->WVP = MakeIdentity4x4();
 	//ライティングをしない
-	materialDataObj->enableLighting = false;
+	materialDataObj->enableLighting = true;
 
 	// Lightingするか
 	//materialDataObj->enableLighting = true;
@@ -170,7 +170,7 @@ void Triangle::DrawSphere(DirectXCommon* dir_) {
 	ImGui::End();
 }
 
-void Triangle::DrawOBJ(DirectXCommon* dir_) {
+void Triangle::DrawOBJ(DirectXCommon* dir_, const Matrix4x4& transformationMatrixData) {
 	wvpDataObj->World = MakeAffineMatrix(transformObj.scale, transformObj.rotate, transformObj.translate);
 	//wvpDataObj->World = Multiply(wvpDataObj->World, transformationMatrixData);
 	wvpDataObj->WVP = wvpDataObj->World;

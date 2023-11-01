@@ -6,8 +6,9 @@
 #include "Mesh.h"
 #include "Triangle.h"
 #include "ImguiManege.h"
+#include "Camera.h"
 
-// WIndowsアプリでのエントリーポイント(main関数)
+// WIndowsアプリでのエントリーポイント(main関数) 
 int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 	CoInitializeEx(0, COINIT_MULTITHREADED);
@@ -46,9 +47,12 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	Mesh* mesh = new Mesh();
 	Triangle* triangle[Max];
 	ImGuiManeger* imgui = new ImGuiManeger;
+	Camera* camera = new Camera();
 
 	directX->Initialize(winapp);
 	mesh->Initialize(directX,winapp);
+
+	camera->Initialize();
 
 	MSG msg{};
 
@@ -59,7 +63,6 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 	Transform transform{ {1.0f, 1.0f, 1.0f}, {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 0.0f} };
 	Transform cameraTransform{ {1.0f, 1.0f, 1.0f}, {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, -5.0f} };
-
 	imgui->Initialize(winapp, directX);
 
 	// ウインドウの×ボタンが押されるまでループ
@@ -74,7 +77,6 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			imgui->Update();
 			directX->Update();
 			mesh->Update(directX);
-
 
 			//transform.rotate.y += 0.03f;
 
@@ -94,9 +96,11 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 			//triangle[0]->DrawSprite(directX);
 
-			//triangle[0]->DrawSphere(directX);
+			triangle[0]->DrawSphere(directX);
 
-			triangle[0]->DrawOBJ(directX);
+			camera->Update();
+
+			triangle[0]->DrawOBJ(directX, *camera->GettransformationMatrixData());
 			
 
 			ImGui::Begin("vertexData");
@@ -137,6 +141,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	directX->Release(winapp);
 	mesh->Release();
 
+	delete camera;
 	delete mesh;
 	delete imgui;
 	delete directX;

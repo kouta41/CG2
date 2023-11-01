@@ -28,7 +28,7 @@ public:
 	void Draw(DirectXCommon* dir_);
 	void DrawSprite(DirectXCommon* dir_);
 	void DrawSphere(DirectXCommon* dir_);
-	void DrawOBJ(DirectXCommon* dir_);
+	void DrawOBJ(DirectXCommon* dir_, const Matrix4x4& transformationMatrixData);
 
 	// 解放
 	void Release();
