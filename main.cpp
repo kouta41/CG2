@@ -87,14 +87,16 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 			for (int i = 1; i < Max; i++) {
 				*triangle[i]->GetwvpData() = worldViewProjectionMatrix;
-				triangle[i]->Draw(directX);
+				//triangle[i]->Draw(directX);
 			}
 
-			triangle[0]->Draw(directX);
+			//triangle[0]->Draw(directX);
 
-			triangle[0]->DrawSprite(directX);
+			//triangle[0]->DrawSprite(directX);
 
-			triangle[0]->DrawSphere(directX);
+			//triangle[0]->DrawSphere(directX);
+
+			triangle[0]->DrawOBJ(directX);
 			
 
 			ImGui::Begin("vertexData");

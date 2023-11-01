@@ -18,6 +18,35 @@ void Triangle::Initialize(DirectXCommon* dir_, Vector4* pos,WinApp* window) {
 	directionalLightData->intensity = 1.0f;
 #pragma endregion ライト
 
+#pragma region OBJ
+	// モデル読み込み
+	modelData = LoadObjFile("resources", "axis.obj");
+	DirectX::ScratchImage mipImages2 = LoadTexture(modelData.material.textureFilePath);
+
+	vertexResourceObj = CreateBufferResource(dir_->GetDevice(), sizeof(VertexData) * modelData.vertices.size());
+	vertexBufferViewObj.BufferLocation = vertexResource->GetGPUVirtualAddress();
+	vertexBufferViewObj.SizeInBytes = UINT(sizeof(VertexData) * modelData.vertices.size());
+	vertexBufferViewObj.StrideInBytes = sizeof(VertexData);
+	vertexResourceObj->Map(0, nullptr, reinterpret_cast<void**>(&vertexDataObj));
+	std::memcpy(vertexDataObj, modelData.vertices.data(), sizeof(VertexData) * modelData.vertices.size());
+
+	materialResourceObj = CreateBufferResource(dir_->GetDevice(), sizeof(Material));
+	materialResourceObj->Map(0, nullptr, reinterpret_cast<void**>(&materialDataObj));
+	// 白を設定
+	materialDataObj->color = { 1.0f,1.0f,1.0f,1.0f };
+	materialDataObj->uvTransform = MakeIdentity4x4();
+
+	wvpResourceObj= CreateBufferResource(dir_->GetDevice(), sizeof(TransformationMatrix));
+	// 書き込むためのアドレスを取得
+	wvpResourceObj->Map(0, nullptr, reinterpret_cast<void**>(&wvpDataObj));
+	// 単位行列を書き込んでおく
+	wvpDataObj->WVP = MakeIdentity4x4();
+	//ライティングをしない
+	materialDataObj->enableLighting = false;
+
+	// Lightingするか
+	//materialDataObj->enableLighting = true;
+#pragma endregion オブジェクト
 
 	Triangle::LoadTexture(dir_);
 }
@@ -141,6 +170,39 @@ void Triangle::DrawSphere(DirectXCommon* dir_) {
 	ImGui::End();
 }
 
+void Triangle::DrawOBJ(DirectXCommon* dir_) {
+	wvpDataObj->World = MakeAffineMatrix(transformObj.scale, transformObj.rotate, transformObj.translate);
+	//wvpDataObj->World = Multiply(wvpDataObj->World, transformationMatrixData);
+	wvpDataObj->WVP = wvpDataObj->World;
+
+	Matrix4x4 uvtransformMatrix = MakeScaleMatrix(uvTransformObj.scale);
+	uvtransformMatrix = Multiply(uvtransformMatrix, MakeRotateZMatrix(uvTransformObj.rotate.z));
+	uvtransformMatrix = Multiply(uvtransformMatrix, MakeTranslateMatrix(uvTransformObj.translate));
+	materialData->uvTransform = uvtransformMatrix;
+
+	
+
+	//頂点
+	dir_->GetCommandList_()->IASetVertexBuffers(0, 1, &vertexBufferViewObj);
+	//色用のCBufferの場所を特定
+	dir_->GetCommandList_()->SetGraphicsRootConstantBufferView(0, materialResourceObj->GetGPUVirtualAddress());
+	//WVP
+	dir_->GetCommandList_()->SetGraphicsRootConstantBufferView(1,materialResourceObj->GetGPUVirtualAddress());
+	//テクスチャ
+	dir_->GetCommandList_()->SetGraphicsRootDescriptorTable(2, textureSrvHandleGPU);
+	//Light
+	//dir_->GetCommandList_()->SetGraphicsRootConstantBufferView(3, directionalLightResource->GetGPUVirtualAddress());
+
+	dir_->GetCommandList_()->DrawInstanced(UINT(modelData.vertices.size()), 1, 0, 0);
+
+	ImGui::Begin("Model");
+	ImGui::SliderAngle(".Rotate.y ", &transformObj.rotate.y);
+	ImGui::SliderFloat3("translate", &transformObj.translate.x, -1.0f, 1.0f);
+	ImGui::DragFloat2("UVTransform", &uvTransformObj.translate.x, 0.01f, -10.0f, 10.0f);
+	ImGui::DragFloat2("UVScale", &uvTransformObj.scale.x, 0.01f, -10.0f, 10.0f);
+	ImGui::SliderAngle("UVRotate", &uvTransformObj.rotate.z);
+	ImGui::End();
+}
 
 void Triangle::Release() {
 	vertexResource->Release();
@@ -370,6 +432,9 @@ void Triangle::CreateSphereResoure(DirectXCommon* dir_) {
 
 }
 
+
+
+
 void Triangle::LoadTexture(DirectXCommon* dir_) {
 
 	// Textureを読んで転送する(1枚目)
@@ -433,6 +498,87 @@ void Triangle::LoadTexture(DirectXCommon* dir_) {
 
 }
 
+MaterialData Triangle::LoadMaterialTemplateFile(const std::string& directoryPath, const std::string& filename)
+{
+	MaterialData materialData;//構築するMaterialData
+	std::string line;//ファイルから読んだ1行を格納するもの
+	std::ifstream file(directoryPath + '/' + filename);//ファイルを開く
+	assert(file.is_open());//開けなかったら止める
+	while (std::getline(file, line)) {
+		std::string identifier;
+		std::istringstream s(line);
+		s >> identifier;
+		//identifierに応じた処理
+		if (identifier == "map_Kd") {
+			std::string textureFilename;
+			s >> textureFilename;
+			//連結してファイルパスにする
+			materialData.textureFilePath = directoryPath + "/" + textureFilename;
+		}
+	}
+
+	return materialData;
+}
+
+ModelData Triangle::LoadObjFile(const std::string& directoryPath, const std::string& filename) {
+	ModelData modelData;	//構築するModelData
+	std::vector<Vector4> positions;	//位置
+	std::vector<Vector3> normals;	//法線
+	std::vector<Vector2> texcoords;	//テクスチャ座標
+	std::string line;	//ファイルから読んだ1桁を格納するもの
+	std::ifstream file(directoryPath + "/" + filename);	//ファイルを開く
+	assert(file.is_open());	//開けなかったら止める
+
+	while (std::getline(file, line)) {
+		std::string identifier;
+		std::istringstream s(line);
+		s >> identifier;	//先頭の識別子を読む
+
+		//identifierに応じた処理
+		if (identifier == "v") {
+			Vector4 position;
+			s >> position.x >> position.y >> position.z;
+			position.w = 1.0f;
+			positions.push_back(position);
+		}
+		else if (identifier == "vt") {
+			Vector2 texcoord;
+			s >> texcoord.x >> texcoord.y;
+			texcoords.push_back(texcoord);
+		}
+		else if (identifier == "vn") {
+			Vector3 normal;
+			s >> normal.x >> normal.y >> normal.z;
+			normals.push_back(normal);
+		}
+		else if (identifier == "f") {
+			//面は三角形限定
+			//VertexData triamgle[3];
+			for (int32_t faceVertex = 0; faceVertex < 3; ++faceVertex) {
+				std::string vertexDefinition;
+				s >> vertexDefinition;
+				//頂点の要素へのIndexは「位置/UV/法線」で格納されているので、分解してIndexを取得する
+				std::istringstream v(vertexDefinition);
+				uint32_t elementIndices[3];
+				for (int32_t element = 0; element < 3; ++element) {
+					std::string index;
+					std::getline(v, index, '/');// /区切りでインデックスを読んでいく
+					elementIndices[element] = std::stoi(index);
+				}
+				Vector4 position = positions[elementIndices[0] - 1];
+				Vector2 texcoord = texcoords[elementIndices[1] - 1];
+				Vector3 normal = normals[elementIndices[2] - 1];
+				VertexData vertex = { position,texcoord,normal };
+				modelData.vertices.push_back(vertex);
+				//	triamgle[faceVertex] = { position,texcoord,normal };
+
+			}
+
+		}
+
+	}
+	return modelData;
+}
 void Triangle::CreateMaterialResource(DirectXCommon* dir_) {
 	//// マテリアル用のリソースを作る。今回はcolor1つ分のサイズを用意する
 	materialResource = CreateBufferResource(dir_->GetDevice(), sizeof(Vector4));

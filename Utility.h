@@ -12,6 +12,7 @@
 #include <string>
 #include <format>
 
+
 #include "ConvertString.h"
 #include "externals/DirectXTex/DirectXTex.h"
 
@@ -86,11 +87,17 @@ struct DirectionalLight
 	Vector3 direction; //ライトの向き
 	float intensity; //ライトの輝度
 };
-
+struct MaterialData
+{
+	std::string textureFilePath;
+};
 
 struct ModelData {
 	std::vector<VertexData> vertices;
+	MaterialData material;
+	int TextureIndex;
 };
+
 Matrix4x4 MakeIdentity4x4();
 
 // ベクトル変換
@@ -129,7 +136,6 @@ void Log(const std::string& message);
 	IDxcCompiler3* dxcCompiler,
 	IDxcIncludeHandler* includeHandler);
 
- ModelData LoadObjFile(const std::string& directoryPath, const std::string& filename);
 
  D3D12_CPU_DESCRIPTOR_HANDLE GetCPUDescriptorHandle(ID3D12DescriptorHeap* descriptorHeap, uint32_t descriptorSize, uint32_t index);
 
