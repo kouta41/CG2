@@ -1,13 +1,19 @@
 #pragma once
 #include "Utility.h"
 #include "WinApp.h"
-
+#include "imgui.h"
 
 class Camera {
-public:
 
+public:
+	/// <summary>
+	/// 
+	/// </summary>
 	void Initialize();
 
+	/// <summary>
+	/// 
+	/// </summary>
 	void Update();
 
 	void Draw();

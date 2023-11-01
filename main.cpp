@@ -46,9 +46,8 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	DirectXCommon* directX = new DirectXCommon();
 	Mesh* mesh = new Mesh();
 	Triangle* triangle[Max];
-	ImGuiManeger* imgui = new ImGuiManeger;
+	ImGuiManeger* imgui = new ImGuiManeger();
 	Camera* camera = new Camera();
-
 	directX->Initialize(winapp);
 	mesh->Initialize(directX,winapp);
 
@@ -77,18 +76,15 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			imgui->Update();
 			directX->Update();
 			mesh->Update(directX);
+			
+			
+			camera->Update();
 
 			//transform.rotate.y += 0.03f;
 
-			Matrix4x4 worldMatrix = MakeAffineMatrix(transform.scale, transform.rotate, transform.translate);
-			Matrix4x4 cameraMatrix = MakeAffineMatrix(cameraTransform.scale, cameraTransform.rotate, cameraTransform.translate);
-
-			Matrix4x4 viewMatrix = Inverse(cameraMatrix);
-			Matrix4x4 projectionMatrix = MakePerspectiveFovMatrix(0.45f, float(winapp->GetkClientWidth()) / float(winapp->GetkClientHeight()), 0.1f, 100.0f);
-			Matrix4x4 worldViewProjectionMatrix = Multiply(worldMatrix, Multiply(viewMatrix, projectionMatrix));
-
+			
 			for (int i = 1; i < Max; i++) {
-				*triangle[i]->GetwvpData() = worldViewProjectionMatrix;
+			//	*triangle[i]->GetwvpData() = *camera->GettransformationMatrixData();
 				//triangle[i]->Draw(directX);
 			}
 
@@ -98,9 +94,8 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 			triangle[0]->DrawSphere(directX);
 
-			camera->Update();
 
-			triangle[0]->DrawOBJ(directX, *camera->GettransformationMatrixData());
+			//triangle[0]->DrawOBJ(directX, *camera->GettransformationMatrixData());
 			
 
 			ImGui::Begin("vertexData");

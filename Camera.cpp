@@ -2,6 +2,9 @@
 
 void Camera::Initialize() {
 	cameraTransform = { {1.0f, 1.0f, 1.0f}, {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, -10.0f} };
+	/*ImGui::Begin("cameraTransform");
+	ImGui::SliderFloat3("vertexData", &cameraTransform.translate.x, -1.0f, 1.0f);
+	ImGui::End();*/
 }
 
 void Camera::Update() {
