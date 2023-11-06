@@ -1,13 +1,14 @@
 #include "Camera.h"
 
-void Camera::Initialize() {
+void Cameraex::Initialize(WinApp* winapp) {
 	cameraTransform = { {1.0f, 1.0f, 1.0f}, {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, -10.0f} };
+	winapp_ = winapp;
 	/*ImGui::Begin("cameraTransform");
 	ImGui::SliderFloat3("vertexData", &cameraTransform.translate.x, -1.0f, 1.0f);
 	ImGui::End();*/
 }
 
-void Camera::Update() {
+void Cameraex::Update() {
 	worldMatrix = MakeAffineMatrix({ 1.0f, 1.0f, 1.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, -5.0f });
 	cameraMatrix = MakeAffineMatrix(cameraTransform.scale, cameraTransform.rotate, cameraTransform.translate);
 	viewMatrix = Inverse(cameraMatrix);
@@ -16,4 +17,4 @@ void Camera::Update() {
 	transformationMatrixData = &worldViewProjectionMatrix;
 }
 
-void Camera::Draw() {}
+void Cameraex::Draw() {}

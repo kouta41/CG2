@@ -3,13 +3,13 @@
 #include "WinApp.h"
 #include "imgui.h"
 
-class Camera {
+class Cameraex {
 
 public:
 	/// <summary>
 	/// 
 	/// </summary>
-	void Initialize();
+	void Initialize(WinApp* winapp);
 
 	/// <summary>
 	/// 
@@ -19,10 +19,9 @@ public:
 	void Draw();
 
 	Matrix4x4* GettransformationMatrixData() { return transformationMatrixData; }
-public:
+private:
 
-	WinApp* winapp_ = nullptr;
-
+	WinApp* winapp_;
 	Transform cameraTransform;
 	Matrix4x4 worldMatrix;
 	Matrix4x4 cameraMatrix;

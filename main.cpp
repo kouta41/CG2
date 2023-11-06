@@ -47,11 +47,11 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	Mesh* mesh = new Mesh();
 	Triangle* triangle[Max];
 	ImGuiManeger* imgui = new ImGuiManeger();
-	Camera* camera = new Camera();
+	Cameraex* camera = new Cameraex();
 	directX->Initialize(winapp);
 	mesh->Initialize(directX,winapp);
 
-	camera->Initialize();
+	camera->Initialize(winapp);
 
 	MSG msg{};
 
@@ -95,7 +95,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			triangle[0]->DrawSphere(directX);
 
 
-			//triangle[0]->DrawOBJ(directX, *camera->GettransformationMatrixData());
+			triangle[0]->DrawOBJ(directX, *camera->GettransformationMatrixData());
 			
 
 			ImGui::Begin("vertexData");
