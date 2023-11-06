@@ -73,12 +73,12 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		}
 		else {
 			// ゲームの処理
+			camera->Update();
 			imgui->Update();
 			directX->Update();
 			mesh->Update(directX);
 			
 			
-			camera->Update();
 
 			//transform.rotate.y += 0.03f;
 
