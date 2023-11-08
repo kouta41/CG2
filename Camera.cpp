@@ -17,4 +17,19 @@ void Cameraex::Update() {
 	transformationMatrixData = &worldViewProjectionMatrix;
 }
 
-void Cameraex::Draw() {}
+void Cameraex::Draw() {
+#pragma region ImGui
+	ImGui::Begin("Camera");
+	float ImGuiScale[Vector3D] = { cameraTransform.scale.x,cameraTransform.scale.y ,cameraTransform.scale.z };
+	ImGui::SliderFloat3("Scale", ImGuiScale, 1, 30, "%.3f");
+	cameraTransform.scale = { ImGuiScale[x],ImGuiScale[y],ImGuiScale[z] };
+	float ImGuiRotate[Vector3D] = { cameraTransform.rotate.x,cameraTransform.rotate.y ,cameraTransform.rotate.z };
+	ImGui::SliderFloat3("Rotate", ImGuiRotate, 0, 5, "%.3f");
+	cameraTransform.rotate = { ImGuiRotate[x],ImGuiRotate[y],ImGuiRotate[z] };
+	float ImGuiTranslate[Vector3D] = { cameraTransform.translate.x,cameraTransform.translate.y ,cameraTransform.translate.z };
+	ImGui::SliderFloat3("Translate", ImGuiTranslate, -10, 10, "%.3f");
+	cameraTransform.translate = { ImGuiTranslate[x],ImGuiTranslate[y],ImGuiTranslate[z] };
+	ImGui::End();
+#pragma endregion
+
+}

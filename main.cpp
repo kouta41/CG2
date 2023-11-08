@@ -83,6 +83,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			model->Update(*camera->GettransformationMatrixData());
 
 			
+			
 
 			//transform.rotate.y += 0.03f;
 
@@ -107,7 +108,6 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			ImGui::SliderFloat3("vertexData1", &triangle[1]->transform_.translate.x, -1.0f, 1.0f);
 
 			ImGui::End();
-
 			/*ImGui::Begin("Mesh Color");
 			ImGui::ColorEdit3("Mesh Color", &triangle[0]->GetmaterialData()->x);
 			ImGui::End();
