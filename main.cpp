@@ -7,6 +7,7 @@
 #include "Triangle.h"
 #include "ImguiManege.h"
 #include "Camera.h"
+#include "Model.h"
 
 // WIndowsアプリでのエントリーポイント(main関数) 
 int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
@@ -48,8 +49,10 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	Triangle* triangle[Max];
 	ImGuiManeger* imgui = new ImGuiManeger();
 	Cameraex* camera = new Cameraex();
+	Model* model = new Model();
 	directX->Initialize(winapp);
 	mesh->Initialize(directX,winapp);
+	model->Initialize(directX, triangle[0]);
 
 	camera->Initialize(winapp);
 
@@ -77,7 +80,8 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			imgui->Update();
 			directX->Update();
 			mesh->Update(directX);
-			
+			model->Update(*camera->GettransformationMatrixData());
+
 			
 
 			//transform.rotate.y += 0.03f;
@@ -97,7 +101,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 			triangle[0]->DrawOBJ(directX, *camera->GettransformationMatrixData());
 			
-
+			model->Draw(directX, triangle[0]);
 			ImGui::Begin("vertexData");
 			ImGui::SliderFloat3("vertexData", &triangle[0]->transform_.translate.x, -1.0f, 1.0f);
 			ImGui::SliderFloat3("vertexData1", &triangle[1]->transform_.translate.x, -1.0f, 1.0f);
@@ -136,6 +140,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	directX->Release(winapp);
 	mesh->Release();
 
+	delete model;
 	delete camera;
 	delete mesh;
 	delete imgui;

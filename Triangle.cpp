@@ -171,14 +171,16 @@ void Triangle::DrawSphere(DirectXCommon* dir_) {
 }
 
 void Triangle::DrawOBJ(DirectXCommon* dir_, const Matrix4x4& transformationMatrixData) {
+
+
 	wvpDataObj->World = MakeAffineMatrix(transformObj.scale, transformObj.rotate, transformObj.translate);
-	//wvpDataObj->World = Multiply(wvpDataObj->World, transformationMatrixData);
+	wvpDataObj->World = Multiply(wvpDataObj->World, transformationMatrixData);
 	wvpDataObj->WVP = wvpDataObj->World;
 
 	Matrix4x4 uvtransformMatrix = MakeScaleMatrix(uvTransformObj.scale);
 	uvtransformMatrix = Multiply(uvtransformMatrix, MakeRotateZMatrix(uvTransformObj.rotate.z));
 	uvtransformMatrix = Multiply(uvtransformMatrix, MakeTranslateMatrix(uvTransformObj.translate));
-	materialData->uvTransform = uvtransformMatrix;
+	materialDataObj->uvTransform = uvtransformMatrix;
 
 	
 
@@ -187,15 +189,18 @@ void Triangle::DrawOBJ(DirectXCommon* dir_, const Matrix4x4& transformationMatri
 	//色用のCBufferの場所を特定
 	dir_->GetCommandList_()->SetGraphicsRootConstantBufferView(0, materialResourceObj->GetGPUVirtualAddress());
 	//WVP
-	dir_->GetCommandList_()->SetGraphicsRootConstantBufferView(1,materialResourceObj->GetGPUVirtualAddress());
+	dir_->GetCommandList_()->SetGraphicsRootConstantBufferView(1, wvpResourceObj->GetGPUVirtualAddress());
 	//テクスチャ
 	dir_->GetCommandList_()->SetGraphicsRootDescriptorTable(2, textureSrvHandleGPU);
 	//Light
 	//dir_->GetCommandList_()->SetGraphicsRootConstantBufferView(3, directionalLightResource->GetGPUVirtualAddress());
-
-	dir_->GetCommandList_()->DrawInstanced(UINT(modelData.vertices.size()), 1, 0, 0);
+	if (isModel == true) {
+		// 描画(DrawCall/ドローコール)
+		dir_->GetCommandList_()->DrawInstanced(UINT(modelData.vertices.size()), 1, 0, 0);
+	}
 
 	ImGui::Begin("Model");
+	ImGui::Checkbox("IsModel", &isModel);
 	ImGui::SliderAngle(".Rotate.y ", &transformObj.rotate.y);
 	ImGui::SliderFloat3("translate", &transformObj.translate.x, -1.0f, 1.0f);
 	ImGui::DragFloat2("UVTransform", &uvTransformObj.translate.x, 0.01f, -10.0f, 10.0f);

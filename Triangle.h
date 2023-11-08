@@ -52,6 +52,7 @@ public:
 	MaterialData LoadMaterialTemplateFile(const std::string& directoryPath, const std::string& filename);
 
 	Matrix4x4* GetwvpData() { return wvpData; }
+	D3D12_GPU_DESCRIPTOR_HANDLE GettextureSrvHandleGPU() { return	textureSrvHandleGPU; }
 
 	Transform transform_ = { {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f} };
 
@@ -151,6 +152,7 @@ private:
 	Microsoft::WRL::ComPtr<ID3D12Resource> wvpResourceObj = nullptr;
 	//Sprite用WVPデータ
 	TransformationMatrix* wvpDataObj = nullptr;
+	bool isModel;
 
 #pragma endregion オブジェクト
 
