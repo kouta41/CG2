@@ -33,7 +33,7 @@ void DirectXCommon::Initialize(WinApp* winApp_) {
 	// 高い順に生成できるか試していく
 	for (size_t i = 0; i < _countof(featureLevels); ++i) {
 		// 採用したアダプタでデバイスを生成
-		hr_ = D3D12CreateDevice(useAdapter_, featureLevels[i], IID_PPV_ARGS(&device_));
+		hr_ = D3D12CreateDevice(useAdapter_.Get(), featureLevels[i], IID_PPV_ARGS(&device_));
 		// 指定した機能レベルでデバイスが生成できたか確認
 		if (SUCCEEDED(hr_)) {
 			// 生成できたのでログ出力を使ってループを抜ける
@@ -91,7 +91,7 @@ void DirectXCommon::Initialize(WinApp* winApp_) {
 	assert(SUCCEEDED(hr_));
 
 	// コマンドリストを生成する
-	hr_ = device_->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, commandAllocator_, nullptr,
+	hr_ = device_->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, commandAllocator_.Get(), nullptr,
 		IID_PPV_ARGS(&commandList_));
 	// コマンドリストの生成がうまくいかなかったので起動できない
 	assert(SUCCEEDED(hr_));
@@ -107,17 +107,17 @@ void DirectXCommon::Initialize(WinApp* winApp_) {
 	swapChainDesc.BufferCount = 2;/// ダブルバッファ
 	swapChainDesc.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD;// モニタに写したら中身を破棄
 	// コマンドキュー、ウインドウハンドル、設定を渡して生成する
-	hr_ = dxgiFactory_->CreateSwapChainForHwnd(commandQueue_, winApp_->Gethwnd(), &swapChainDesc, nullptr, nullptr, reinterpret_cast<IDXGISwapChain1**>(&swapChain_));
+	hr_ = dxgiFactory_->CreateSwapChainForHwnd(commandQueue_.Get(), winApp_->Gethwnd(), &swapChainDesc, nullptr, nullptr, reinterpret_cast<IDXGISwapChain1**>(swapChain_.GetAddressOf()));
 	assert(SUCCEEDED(hr_));
 
 	// RTV用のヒープでディスクリプタの数は2。RTVはShader内で触るものではないので、ShaderVisibleはfalse
-	rtvDescriptorHeap_ = CreateDescriptorHeap(device_, D3D12_DESCRIPTOR_HEAP_TYPE_RTV, 2, false);
+	rtvDescriptorHeap_ = CreateDescriptorHeap(device_.Get(), D3D12_DESCRIPTOR_HEAP_TYPE_RTV, 2, false);
 
 	// SRV用のヒープでディスクリプタの数は128。SRVはShader内で触るものなので、ShaderVisibleはtrue
-	srvDescriptorHeap_ = CreateDescriptorHeap(device_, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, 128, true);
+	srvDescriptorHeap_ = CreateDescriptorHeap(device_.Get(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, 128, true);
 
 	//DSV用のヒープでディスクリプトの数は１。DSVはShader内で触るものではないので、ShaderrVisibleはfalse
-	dsvDescriptorHeap_ = CreateDescriptorHeap(device_, D3D12_DESCRIPTOR_HEAP_TYPE_DSV, 1, false);
+	dsvDescriptorHeap_ = CreateDescriptorHeap(device_.Get(), D3D12_DESCRIPTOR_HEAP_TYPE_DSV, 1, false);
 	
 
 	// SwapChainからResourceを引っ張ってくる
@@ -135,11 +135,11 @@ void DirectXCommon::Initialize(WinApp* winApp_) {
 	// RTVを2つ作るのでディスクリプタを2つ用意
 	// まず1つ目を作る。１つ目は最初のところに作る。作る場所をこちらで指定してあげる必要がある
 	rtvHandles[0] = rtvStartHandle;
-	device_->CreateRenderTargetView(swapChainResources[0], &rtvDesc, rtvHandles[0]);
+	device_->CreateRenderTargetView(swapChainResources[0].Get(), &rtvDesc, rtvHandles[0]);
 	// 2つ目のディスクリプタハンドルを得る(自力で)
 	rtvHandles[1].ptr = rtvHandles[0].ptr + device_->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
 	// 2つ目を作る
-	device_->CreateRenderTargetView(swapChainResources[1], &rtvDesc, rtvHandles[1]);
+	device_->CreateRenderTargetView(swapChainResources[1].Get(), &rtvDesc, rtvHandles[1]);
 
 
 
@@ -169,7 +169,7 @@ void DirectXCommon::Update() {
 	// Noneにしておく
 	barrier.Flags = D3D12_RESOURCE_BARRIER_FLAG_NONE;
 	// バリアを張る対象のリソース。現在のバックバッファに対して行う
-	barrier.Transition.pResource = swapChainResources[backBufferIndex];
+	barrier.Transition.pResource = swapChainResources[backBufferIndex].Get();
 	// 遷移前(現在)のResourceState
 	barrier.Transition.StateBefore = D3D12_RESOURCE_STATE_PRESENT;
 	// 遷移後のResourceState
@@ -187,7 +187,7 @@ void DirectXCommon::Update() {
 	commandList_->ClearRenderTargetView(rtvHandles[backBufferIndex], clearColor, 0, nullptr);
 	commandList_->ClearDepthStencilView(dsvHandle, D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);
 	// 描画用のDescriptorHeapの設定
-	ID3D12DescriptorHeap* descriptorHeaps[] = { srvDescriptorHeap_ };
+	ID3D12DescriptorHeap* descriptorHeaps[] = { srvDescriptorHeap_.Get()};
 	commandList_->SetDescriptorHeaps(1, descriptorHeaps);
 
 
@@ -205,7 +205,7 @@ void DirectXCommon::Close() {
 	hr_ = commandList_->Close();
 	assert(SUCCEEDED(hr_));
 	// GPUにコマンドの実行を行わせる
-	ID3D12CommandList* commandLists[] = { commandList_ };
+	ID3D12CommandList* commandLists[] = { commandList_.Get()};
 	commandQueue_->ExecuteCommandLists(1, commandLists);
 	// GPUとOSに画像の交換を行うよう通知する
 	swapChain_->Present(1, 0);
@@ -213,7 +213,7 @@ void DirectXCommon::Close() {
 	// Fenceの値を更新
 	fenceValue++;
 	// GPUがここまでたどり着いたときに、Fenceの値を指定した値に代入するようにsignalを送る
-	commandQueue_->Signal(fence, fenceValue);
+	commandQueue_->Signal(fence.Get(), fenceValue);
 	// Fenceの値が指定したSignal値にたどりついているか確認する
 			// GetCompletedvalueの初期値はFence作成時に渡した初期値
 	if (fence->GetCompletedValue() < fenceValue) {
@@ -226,44 +226,37 @@ void DirectXCommon::Close() {
 	// 次のフレーム用のコマンドリストを準備
 	hr_ = commandAllocator_->Reset();
 	assert(SUCCEEDED(hr_));
-	hr_ = commandList_->Reset(commandAllocator_, nullptr);
+	hr_ = commandList_->Reset(commandAllocator_.Get(), nullptr);
 	assert(SUCCEEDED(hr_));
 }
 
 void DirectXCommon::Release(WinApp* winApp_) {
 
 	CloseHandle(fenceEvent);
-	fence->Release();
-	rtvDescriptorHeap_->Release();
-	srvDescriptorHeap_->Release();
-	swapChainResources[0]->Release();
-	swapChainResources[1]->Release();
-	swapChain_->Release();
-	commandList_->Release();
-	commandAllocator_->Release();
-	commandQueue_->Release();
-	device_->Release();
-	useAdapter_->Release();
-	dxgiFactory_->Release();
 
 #ifdef _DEBUG
 	winApp_->debugController->Release();
 #endif
 	CloseWindow(winApp_->Gethwnd());
 
-	// リソースリークチェック
-	IDXGIDebug1* debug;
-	if (SUCCEEDED(DXGIGetDebugInterface1(0, IID_PPV_ARGS(&debug)))) {
-		debug->ReportLiveObjects(DXGI_DEBUG_ALL, DXGI_DEBUG_RLO_ALL);
-		debug->ReportLiveObjects(DXGI_DEBUG_APP, DXGI_DEBUG_RLO_ALL);
-		debug->ReportLiveObjects(DXGI_DEBUG_D3D12, DXGI_DEBUG_RLO_ALL);
-		debug->Release();
-	}
+	struct D3DResourceLeakCheker {
+		~D3DResourceLeakCheker() {
+			// リソースリークチェック
+			Microsoft::WRL::ComPtr< IDXGIDebug1> debug;
+			if (SUCCEEDED(DXGIGetDebugInterface1(0, IID_PPV_ARGS(&debug)))) {
+				debug->ReportLiveObjects(DXGI_DEBUG_ALL, DXGI_DEBUG_RLO_ALL);
+				debug->ReportLiveObjects(DXGI_DEBUG_APP, DXGI_DEBUG_RLO_ALL);
+				debug->ReportLiveObjects(DXGI_DEBUG_D3D12, DXGI_DEBUG_RLO_ALL);
+				debug->Release();
+			}
+		}
+
+	};
 
 }
 
 // DescriptorHeap関数
-ID3D12DescriptorHeap* DirectXCommon::CreateDescriptorHeap(ID3D12Device* device, D3D12_DESCRIPTOR_HEAP_TYPE heapType, UINT numDescriptors, bool shaderVisible)
+Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> DirectXCommon::CreateDescriptorHeap(ID3D12Device* device, D3D12_DESCRIPTOR_HEAP_TYPE heapType, UINT numDescriptors, bool shaderVisible)
 {
 	ID3D12DescriptorHeap* descriptorHeap = nullptr;
 	// ディスクリプタヒープの生成

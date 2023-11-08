@@ -11,7 +11,7 @@ void Triangle::Initialize(DirectXCommon* dir_, Vector4* pos,WinApp* window) {
 	Triangle::CreateSphereResoure(dir_);
 
 #pragma region Light
-	directionalLightResource = CreateBufferResource(dir_->GetDevice(),sizeof(DirectionalLight));
+	directionalLightResource = CreateBufferResource(dir_->GetDevice().Get(), sizeof(DirectionalLight));
 	directionalLightResource->Map(0, nullptr, reinterpret_cast<void**>(&directionalLightData));
 	directionalLightData->color = { 1.0f,1.0f,1.0f,1.0f };
 	directionalLightData->direction = { 0.0f,-1.0f,0.0f };
@@ -23,20 +23,20 @@ void Triangle::Initialize(DirectXCommon* dir_, Vector4* pos,WinApp* window) {
 	modelData = LoadObjFile("resources", "axis.obj");
 	DirectX::ScratchImage mipImages2 = LoadTexture(modelData.material.textureFilePath);
 
-	vertexResourceObj = CreateBufferResource(dir_->GetDevice(), sizeof(VertexData) * modelData.vertices.size());
+	vertexResourceObj = CreateBufferResource(dir_->GetDevice().Get(), sizeof(VertexData) * modelData.vertices.size());
 	vertexBufferViewObj.BufferLocation = vertexResource->GetGPUVirtualAddress();
 	vertexBufferViewObj.SizeInBytes = UINT(sizeof(VertexData) * modelData.vertices.size());
 	vertexBufferViewObj.StrideInBytes = sizeof(VertexData);
 	vertexResourceObj->Map(0, nullptr, reinterpret_cast<void**>(&vertexDataObj));
 	std::memcpy(vertexDataObj, modelData.vertices.data(), sizeof(VertexData) * modelData.vertices.size());
 
-	materialResourceObj = CreateBufferResource(dir_->GetDevice(), sizeof(Material));
+	materialResourceObj = CreateBufferResource(dir_->GetDevice().Get(), sizeof(Material));
 	materialResourceObj->Map(0, nullptr, reinterpret_cast<void**>(&materialDataObj));
 	// 白を設定
 	materialDataObj->color = { 1.0f,1.0f,1.0f,1.0f };
 	materialDataObj->uvTransform = MakeIdentity4x4();
 
-	wvpResourceObj= CreateBufferResource(dir_->GetDevice(), sizeof(TransformationMatrix));
+	wvpResourceObj= CreateBufferResource(dir_->GetDevice().Get(), sizeof(TransformationMatrix));
 	// 書き込むためのアドレスを取得
 	wvpResourceObj->Map(0, nullptr, reinterpret_cast<void**>(&wvpDataObj));
 	// 単位行列を書き込んでおく
@@ -205,7 +205,7 @@ void Triangle::DrawOBJ(DirectXCommon* dir_, const Matrix4x4& transformationMatri
 }
 
 void Triangle::Release() {
-	vertexResource->Release();
+	/*vertexResource->Release();
 	wvpResource->Release();
 	textureResource->Release();
 	vertexResourceSprite->Release();
@@ -213,12 +213,12 @@ void Triangle::Release() {
 	vertexResourceSphere->Release();
 	transformationMatrixResourceSphere->Release();
 	materialResourceSphere->Release();
-	directionalLightResource->Release();
+	directionalLightResource->Release();*/
 }
 
 void Triangle::CreateVertexResource(DirectXCommon* dir_, Vector4* pos) {
 	// 頂点用のリソースを作る。今回はcolor1つ分のサイズを用意する
-	vertexResource = CreateBufferResource(dir_->GetDevice(), sizeof(VertexData) * 6);
+	vertexResource = CreateBufferResource(dir_->GetDevice().Get(), sizeof(VertexData) * 6);
 	// 頂点バッファビューを作成する
 
 	// リソースの先頭のアドレスから使う
@@ -257,7 +257,7 @@ void Triangle::CreateVertexResource(DirectXCommon* dir_, Vector4* pos) {
 
 
 	//WVP用のリソースを作る。matrix4x4 一つ分サイズ分を用意する
-	wvpResource = CreateBufferResource(dir_->GetDevice(), sizeof(Matrix4x4));
+	wvpResource = CreateBufferResource(dir_->GetDevice().Get(), sizeof(Matrix4x4));
 	//データを書き込むためのアドレスを取得
 	wvpResource->Map(0, nullptr, reinterpret_cast<void**>(&wvpData));
 
@@ -270,16 +270,16 @@ void Triangle::CreateVertexResource(DirectXCommon* dir_, Vector4* pos) {
 
 
 	//DepthStencilTextureをウィンドウのサイズで作成
-	depthStencilResource = CreateDepthStencilTextureResource(dir_->GetDevice(), window_->GetkClientWidth(), window_->GetkClientHeight());
+	depthStencilResource = CreateDepthStencilTextureResource(dir_->GetDevice().Get(), window_->GetkClientWidth(), window_->GetkClientHeight());
 
 }
 
 void Triangle::Create2DSpriteResource(DirectXCommon* dir_) {
 	//Sprite用の頂点リソースを作る
-	vertexResourceSprite = CreateBufferResource(dir_->GetDevice(), sizeof(VertexData) * 6);
-	materialResourceSprite = CreateBufferResource(dir_->GetDevice(),sizeof(Material)*6);
+	vertexResourceSprite = CreateBufferResource(dir_->GetDevice().Get(), sizeof(VertexData) * 6);
+	materialResourceSprite = CreateBufferResource(dir_->GetDevice().Get(), sizeof(Material) * 6);
 
-	transformationMatrixResourceSprite = CreateBufferResource(dir_->GetDevice(),sizeof(TransformationMatrix));
+	transformationMatrixResourceSprite = CreateBufferResource(dir_->GetDevice().Get(), sizeof(TransformationMatrix));
 	//頂点バッファビューを作成する
 	//リソースの先頭のアドレスから使う
 	vertexBufferViewSprite.BufferLocation = vertexResourceSprite->GetGPUVirtualAddress();
@@ -288,7 +288,7 @@ void Triangle::Create2DSpriteResource(DirectXCommon* dir_) {
 	//1頂点当たりのサイズ
 	vertexBufferViewSprite.StrideInBytes = sizeof(VertexData);
 
-	indexResourceSprite = CreateBufferResource(dir_->GetDevice(),sizeof(uint32_t) *12);
+	indexResourceSprite = CreateBufferResource(dir_->GetDevice().Get(), sizeof(uint32_t) * 12);
 
 	//リソースの先頭のアドレスから使う
 	indexBufferViewSprite.BufferLocation = indexResourceSprite->GetGPUVirtualAddress();
@@ -332,7 +332,7 @@ void Triangle::Create2DSpriteResource(DirectXCommon* dir_) {
 }
 
 void Triangle::CreateSphereResoure(DirectXCommon* dir_) {
-	vertexResourceSphere = CreateBufferResource(dir_->GetDevice(),sizeof(VertexData) * 6 * kSubdivision * kSubdivision);
+	vertexResourceSphere = CreateBufferResource(dir_->GetDevice().Get(), sizeof(VertexData) * 6 * kSubdivision * kSubdivision);
 	//リソースの先頭のアドレス
 	vertexBufferViewSphere.BufferLocation = vertexResourceSphere->GetGPUVirtualAddress();
 	//使用する頂点サイズ
@@ -419,14 +419,14 @@ void Triangle::CreateSphereResoure(DirectXCommon* dir_) {
 	}
 	vertexDataSphere[0].normal = { 0.0f,0.0f,-1.0f };
 
-	materialResourceSphere = CreateBufferResource(dir_->GetDevice(),sizeof(Material));
+	materialResourceSphere = CreateBufferResource(dir_->GetDevice().Get(), sizeof(Material));
 	materialResourceSphere->Map(0, nullptr, reinterpret_cast<void**>(&materialDataSphere));
 
 	//ライティングをする
 	materialDataSphere->enableLighting = true;
 	materialDataSphere->color = { 1.0f,1.0f,1.0f,1.0f};
 
-	transformationMatrixResourceSphere = CreateBufferResource(dir_->GetDevice(),sizeof(Matrix4x4));
+	transformationMatrixResourceSphere = CreateBufferResource(dir_->GetDevice().Get(), sizeof(Matrix4x4));
 	
 	
 
@@ -440,8 +440,8 @@ void Triangle::LoadTexture(DirectXCommon* dir_) {
 	// Textureを読んで転送する(1枚目)
 	DirectX::ScratchImage mipImages = LoadTexture("resources/uvChecker.png");
 	const DirectX::TexMetadata& metadata = mipImages.GetMetadata();
-	textureResource = CreateTextureResource(dir_->GetDevice(), metadata);
-	UploadTextureData(textureResource, mipImages);
+	textureResource = CreateTextureResource(dir_->GetDevice().Get(), metadata);
+	UploadTextureData(textureResource.Get(), mipImages);
 
 	// metaDataを基にSRVの設定
 	D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc{};
@@ -459,7 +459,7 @@ void Triangle::LoadTexture(DirectXCommon* dir_) {
 	textureSrvHandleGPU.ptr += dir_->GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 
 	// SRVの生成
-	dir_->GetDevice()->CreateShaderResourceView(textureResource, &srvDesc, textureSrvHandleCPU);
+	dir_->GetDevice()->CreateShaderResourceView(textureResource.Get(), &srvDesc, textureSrvHandleCPU);
 
 	//DSVの設定
 	dsvDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
@@ -479,7 +479,7 @@ void Triangle::LoadTexture(DirectXCommon* dir_) {
 	//二枚目のTextureを読んで転送する
 	DirectX::ScratchImage mipImages2 = LoadTexture("resources/monsterBall.png");
 	const DirectX::TexMetadata& metadata2 = mipImages2.GetMetadata();
-	ID3D12Resource* textureResoure2 = CreateTextureResource(dir_->GetDevice(), metadata2);
+	ID3D12Resource* textureResoure2 = CreateTextureResource(dir_->GetDevice().Get(), metadata2);
 	UploadTextureData(textureResoure2, mipImages2);
 
 	//meataDataを基にSRVの設定
@@ -581,7 +581,7 @@ ModelData Triangle::LoadObjFile(const std::string& directoryPath, const std::str
 }
 void Triangle::CreateMaterialResource(DirectXCommon* dir_) {
 	//// マテリアル用のリソースを作る。今回はcolor1つ分のサイズを用意する
-	materialResource = CreateBufferResource(dir_->GetDevice(), sizeof(Vector4));
+	materialResource = CreateBufferResource(dir_->GetDevice().Get(), sizeof(Vector4));
 
 	// 頂点バッファビューを作成する
 
@@ -599,7 +599,7 @@ void Triangle::CreateMaterialResource(DirectXCommon* dir_) {
 
 void Triangle::CreateWVPResource(DirectXCommon* dir_) {
 	// WVP用のリソースを作る。Matrix4x4 1つ分のサイズを用意する
-	wvpResource = CreateBufferResource(dir_->GetDevice(), sizeof(Matrix4x4));
+	wvpResource = CreateBufferResource(dir_->GetDevice().Get(), sizeof(Matrix4x4));
 	// データを書き込む
 	// 書き込むためのアドレスを取得
 	wvpResource->Map(0, nullptr, reinterpret_cast<void**>(&wvpData));

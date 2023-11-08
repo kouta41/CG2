@@ -68,7 +68,7 @@ private:
 
 #pragma region TriAngle
 	//バーテックスリソース
-	ID3D12Resource* vertexResource = nullptr;
+	Microsoft::WRL::ComPtr<ID3D12Resource> vertexResource = nullptr;
 	//頂点データ
 	VertexData* vertexData = nullptr;
 	//バーテックスバッファビュー
@@ -76,36 +76,36 @@ private:
 	D3D12_VERTEX_BUFFER_VIEW materialBufferView{};
 
 	//マテリアルリソース
-	ID3D12Resource* materialResource = nullptr;
+	Microsoft::WRL::ComPtr<ID3D12Resource> materialResource = nullptr;
 	//色データ
 	//Vector4* materialData = nullptr;
 	Material* materialData = nullptr;
 
 	//WVPリソース
-	ID3D12Resource* wvpResource = nullptr;
+	Microsoft::WRL::ComPtr<ID3D12Resource> wvpResource = nullptr;
 	//WVPデータ
 	Matrix4x4* wvpData = nullptr;
 	//テクスチャデータ
-	ID3D12Resource* textureResource = nullptr;
+	Microsoft::WRL::ComPtr<ID3D12Resource> textureResource = nullptr;
 #pragma endregion 三角形
 
 #pragma region sprite
 	//Sprite用頂点データ
-	ID3D12Resource* vertexResourceSprite = nullptr;
+	Microsoft::WRL::ComPtr<ID3D12Resource> vertexResourceSprite = nullptr;
 	//Sprite用頂点データ
 	VertexData* vertexDataSprite = nullptr;
 	//Sprite用バーテックスバッファビュー
 	D3D12_VERTEX_BUFFER_VIEW vertexBufferViewSprite{};
 	//マテリアルリソース
-	ID3D12Resource* materialResourceSprite = nullptr;
+	Microsoft::WRL::ComPtr<ID3D12Resource> materialResourceSprite = nullptr;
 	//色データ
 	Material* materialDataSprite = nullptr;
 	//Sprite用WVPリソース
-	ID3D12Resource* transformationMatrixResourceSprite = nullptr;
+	Microsoft::WRL::ComPtr<ID3D12Resource> transformationMatrixResourceSprite = nullptr;
 	//Sprite用WVPデータ
 	TransformationMatrix* transformationMatrixDataSprite = nullptr;
 	//Index用
-	ID3D12Resource* indexResourceSprite = nullptr;
+	Microsoft::WRL::ComPtr<ID3D12Resource> indexResourceSprite = nullptr;
 	//Index用頂点データ
 	uint32_t* indexDataSprite = nullptr;
 	//Index用バッファビュー
@@ -116,39 +116,39 @@ private:
 #pragma region Sphere
 	const int kSubdivision = 16;
 	//Sphere用頂点データ
-	ID3D12Resource* vertexResourceSphere = nullptr;
+	Microsoft::WRL::ComPtr<ID3D12Resource> vertexResourceSphere = nullptr;
 	//Sphere用頂点データ
 	VertexData* vertexDataSphere = nullptr;
 	//Sphere用バーテックスバッファビュー
 	D3D12_VERTEX_BUFFER_VIEW vertexBufferViewSphere{};
 	//マテリアルリソース
-	ID3D12Resource* materialResourceSphere = nullptr;
+	Microsoft::WRL::ComPtr<ID3D12Resource> materialResourceSphere = nullptr;
 	//色データ
 	Material* materialDataSphere = nullptr;
 	//Sphere用WVPリソース
-	ID3D12Resource* transformationMatrixResourceSphere = nullptr;
+	Microsoft::WRL::ComPtr<ID3D12Resource> transformationMatrixResourceSphere = nullptr;
 	//Sphere用WVPデータ
 	TransformationMatrix* transformationMatrixDataSphere = nullptr;
 #pragma endregion 球
 
 #pragma region Light
-	ID3D12Resource* directionalLightResource = nullptr;
+	Microsoft::WRL::ComPtr<ID3D12Resource> directionalLightResource = nullptr;
 	DirectionalLight* directionalLightData = nullptr;
 #pragma endregion ライト
 
 #pragma region OBJ
 
 	ModelData modelData;
-	ID3D12Resource* vertexResourceObj = nullptr;
+	Microsoft::WRL::ComPtr<ID3D12Resource> vertexResourceObj = nullptr;
 	//Obj用頂点データ
 	VertexData* vertexDataObj = nullptr;
 	D3D12_VERTEX_BUFFER_VIEW vertexBufferViewObj{};
 	//マテリアルリソース
-	ID3D12Resource* materialResourceObj = nullptr;
+	Microsoft::WRL::ComPtr<ID3D12Resource> materialResourceObj = nullptr;
 	//色データ
 	Material* materialDataObj = nullptr;
 	//Sprite用WVPリソース
-	ID3D12Resource* wvpResourceObj = nullptr;
+	Microsoft::WRL::ComPtr<ID3D12Resource> wvpResourceObj = nullptr;
 	//Sprite用WVPデータ
 	TransformationMatrix* wvpDataObj = nullptr;
 
