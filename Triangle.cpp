@@ -205,15 +205,7 @@ void Triangle::DrawOBJ(DirectXCommon* dir_, const Matrix4x4& transformationMatri
 }
 
 void Triangle::Release() {
-	/*vertexResource->Release();
-	wvpResource->Release();
-	textureResource->Release();
-	vertexResourceSprite->Release();
-	transformationMatrixResourceSprite->Release();
-	vertexResourceSphere->Release();
-	transformationMatrixResourceSphere->Release();
-	materialResourceSphere->Release();
-	directionalLightResource->Release();*/
+	
 }
 
 void Triangle::CreateVertexResource(DirectXCommon* dir_, Vector4* pos) {
