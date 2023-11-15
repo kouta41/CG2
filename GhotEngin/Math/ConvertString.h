@@ -7,6 +7,7 @@
 #include <cassert>
 #pragma comment(lib,"dxcompiler.lib")
 
+
 std::string ConvertString(const std::wstring& str);
 std::wstring ConvertString(const std::string& str);
 

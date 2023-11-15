@@ -8,6 +8,8 @@
 #include "ImguiManege.h"
 #include "Camera.h"
 #include "Model.h"
+#include"GhotEngin/Math/Vector4.h"
+
 
 // WIndowsアプリでのエントリーポイント(main関数) 
 int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {

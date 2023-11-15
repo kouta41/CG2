@@ -52,7 +52,7 @@
       <LanguageStandard>stdcpp20</LanguageStandard>
       <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
       <TreatWarningAsError>true</TreatWarningAsError>
-      <AdditionalIncludeDirectories>$(ProjectDir)\externals\imgui\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)GhotEngin\Math\;$(ProjectDir)GhotEngin\ViewProjection\;$(ProjectDir)externals\imgui\;$(ProjectDir)GhotEngin\Base\DX12;%(AdditionalIncludeDirectories);$(ProjectDir)GhotEngin\Base\DX12;$(ProjectDir)GhotEngin\Base\WinApp;$(ProjectDir)GhotEngin\Base\DX12;$(ProjectDir)GhotEngin\Math;$(ProjectDir)externals\DirectXTex\DirectXTex</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -76,7 +76,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
       <LanguageStandard>stdcpp20</LanguageStandard>
       <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
       <TreatWarningAsError>true</TreatWarningAsError>
-      <AdditionalIncludeDirectories>$(ProjectDir)\externals\imgui\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)\externals\imgui\;%(AdditionalIncludeDirectories);$(ProjectDir)GhotEngin\Base\DX12;$(ProjectDir)GhotEngin\Base\WinApp;$(ProjectDir)GhotEngin\Base\DX12;$(ProjectDir)GhotEngin\Math;$(ProjectDir)externals\DirectXTex\DirectXTex</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -93,8 +93,8 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Camera.cpp" />
-    <ClCompile Include="ConvertString.cpp" />
-    <ClCompile Include="DirectX12.cpp" />
+    <ClCompile Include="GhotEngin\Math\ConvertString.cpp" />
+    <ClCompile Include="GhotEngin\Base\DX12\DirectX12.cpp" />
     <ClCompile Include="externals\imgui\imgui.cpp" />
     <ClCompile Include="externals\imgui\imgui_demo.cpp" />
     <ClCompile Include="externals\imgui\imgui_draw.cpp" />
@@ -104,17 +104,18 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="externals\imgui\imgui_widgets.cpp" />
     <ClCompile Include="ImguiManeger.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="GhotEngin\Math\Mathfunction.cpp" />
     <ClCompile Include="Mesh.cpp" />
     <ClCompile Include="Model.cpp" />
     <ClCompile Include="Triangle.cpp" />
     <ClCompile Include="GhotEngin\Math\Utility.cpp" />
     <ClCompile Include="GhotEngin\ViewProjection\ViewProjection.cpp" />
-    <ClCompile Include="WinApp.cpp" />
+    <ClCompile Include="GhotEngin\Base\WinApp\WinApp.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Camera.h" />
-    <ClInclude Include="ConvertString.h" />
-    <ClInclude Include="DirectX12.h" />
+    <ClInclude Include="GhotEngin\Math\ConvertString.h" />
+    <ClInclude Include="GhotEngin\Base\DX12\DirectX12.h" />
     <ClInclude Include="externals\imgui\imconfig.h" />
     <ClInclude Include="externals\imgui\imgui.h" />
     <ClInclude Include="externals\imgui\imgui_impl_dx12.h" />
@@ -123,13 +124,19 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="externals\imgui\imstb_rectpack.h" />
     <ClInclude Include="externals\imgui\imstb_textedit.h" />
     <ClInclude Include="externals\imgui\imstb_truetype.h" />
+    <ClInclude Include="GhotEngin\Math\Matrix3x3.h" />
+    <ClInclude Include="GhotEngin\Math\Matrix4x4.h" />
+    <ClInclude Include="GhotEngin\Math\Vector2.h" />
+    <ClInclude Include="GhotEngin\Math\Vector3.h" />
+    <ClInclude Include="GhotEngin\Math\Vector4.h" />
     <ClInclude Include="ImguiManege.h" />
+    <ClInclude Include="GhotEngin\Math\Mathfunction.h" />
     <ClInclude Include="Mesh.h" />
     <ClInclude Include="Model.h" />
     <ClInclude Include="Triangle.h" />
     <ClInclude Include="GhotEngin\Math\Utility.h" />
     <ClInclude Include="GhotEngin\ViewProjection\ViewProjection.h" />
-    <ClInclude Include="WinApp.h" />
+    <ClInclude Include="GhotEngin\Base\WinApp\WinApp.h" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Object3d.PS.hlsl">
