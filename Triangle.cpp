@@ -134,7 +134,6 @@ void Triangle::DrawSphere(DirectXCommon* dir_) {
 
 	dir_->GetCommandList_()->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	//色用のCBufferの場所を特定
-//	dir_->GetCommandList_()->SetGraphicsRootConstantBufferView(0, materialResource->GetGPUVirtualAddress());
 	dir_->GetCommandList_()->SetGraphicsRootConstantBufferView(0, materialResourceSphere->GetGPUVirtualAddress());
 
 	//頂点
@@ -576,6 +575,7 @@ ModelData Triangle::LoadObjFile(const std::string& directoryPath, const std::str
 	}
 	return modelData;
 }
+
 void Triangle::CreateMaterialResource(DirectXCommon* dir_) {
 	//// マテリアル用のリソースを作る。今回はcolor1つ分のサイズを用意する
 	materialResource = CreateBufferResource(dir_->GetDevice().Get(), sizeof(Vector4));
@@ -730,6 +730,7 @@ ID3D12Resource* Triangle::CreateDepthStencilTextureResource(ID3D12Device* device
 	return resource;
 
 }
+
 DirectX::ScratchImage Triangle::LoadTexture(const std::string& filePath) {
 
 	// テクスチャファイルを読んでプログラムで扱えるようにする

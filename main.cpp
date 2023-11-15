@@ -80,6 +80,8 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			imgui->Update();
 			directX->Update();
 			mesh->Update(directX);
+
+
 			model->Update(*camera->GettransformationMatrixData());
 
 			
@@ -102,12 +104,12 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 			triangle[0]->DrawOBJ(directX, *camera->GettransformationMatrixData());
 			
-			model->Draw(directX, triangle[0]);
-			ImGui::Begin("vertexData");
-			ImGui::SliderFloat3("vertexData", &triangle[0]->transform_.translate.x, -1.0f, 1.0f);
-			ImGui::SliderFloat3("vertexData1", &triangle[1]->transform_.translate.x, -1.0f, 1.0f);
+		//	model->Draw(directX, triangle[0]);
+		//	ImGui::Begin("vertexData");
+		//	ImGui::SliderFloat3("vertexData", &triangle[0]->transform_.translate.x, -1.0f, 1.0f);
+		//	ImGui::SliderFloat3("vertexData1", &triangle[1]->transform_.translate.x, -1.0f, 1.0f);
 
-			ImGui::End();
+		//	ImGui::End();
 			/*ImGui::Begin("Mesh Color");
 			ImGui::ColorEdit3("Mesh Color", &triangle[0]->GetmaterialData()->x);
 			ImGui::End();
