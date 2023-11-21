@@ -1,14 +1,16 @@
-#include <Windows.h>
-#include <cstdint>
-#include <d3d12.h>
 #include "WinApp.h"
-#include "DirectX12.h"
-#include "Utility.h"
-#include "externals/imgui/imgui.h"
-#include "externals/imgui/imgui_impl_dx12.h"
-#include "externals/imgui/imgui_impl_win32.h"
+#include <string>
 
-extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPram);
+
+WinApp* WinApp::GetInstance()
+{
+	static WinApp instance;
+	return &instance;
+}
+
+WinApp::~WinApp()
+{
+}
 
 // ウィンドウプロシージャ
 LRESULT WinApp::WindowProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam) {
@@ -44,7 +46,7 @@ WinApp::WinApp(const wchar_t* title) {
 	RegisterClass(&wc);
 
 	// ウインドウサイズを表す構造体にクライアント領域を入れる
-	RECT wrc = { 0, 0, kClientWidth, kClientHeight };
+	RECT wrc = { 0, 0, kWindowWidth, kWindowHeight };
 
 	// クライアント領域を元に実際のサイズにwrcを変更してもらう
 	AdjustWindowRect(&wrc, WS_OVERLAPPEDWINDOW, false);
@@ -77,3 +79,5 @@ WinApp::WinApp(const wchar_t* title) {
 	// ウインドウを表示する
 	ShowWindow(hwnd, SW_SHOW);
 }
+
+

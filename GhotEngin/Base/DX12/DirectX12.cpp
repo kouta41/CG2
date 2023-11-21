@@ -1,5 +1,11 @@
 #include "DirectX12.h"
 
+DirectXCommon* DirectXCommon::GetInstance()
+{
+	static DirectXCommon instance;
+	return &instance;
+}
+
 void DirectXCommon::Initialize(WinApp* winApp_) {
 
 	// DXGIファクトリーの生成

@@ -11,7 +11,7 @@
 #include <format>
 #include <cstdint>
 #include "WinApp.h"
-#include "ConvertString.h"
+#include "StringUtility.h"
 #include "Utility.h"
 
 #pragma comment(lib, "d3d12.lib")
@@ -20,6 +20,9 @@
 
 class DirectXCommon {
 public:
+
+	static DirectXCommon* GetInstance();
+
 	// Default Methods
 	void Initialize(WinApp* winApp_);
 	void Update();
@@ -38,12 +41,10 @@ public:
 
 	// Accessor
 	ID3D12GraphicsCommandList* GetCommandList_() { return commandList_.Get(); }
-	Microsoft::WRL::ComPtr<ID3D12Device> GetDevice() { return device_; }
+	Microsoft::WRL::ComPtr<ID3D12Device> GetDevice() { return device_.Get(); }
 	DXGI_SWAP_CHAIN_DESC1 GetswapChainDesc() { return swapChainDesc; }
-	D3D12_RENDER_TARGET_VIEW_DESC GetrtvDesc() { return rtvDesc; }
 	ID3D12DescriptorHeap* GetsrvDescriptorHeap_() { return srvDescriptorHeap_.Get(); }
-	ID3D12DescriptorHeap* GetdsvDescriptorHeap_() { return dsvDescriptorHeap_.Get(); }
-	ID3D12DescriptorHeap* GetrtvDescriptorHeap_() { return 	rtvDescriptorHeap_.Get(); }
+
 
 
 private:

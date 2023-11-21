@@ -24,7 +24,7 @@
     <ClCompile Include="GhotEngin\Base\WinApp\WinApp.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="GhotEngin\Math\ConvertString.cpp">
+    <ClCompile Include="GhotEngin\Utility\StringUtility.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="GhotEngin\Base\DX12\DirectX12.cpp">
@@ -75,6 +75,15 @@
     <ClCompile Include="GhotEngin\Math\Mathfunction.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
+    <ClCompile Include="GhotEngin\CreateResource\CreateResource.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="GhotEngin\GtaphicsPipeline\GraphicsPipeline.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="GhotEngin\Utility\ShaderCompile.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Object3d.PS.hlsl" />
@@ -84,7 +93,7 @@
     <ClInclude Include="GhotEngin\Base\WinApp\WinApp.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="GhotEngin\Math\ConvertString.h">
+    <ClInclude Include="GhotEngin\Utility\StringUtility.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="GhotEngin\Base\DX12\DirectX12.h">
@@ -151,6 +160,15 @@
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="GhotEngin\Math\Mathfunction.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="GhotEngin\CreateResource\CreateResource.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="GhotEngin\GtaphicsPipeline\GraphicsPipeline.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="GhotEngin\Utility\ShaderCompile.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
   </ItemGroup>

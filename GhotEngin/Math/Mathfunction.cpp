@@ -317,4 +317,12 @@ Matrix4x4 Inverse(const Matrix4x4& m) {
 	return m4;
 }
 
+Matrix4x4 MakeIdentityMatrix()
+{
+	static const Matrix4x4 result{ 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f,
+		0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f };
+
+	return result;
+}
+
 

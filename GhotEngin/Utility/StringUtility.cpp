@@ -1,4 +1,4 @@
-#include"ConvertString.h"
+#include "StringUtility.h"
 
 std::wstring ConvertString(const std::string& str)
 {
@@ -35,4 +35,11 @@ std::string ConvertString(const std::wstring& str)
 }
 
 
+// 出力ウィンドウに文字を出す関数
+void Log(const std::string& message) {
+    OutputDebugStringA(message.c_str());
+}
 
+void Log(const std::wstring& message) {
+    OutputDebugStringA(ConvertString(message).c_str());
+}
