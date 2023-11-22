@@ -12,7 +12,6 @@
 #include <cstdint>
 #include "WinApp.h"
 #include "StringUtility.h"
-#include "Utility.h"
 
 #pragma comment(lib, "d3d12.lib")
 #pragma comment(lib, "dxgi.lib")
@@ -23,24 +22,52 @@ public:
 
 	static DirectXCommon* GetInstance();
 
-	// Default Methods
-	void Initialize(WinApp* winApp_);
-	void Update();
-	// void Draw(); //not use
-	void Release(WinApp* winApp_);
+
+	/// <summary>
+	/// 初期化
+	/// </summary>
+	void Initialize(WinApp* win);
+
+	/// <summary>
+	/// 描画前
+	/// </summary>
+	void PreDraw();
+
+	/// <summary>
+	/// 描画後
+	/// </summary>
+	void PostDraw();
 
 
-	// User Methods
-	void Fence();
-	void Close();
+	// DXGI初期化
+	void InitializeDxgi();
 
+	// コマンド
+	void InitializeCommand();
 
+	// スワップチェーン
+	void CreateSwapChain();
+
+	// descriptorheap生成
+	Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> CreateDescriptorHeap(D3D12_DESCRIPTOR_HEAP_TYPE type, UINT numDescriptors, bool shaderVisible);
+
+	// RTV,SRV作成
+	void CreateRenderTargetView();
+
+	// fence作成
+	void CreateFence();
+
+	// 深度バッファのクリア
+	void ClearDepthBuffer();
+
+	/// 深度バッファ生成
+	void CreateDepthBuffer();
 	
 
 	Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> CreateDescriptorHeap(ID3D12Device* device, D3D12_DESCRIPTOR_HEAP_TYPE heapType, UINT numDescriptors, bool shaderVisible);
 
 	// Accessor
-	ID3D12GraphicsCommandList* GetCommandList_() { return commandList_.Get(); }
+	static ID3D12GraphicsCommandList* GetCommandList_() { return commandList_.Get(); }
 	Microsoft::WRL::ComPtr<ID3D12Device> GetDevice() { return device_.Get(); }
 	DXGI_SWAP_CHAIN_DESC1 GetswapChainDesc() { return swapChainDesc; }
 	ID3D12DescriptorHeap* GetsrvDescriptorHeap_() { return srvDescriptorHeap_.Get(); }
@@ -49,28 +76,31 @@ public:
 
 private:
 
-	WinApp* window_;
+	WinApp* winApp_;
 
-	Microsoft::WRL::ComPtr<IDXGIFactory7> dxgiFactory_ = nullptr;
-	Microsoft::WRL::ComPtr<ID3D12Device> device_ = nullptr;
-	Microsoft::WRL::ComPtr<IDXGIAdapter4> useAdapter_ = nullptr;
-	Microsoft::WRL::ComPtr<ID3D12CommandQueue> commandQueue_ = nullptr;
-	Microsoft::WRL::ComPtr<ID3D12CommandAllocator> commandAllocator_ = nullptr;
-	Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList> commandList_ = nullptr;
-	Microsoft::WRL::ComPtr<IDXGISwapChain4> swapChain_ = nullptr;
+	// DirectX3D関連
+	Microsoft::WRL::ComPtr<IDXGIFactory7> dxgiFactory_;
+	Microsoft::WRL::ComPtr<ID3D12Device> device_;
+	static Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList> commandList_;
+	Microsoft::WRL::ComPtr<ID3D12CommandAllocator> commandAllocator_;
+	Microsoft::WRL::ComPtr<ID3D12CommandQueue> commandQueue_;
+	Microsoft::WRL::ComPtr<IDXGISwapChain4> swapChain_;
+	Microsoft::WRL::ComPtr<ID3D12Resource> swapChainResources[2];
 	DXGI_SWAP_CHAIN_DESC1 swapChainDesc{};
+	Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> rtvHeap_;
+	Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> srvHeap_;
+	Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> dsvHeap_;
+	Microsoft::WRL::ComPtr<ID3D12Resource> depthBuffer_;
+	Microsoft::WRL::ComPtr<ID3D12Fence> fence_;
+	UINT64 fenceVal_ = 0;
+	HANDLE fenceEvent_;
 	D3D12_RESOURCE_BARRIER barrier{};
-	Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> rtvDescriptorHeap_ = nullptr;
-	Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> srvDescriptorHeap_ = nullptr;
-	Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> dsvDescriptorHeap_ = nullptr;
-	D3D12_CPU_DESCRIPTOR_HANDLE rtvHandles[2];
-	D3D12_CPU_DESCRIPTOR_HANDLE dsvHandle;
-	D3D12_RENDER_TARGET_VIEW_DESC rtvDesc{};
-	Microsoft::WRL::ComPtr<ID3D12Resource> swapChainResources[2] = { nullptr };
-	Microsoft::WRL::ComPtr<ID3D12Fence> fence = nullptr;
-	uint64_t fenceValue = 0;
-	HANDLE fenceEvent = 0;
 	HRESULT hr_;
-
+	D3D12_CPU_DESCRIPTOR_HANDLE rtvHandles[2];
+	// ビューポート
+	D3D12_VIEWPORT viewport{};
+	// シザー矩形
+	D3D12_RECT scissorRect{};
+	UINT backBufferIndex_;
 
 };

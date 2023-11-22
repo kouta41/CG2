@@ -43,6 +43,12 @@
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <IncludePath>$(ProjectDir)\externals\DirectXTex;$(IncludePath)</IncludePath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <IncludePath>$(ProjectDir)\externals\DirectXTex;$(IncludePath)</IncludePath>
+  </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
@@ -52,7 +58,7 @@
       <LanguageStandard>stdcpp20</LanguageStandard>
       <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
       <TreatWarningAsError>true</TreatWarningAsError>
-      <AdditionalIncludeDirectories>$(ProjectDir)GhotEngin\ViewProjection;$(ProjectDir)GhotEngin\Math;$(ProjectDir)GhotEngin\Base\DX12;$(ProjectDir)GhotEngin\Base\WinApp;$(ProjectDir)externals\imgui;$(ProjectDir)GhotEngin\Utility;$(ProjectDir)GhotEngin\CreateResource;$(ProjectDir)GhotEngin\GraphicsPipeline;$(ProjectDir)GhotEngin\Input;$(ProjectDir)GhotEngin\ShaderFile;$(ProjectDir)GhotEngin\Transform;$(ProjectDir)GhotEngin;$(ProjectDir)GhotEngin\Utility\ImGuiManager;$(ProjectDir)GhotEngin\TextureManager;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)GhotEngin\ViewProjection;$(ProjectDir)GhotEngin\Math;$(ProjectDir)GhotEngin\Base\DX12;$(ProjectDir)GhotEngin\Base\WinApp;$(ProjectDir)externals\imgui;$(ProjectDir)GhotEngin\Utility;$(ProjectDir)GhotEngin\CreateResource;$(ProjectDir)GhotEngin\GraphicsPipeline;$(ProjectDir)GhotEngin\Input;$(ProjectDir)GhotEngin\ShaderFile;$(ProjectDir)GhotEngin\Transform;$(ProjectDir)GhotEngin;$(ProjectDir)GhotEngin\Utility\ImGuiManager;$(ProjectDir)GhotEngin\TextureManager;$(ProjectDir)GhotEngin\Model;$(ProjectDir)GhotEngin\Sprite;$(ProjectDir)Project\GameScenen;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -76,7 +82,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
       <LanguageStandard>stdcpp20</LanguageStandard>
       <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
       <TreatWarningAsError>true</TreatWarningAsError>
-      <AdditionalIncludeDirectories>$(ProjectDir)GhotEngin\ViewProjection;$(ProjectDir)GhotEngin\Math;$(ProjectDir)GhotEngin\Base\DX12;$(ProjectDir)GhotEngin\Base\WinApp;$(ProjectDir)externals\imgui;$(ProjectDir)GhotEngin\Utility;$(ProjectDir)GhotEngin\CreateResource;$(ProjectDir)GhotEngin\GraphicsPipeline;$(ProjectDir)GhotEngin\Input;$(ProjectDir)GhotEngin\ShaderFile;$(ProjectDir)GhotEngin\Transform;$(ProjectDir)GhotEngin;$(ProjectDir)GhotEngin\Utility\ImGuiManager;$(ProjectDir)GhotEngin\TextureManager;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)GhotEngin\ViewProjection;$(ProjectDir)GhotEngin\Math;$(ProjectDir)GhotEngin\Base\DX12;$(ProjectDir)GhotEngin\Base\WinApp;$(ProjectDir)externals\imgui;$(ProjectDir)GhotEngin\Utility;$(ProjectDir)GhotEngin\CreateResource;$(ProjectDir)GhotEngin\GraphicsPipeline;$(ProjectDir)GhotEngin\Input;$(ProjectDir)GhotEngin\ShaderFile;$(ProjectDir)GhotEngin\Transform;$(ProjectDir)GhotEngin;$(ProjectDir)GhotEngin\Utility\ImGuiManager;$(ProjectDir)GhotEngin\TextureManager;$(ProjectDir)GhotEngin\Model;$(ProjectDir)GhotEngin\Sprite;$(ProjectDir)Project\GameScenen;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -92,7 +98,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Project\GameScenen\GameScenen.cpp" />
+    <ClCompile Include="Project\GameScenen\GameScene.cpp" />
     <ClCompile Include="GhotEngin\GhotEngin.cpp" />
     <ClCompile Include="GhotEngin\CreateResource\CreateResource.cpp" />
     <ClCompile Include="GhotEngin\Utility\StringUtility.cpp" />
@@ -105,7 +111,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="externals\imgui\imgui_tables.cpp" />
     <ClCompile Include="externals\imgui\imgui_widgets.cpp" />
     <ClCompile Include="GhotEngin\GraphicsPipeline\GraphicsPipeline.cpp" />
-    <ClCompile Include="GhotEngin\Utility\ImGuiManager\ImguiManeger.cpp" />
+    <ClCompile Include="GhotEngin\Utility\ImGuiManager\ImguiManager.cpp" />
     <ClCompile Include="GhotEngin\Input\Input.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="GhotEngin\Math\Mathfunction.cpp" />
@@ -119,7 +125,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="GhotEngin\TextureManager\TextureManager.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Project\GameScenen\GameScenen.h" />
+    <ClInclude Include="Project\GameScenen\GameScene.h" />
     <ClInclude Include="GhotEngin\GhotEngin.h" />
     <ClInclude Include="GhotEngin\CreateResource\CreateResource.h" />
     <ClInclude Include="GhotEngin\Utility\StringUtility.h" />
@@ -138,7 +144,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="GhotEngin\Math\Vector3.h" />
     <ClInclude Include="GhotEngin\Math\Vector4.h" />
     <ClInclude Include="GhotEngin\GraphicsPipeline\GraphicsPipeline.h" />
-    <ClInclude Include="GhotEngin\Utility\ImGuiManager\ImguiManege.h" />
+    <ClInclude Include="GhotEngin\Utility\ImGuiManager\ImguiManager.h" />
     <ClInclude Include="GhotEngin\Math\Mathfunction.h" />
     <ClInclude Include="GhotEngin\Input\Input.h" />
     <ClInclude Include="GhotEngin\Model\Model.h" />
@@ -177,6 +183,11 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
   </ItemGroup>
   <ItemGroup>
     <None Include="GhotEngin\ShaderFile\Object3d.hlsli" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="externals\DirectXTex\DirectXTex_Desktop_2022_Win10.vcxproj">
+      <Project>{371b9fa9-4c90-4ac6-a123-aced756d6c77}</Project>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

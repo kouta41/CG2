@@ -54,7 +54,7 @@
     <ClCompile Include="externals\imgui\imgui_widgets.cpp">
       <Filter>imgui</Filter>
     </ClCompile>
-    <ClCompile Include="GhotEngin\Utility\ImGuiManager\ImguiManeger.cpp">
+    <ClCompile Include="GhotEngin\Utility\ImGuiManager\ImguiManager.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="GhotEngin\Model\Model.cpp">
@@ -84,7 +84,7 @@
     <ClCompile Include="GhotEngin\GhotEngin.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="Project\GameScenen\GameScenen.cpp">
+    <ClCompile Include="Project\GameScenen\GameScene.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="GhotEngin\Sprite\Sprite.cpp">
@@ -137,7 +137,7 @@
     <ClInclude Include="externals\imgui\imstb_truetype.h">
       <Filter>imgui</Filter>
     </ClInclude>
-    <ClInclude Include="GhotEngin\Utility\ImGuiManager\ImguiManege.h">
+    <ClInclude Include="GhotEngin\Utility\ImGuiManager\ImguiManager.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="GhotEngin\Model\Model.h">
@@ -182,7 +182,7 @@
     <ClInclude Include="GhotEngin\GhotEngin.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="Project\GameScenen\GameScenen.h">
+    <ClInclude Include="Project\GameScenen\GameScene.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="GhotEngin\Sprite\Sprite.h">

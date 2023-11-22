@@ -1,15 +1,10 @@
 #include "WinApp.h"
 #include <string>
+#include <imgui_impl_win32.cpp>
 
-
-WinApp* WinApp::GetInstance()
-{
+WinApp* WinApp::GetInstance() {
 	static WinApp instance;
 	return &instance;
-}
-
-WinApp::~WinApp()
-{
 }
 
 // ウィンドウプロシージャ
@@ -21,63 +16,75 @@ LRESULT WinApp::WindowProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam) {
 
 	// メッセージに応じてゲーム固有の処理を行う
 	switch (msg) {
-		// ウインドウが破棄された
+		// ウィンドウが破棄された	
 	case WM_DESTROY:
-		// osに対して、アプリの終了を伝える
+		// OSに対して、アプリの終了を伝える
 		PostQuitMessage(0);
 		return 0;
 	}
+
+
 	// 標準のメッセージ処理を行う
 	return DefWindowProc(hwnd, msg, wparam, lparam);
 }
 
-WinApp::WinApp(const wchar_t* title) {
+// メッセージ処理
+bool WinApp::ProcessMessage() {
+	MSG msg{}; // メッセージ
 
-	// ウィンドウプロシージャ
-	wc.lpfnWndProc = WindowProc;
-	// ウインドウクラス名
-	wc.lpszClassName = title;
-	// インスタンスハンドル
-	wc.hInstance = GetModuleHandle(nullptr);
-	// カーソル
-	wc.hCursor = LoadCursor(nullptr, IDC_ARROW);
-
-	// ウインドウクラスを登録する
-	RegisterClass(&wc);
-
-	// ウインドウサイズを表す構造体にクライアント領域を入れる
-	RECT wrc = { 0, 0, kWindowWidth, kWindowHeight };
-
-	// クライアント領域を元に実際のサイズにwrcを変更してもらう
-	AdjustWindowRect(&wrc, WS_OVERLAPPEDWINDOW, false);
-
-	// ウインドウの生成
-	hwnd = CreateWindow(
-		wc.lpszClassName,
-		title,
-		WS_OVERLAPPEDWINDOW,
-		CW_USEDEFAULT,
-		CW_USEDEFAULT,
-		wrc.right - wrc.left,
-		wrc.bottom - wrc.top,
-		nullptr,
-		nullptr,
-		wc.hInstance,
-		nullptr
-	);
-
-#ifdef _DEBUG
-
-	if (SUCCEEDED(D3D12GetDebugInterface(IID_PPV_ARGS(&debugController)))) {
-		// デバッグレイヤーを有効化する
-		debugController->EnableDebugLayer();
-		// さらにGPU側でもチェックを行うようにする
-		debugController->SetEnableGPUBasedValidation(TRUE);
+	if (PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE)) // メッセージがある？
+	{
+		TranslateMessage(&msg); // キー入力メッセージの処理
+		DispatchMessage(&msg);  // ウィンドウプロシージャにメッセージを送る
 	}
-#endif
 
-	// ウインドウを表示する
-	ShowWindow(hwnd, SW_SHOW);
+	if (msg.message == WM_QUIT) // 終了メッセージが来たらループを抜ける
+	{
+		return true;
+	}
+
+	return false;
 }
 
+// ゲームウィンドウ
+void WinApp::CreateGameWindow(
+	const wchar_t* title, UINT windowStyle, int32_t clientWidth, int32_t clientHeight) {
 
+	// ウィンドウクラスの設定
+	wc.lpfnWndProc = (WNDPROC)WindowProc;     // ウィンドウプロシージャ
+	wc.lpszClassName = title;      // ウィンドウクラス名
+	wc.hInstance = GetModuleHandle(nullptr);  // ウィンドウハンドル
+	wc.hCursor = LoadCursor(NULL, IDC_ARROW); // カーソル指定
+
+	RegisterClass(&wc); // ウィンドウクラスをOSに登録
+
+	// ウィンドウサイズ{ X座標 Y座標 横幅 縦幅 }
+	RECT wrc = { 0, 0, clientWidth, clientHeight };
+	AdjustWindowRect(&wrc, windowStyle_, false); // 自動でサイズ補正
+
+	// ウィンドウオブジェクトの生成
+	hwnd_ = CreateWindow(
+		wc.lpszClassName, // クラス名
+		title,                   // タイトルバーの文字
+		WS_OVERLAPPEDWINDOW,            // タイトルバーと境界線があるウィンドウ
+		CW_USEDEFAULT,           // 表示X座標（OSに任せる）
+		CW_USEDEFAULT,           // 表示Y座標（OSに任せる）
+		wrc.right - wrc.left,    // ウィンドウ横幅
+		wrc.bottom - wrc.top,    // ウィンドウ縦幅
+		nullptr,                 // 親ウィンドウハンドル
+		nullptr,                 // メニューハンドル
+		wc.hInstance,     // 呼び出しアプリケーションハンドル
+		nullptr);                // オプション
+
+	// ウィンドウ表示
+	ShowWindow(hwnd_, SW_SHOW);
+}
+
+void WinApp::TerminateGameWindow() {
+
+	// ウィンドウクラスを登録解除
+	UnregisterClass(wc.lpszClassName, wc.hInstance);
+
+	// COM 終了
+	CoUninitialize();
+}

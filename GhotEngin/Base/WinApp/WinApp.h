@@ -1,56 +1,53 @@
 #pragma once
 #include <Windows.h>
 #include <cstdint>
-#include <d3d12.h>
-
-#include "DirectX12.h"
-#include "Utility.h"
-
-#include "imgui.h"
-#include "imgui_impl_dx12.h"
-#include "imgui_impl_win32.h"
-
-extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPram);
-
-class DirectXCommon;
+#include "ImGuiManager.h"
 
 class WinApp {
-
 public: // 静的メンバ変数
 	// ウィンドウサイズ
 	static const int32_t kWindowWidth = 1280; // 横
 	static const int32_t kWindowHeight = 720; // 縦
 
-public:
+public: // メンバ関数
+
 	// シングルトンインスタンスの取得
 	static WinApp* GetInstance();
 
-	WinApp(const wchar_t* title);
-	~WinApp();
 
+	// ウィンドウプロシージャ
+	static LRESULT CALLBACK WindowProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
 
+	// メッセージ処理
+	bool ProcessMessage();
 
+	// ウィンドウを作る
+	void CreateGameWindow(
+		const wchar_t* title, UINT windowStyle = WS_OVERLAPPEDWINDOW,
+		int32_t clientWidth = kWindowWidth, int32_t clientHeight = kWindowHeight);
 
-	static LRESULT WindowProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
-
+	/// <summary>
+	/// ゲームウィンドウの破棄
+	/// </summary>
+	void TerminateGameWindow();
 
 	// ウィンドウハンドルの取得
-
-	HWND Gethwnd() { return hwnd; }
+	HWND GetHwnd() const { return hwnd_; }
 
 	// ウィンドウクラスの取得
 	WNDCLASS GetWc() const { return wc; }
 
-private:
+private: // メンバ関数
 	WinApp() = default;
 	~WinApp() = default;
 	WinApp(const WinApp&) = delete;
 	const WinApp& operator=(const WinApp&) = delete;
 
-private:
-	
-	WNDCLASS wc{};
-	HWND hwnd = nullptr;
-	ID3D12Debug1* debugController = nullptr;
+private: // メンバ変数
+
+	// Window関連
+	HWND hwnd_ = nullptr;   // ウィンドウハンドル
+	WNDCLASS wc{}; // ウィンドウクラス
+	UINT windowStyle_;
 
 };
