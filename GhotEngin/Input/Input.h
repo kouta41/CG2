@@ -1,11 +1,11 @@
 #pragma once
 #include <cassert>
 #include <dinput.h>
-#define DIRECTINPUT_VERSION 0x0800
+//#define DIRECTINPUT_VERSION 0x0800
 #pragma comment(lib,"xinput.lib")
 #pragma comment(lib,"dinput8.lib")
 
-#include "WinApp.h"
+#include "Window.h"
 
 class Input{
 public:

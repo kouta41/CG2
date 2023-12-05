@@ -1,13 +1,13 @@
-#include "ViewProjection.h"
+#include "CameraRole.h"
 
-void ViewProjection::Init()
+void CameraRole::Init()
 {
 	matView = MakeIdentityMatrix();
 	matProjection = MakeIdentityMatrix();
 	sMatProjection = MakeIdentityMatrix();
 }
 
-void ViewProjection::UpdateMatrix()
+void CameraRole::UpdateMatrix()
 {
 	matView = Inverse(MakeAffineMatrix(scale, rotate, translate));
 	matProjection = MakePerspectiveFovMatrix(fov, aspectRatio, nearZ, farZ);

@@ -10,7 +10,7 @@ void Input::Init()
 {
 	HRESULT result{};
 	// InputDeviceの作成
-	result = DirectInput8Create(WinApp::GetInstance()->GetWc().hInstance, DIRECTINPUT_VERSION, IID_IDirectInput8,
+	result = DirectInput8Create(Window::GetInstance()->GetWc().hInstance, DIRECTINPUT_VERSION, IID_IDirectInput8,
 		(void**)&Input::GetInstance()->directInput, nullptr);
 
 	assert(SUCCEEDED(result));
@@ -24,7 +24,7 @@ void Input::Init()
 
 	// 排制御レベルのセット
 	result = Input::GetInstance()->keyboard->SetCooperativeLevel(
-		WinApp::GetInstance()->Gethwnd(),
+		Window::GetInstance()->GetHwnd(),
 		DISCL_FOREGROUND | DISCL_NONEXCLUSIVE | DISCL_NOWINKEY);
 }
 

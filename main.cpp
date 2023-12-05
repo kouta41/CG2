@@ -1,6 +1,6 @@
 #include "GhotEngin.h"
 
-// Windowsアプリでのエントリーポイント(main関数)
+// Winsアプリでのエントリーポイント(main関数)
 int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	GhotEngin* ghotEngin = new GhotEngin;
 	ghotEngin->Initialize();

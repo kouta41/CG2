@@ -1,9 +1,10 @@
 #pragma once
 #include <Windows.h>
 #include <cstdint>
+
 #include "ImGuiManager.h"
 
-class WinApp {
+class Window {
 public: // 静的メンバ変数
 	// ウィンドウサイズ
 	static const int32_t kWindowWidth = 1280; // 横
@@ -12,24 +13,24 @@ public: // 静的メンバ変数
 public: // メンバ関数
 
 	// シングルトンインスタンスの取得
-	static WinApp* GetInstance();
+	static Window* GetInstance();
 
 
 	// ウィンドウプロシージャ
-	static LRESULT CALLBACK WindowProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
+	static LRESULT CALLBACK WinProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
 
 	// メッセージ処理
 	bool ProcessMessage();
 
 	// ウィンドウを作る
-	void CreateGameWindow(
-		const wchar_t* title, UINT windowStyle = WS_OVERLAPPEDWINDOW,
+	void CreateGameWin(
+		const wchar_t* title, UINT WinStyle = WS_OVERLAPPEDWINDOW,
 		int32_t clientWidth = kWindowWidth, int32_t clientHeight = kWindowHeight);
 
 	/// <summary>
 	/// ゲームウィンドウの破棄
 	/// </summary>
-	void TerminateGameWindow();
+	void TerminateGameWin();
 
 	// ウィンドウハンドルの取得
 	HWND GetHwnd() const { return hwnd_; }
@@ -38,16 +39,16 @@ public: // メンバ関数
 	WNDCLASS GetWc() const { return wc; }
 
 private: // メンバ関数
-	WinApp() = default;
-	~WinApp() = default;
-	WinApp(const WinApp&) = delete;
-	const WinApp& operator=(const WinApp&) = delete;
+	Window() = default;
+	~Window() = default;
+	Window(const Window&) = delete;
+	const Window& operator=(const Window&) = delete;
 
 private: // メンバ変数
 
-	// Window関連
+	// Win関連
 	HWND hwnd_ = nullptr;   // ウィンドウハンドル
 	WNDCLASS wc{}; // ウィンドウクラス
-	UINT windowStyle_;
+	UINT WinStyle_;
 
 };

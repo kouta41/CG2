@@ -1,7 +1,7 @@
 #pragma once
 
 #include "DirectX12.h"
-#include "WinApp.h"
+#include "Window.h"
 #include <d3d12.h>
 #include "imgui.h"
 
@@ -9,8 +9,12 @@
 #include <cstdint>
 #include <d3d12.h>
 
-class WinApp;
-class DirectXCommon;
+#include <imgui_impl_dx12.h>
+#include <imgui_impl_win32.h>
+
+class Window;
+
+class DirectX12;
 
 class ImGuiManager {
 public:
@@ -20,7 +24,7 @@ public:
     /// <summary>
     /// 初期化
     /// </summary>
-    void Initialize(WinApp* winApp, DirectXCommon* dxCommon);
+    void Initialize(Window* Win, DirectX12* dxCommon);
 
     /// <summary>
     /// 終了
@@ -51,7 +55,7 @@ private:
 
 #ifdef _DEBUG
     // DirectX基盤インスタンス（借りてくる）
-    DirectXCommon* dxCommon_ = nullptr;
+    DirectX12* dxCommon_ = nullptr;
 #endif
 
 };

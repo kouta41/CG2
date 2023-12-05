@@ -2,7 +2,7 @@
 #include "Vector3.h"
 #include "Mathfunction.h"
 
-struct ViewProjection{
+struct CameraRole{
 
 #pragma region	ビュー行列の設定
 

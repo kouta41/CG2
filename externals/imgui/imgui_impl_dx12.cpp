@@ -24,7 +24,7 @@
 //  2021-06-29: Reorganized backend to pull data from a single structure to facilitate usage with multiple-contexts (all g_XXXX access changed to bd->XXXX).
 //  2021-05-19: DirectX12: Replaced direct access to ImDrawCmd::TextureId with a call to ImDrawCmd::GetTexID(). (will become a requirement)
 //  2021-02-18: DirectX12: Change blending equation to preserve alpha in output buffer.
-//  2021-01-11: DirectX12: Improve Windows 7 compatibility (for D3D12On7) by loading d3d12.dll dynamically.
+//  2021-01-11: DirectX12: Improve Wins 7 compatibility (for D3D12On7) by loading d3d12.dll dynamically.
 //  2020-09-16: DirectX12: Avoid rendering calls with zero-sized scissor rectangle since it generates a validation layer warning.
 //  2020-09-08: DirectX12: Clarified support for building on 32-bit systems by redefining ImTextureID.
 //  2019-10-18: DirectX12: *BREAKING CHANGE* Added extra ID3D12DescriptorHeap parameter to ImGui_ImplDX12_Init() function.
@@ -32,7 +32,7 @@
 //  2019-04-30: DirectX12: Added support for special ImDrawCallback_ResetRenderState callback to reset render state.
 //  2019-03-29: Misc: Various minor tidying up.
 //  2018-12-03: Misc: Added #pragma comment statement to automatically link with d3dcompiler.lib when using D3DCompile().
-//  2018-11-30: Misc: Setting up io.BackendRendererName so it can be displayed in the About Window.
+//  2018-11-30: Misc: Setting up io.BackendRendererName so it can be displayed in the About Win.
 //  2018-06-12: DirectX12: Moved the ID3D12GraphicsCommandList* parameter from NewFrame() to RenderDrawData().
 //  2018-06-08: Misc: Extracted imgui_impl_dx12.cpp/.h away from the old combined DX12+Win32 example.
 //  2018-06-08: DirectX12: Use draw_data->DisplayPos and draw_data->DisplaySize to setup projection matrix and clipping rectangle (to ease support for future multi-viewport).
@@ -70,7 +70,7 @@ struct ImGui_ImplDX12_Data
 };
 
 // Backend data stored in io.BackendRendererUserData to allow support for multiple Dear ImGui contexts
-// It is STRONGLY preferred that you use docking branch with multi-viewports (== single Dear ImGui context + multiple windows) instead of multiple Dear ImGui contexts.
+// It is STRONGLY preferred that you use docking branch with multi-viewports (== single Dear ImGui context + multiple Wins) instead of multiple Dear ImGui contexts.
 static ImGui_ImplDX12_Data* ImGui_ImplDX12_GetBackendData()
 {
     return ImGui::GetCurrentContext() ? (ImGui_ImplDX12_Data*)ImGui::GetIO().BackendRendererUserData : nullptr;
@@ -503,15 +503,15 @@ bool    ImGui_ImplDX12_CreateDeviceObjects()
         if (d3d12_dll == nullptr)
         {
             // Attempt to load d3d12.dll from local directories. This will only succeed if
-            // (1) the current OS is Windows 7, and
-            // (2) there exists a version of d3d12.dll for Windows 7 (D3D12On7) in one of the following directories.
+            // (1) the current OS is Wins 7, and
+            // (2) there exists a version of d3d12.dll for Wins 7 (D3D12On7) in one of the following directories.
             // See https://github.com/ocornut/imgui/pull/3696 for details.
             const char* localD3d12Paths[] = { ".\\d3d12.dll", ".\\d3d12on7\\d3d12.dll", ".\\12on7\\d3d12.dll" }; // A. current directory, B. used by some games, C. used in Microsoft D3D12On7 sample
             for (int i = 0; i < IM_ARRAYSIZE(localD3d12Paths); i++)
                 if ((d3d12_dll = ::LoadLibraryA(localD3d12Paths[i])) != nullptr)
                     break;
 
-            // If failed, we are on Windows >= 10.
+            // If failed, we are on Wins >= 10.
             if (d3d12_dll == nullptr)
                 d3d12_dll = ::LoadLibraryA("d3d12.dll");
 
@@ -734,7 +734,7 @@ void ImGui_ImplDX12_Shutdown()
     IM_ASSERT(bd != nullptr && "No renderer backend to shutdown, or already shutdown?");
     ImGuiIO& io = ImGui::GetIO();
 
-    // Clean up windows and device objects
+    // Clean up Wins and device objects
     ImGui_ImplDX12_InvalidateDeviceObjects();
     delete[] bd->pFrameResources;
     io.BackendRendererName = nullptr;

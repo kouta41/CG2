@@ -1,27 +1,30 @@
 #include"ImguiManager.h"
 
+
+
 ImGuiManager* ImGuiManager::GetInstance()
 {
 	static ImGuiManager instance;
 	return &instance;
 }
 
-void ImGuiManager::Initialize(WinApp* winApp, DirectXCommon* dxCommon)
+void ImGuiManager::Initialize(Window* Win, DirectX12* dxCommon)
 {
 #ifdef _DEBUG
 	dxCommon_ = dxCommon;
+
 	IMGUI_CHECKVERSION();
 	// ImGuiのコンテキストを生成
 	ImGui::CreateContext();
 	// ImGuiのスタイルを設定
 	ImGui::StyleColorsDark();
 	// プラットフォームとレンダラーのバックエンドを設定する
-	ImGui_ImplWin32_Init(winApp->Gethwnd());
+	ImGui_ImplWin32_Init(Win->GetHwnd());
 	ImGui_ImplDX12_Init(
-		dxCommon_->GetDevice().Get(), static_cast<int>(dxCommon_->GetswapChainDesc().BufferCount),
-		DXGI_FORMAT_R8G8B8A8_UNORM_SRGB, dxCommon_->GetsrvDescriptorHeap_(),
-		dxCommon_->GetsrvDescriptorHeap_()->GetCPUDescriptorHandleForHeapStart(),
-		dxCommon_->GetsrvDescriptorHeap_()->GetGPUDescriptorHandleForHeapStart());
+		dxCommon_->GetDevice(), static_cast<int>(dxCommon_->GetBufferCount().BufferCount),
+		DXGI_FORMAT_R8G8B8A8_UNORM_SRGB, dxCommon_->GetSRV(),
+		dxCommon_->GetSRV()->GetCPUDescriptorHandleForHeapStart(),
+		dxCommon_->GetSRV()->GetGPUDescriptorHandleForHeapStart());
 #endif
 
 }
@@ -60,9 +63,9 @@ void ImGuiManager::Draw()
 #ifdef _DEBUG
 
 	// デスクリプタヒープの配列をセットするコマンド
-	ID3D12DescriptorHeap* ppHeaps[] = { DirectXCommon::GetInstance()->GetsrvDescriptorHeap_() };
-	DirectXCommon::GetCommandList_()->SetDescriptorHeaps(_countof(ppHeaps), ppHeaps);
+	ID3D12DescriptorHeap* ppHeaps[] = { DirectX12::GetInstance()->GetSRV() };
+	DirectX12::GetCommandList()->SetDescriptorHeaps(_countof(ppHeaps), ppHeaps);
 	// 描画コマンドを発行
-	ImGui_ImplDX12_RenderDrawData(ImGui::GetDrawData(), DirectXCommon::GetCommandList_());
+	ImGui_ImplDX12_RenderDrawData(ImGui::GetDrawData(), DirectX12::GetCommandList());
 #endif
 }

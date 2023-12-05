@@ -1,10 +1,11 @@
 #pragma once
+
 #include "DirectX12.h"
 #include "StringUtility.h"
 #include "ShaderCompile.h"
 #include "CreateResource.h"
-#include "Vector4.h"
 
+// 共通で使うやつ
 struct Property {
 	Microsoft::WRL::ComPtr<ID3D12RootSignature> rootSignature_ = nullptr;
 	Microsoft::WRL::ComPtr<ID3D12PipelineState> graphicsPipelineState_ = nullptr;;
@@ -16,29 +17,32 @@ struct Property {
 struct PipelineState {
 	Property Object3D;
 	Property Sprite2D;
+	Property PointLight;
 };
 
 // BlendMode
 enum BlendMode {
 	BlendNormal,
+
 };
 
-class GraphicsPipeline
-{
+class GraphicsPipeline {
 public:
-	//シングルトンインスタンスの取得
+
+	// シングルトンインスタンスの取得
 	static GraphicsPipeline* GetInstance();
 
 	/// <summary>
-	/// 
+	/// 初期化
 	/// </summary>
-	static void Init();
+	static void Initialize();
 
 	/// <summary>
-	/// 
+	/// psoのgetter
 	/// </summary>
 	/// <returns></returns>
-	PipelineState getPSO() { return pso; }
+	PipelineState GetPSO() { return  pso; }
+
 
 private:
 	/// <summary>
@@ -53,7 +57,6 @@ private:
 	/// blendModeの設定
 	/// </summary>
 	/// <param name="blendDesc"></param>
-	/// <param name="blendMode"></param>
 	static void SetBlendMode(D3D12_RENDER_TARGET_BLEND_DESC& blendDesc, BlendMode blendMode);
 
 	/// <summary>
@@ -72,6 +75,8 @@ private:
 
 	static Property CreateSprite2D(Microsoft::WRL::ComPtr <ID3D12Device> device, const std::wstring& shaderName);
 
-	PipelineState pso = {};
-};
+	static Property CreatePointLight(Microsoft::WRL::ComPtr <ID3D12Device> device, const std::wstring& shaderName);
 
+	PipelineState pso = {};
+
+};

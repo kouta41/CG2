@@ -1,5 +1,6 @@
 #pragma once
 #include <format>
+#include <cassert>
 
 #include "Matrix4x4.h"
 #include "Vector3.h"
@@ -39,4 +40,13 @@ Matrix4x4 Inverse(const Matrix4x4& m);
 
 // 単位行列
 Matrix4x4 MakeIdentityMatrix();
+
+// 正規化
+Vector3 Normalize(const Vector3& v);
+
+//回転行列
+Matrix4x4 MakeRotateMatrix(const Vector3& radian);
+
+// 変換
+Vector3 Transform(const Vector3& vector, const Matrix4x4& matrix);
 

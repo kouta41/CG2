@@ -1,4 +1,4 @@
-// dear imgui: Platform Backend for Windows (standard windows API for 32-bits AND 64-bits applications)
+// dear imgui: Platform Backend for Wins (standard Wins API for 32-bits AND 64-bits applications)
 // This needs to be used along with a Renderer (e.g. DirectX11, OpenGL3, Vulkan..)
 
 // Implemented features:
@@ -22,7 +22,7 @@ IMGUI_IMPL_API void     ImGui_ImplWin32_Shutdown();
 IMGUI_IMPL_API void     ImGui_ImplWin32_NewFrame();
 
 // Win32 message handler your application need to call.
-// - Intentionally commented out in a '#if 0' block to avoid dragging dependencies on <windows.h> from this helper.
+// - Intentionally commented out in a '#if 0' block to avoid dragging dependencies on <Wins.h> from this helper.
 // - You should COPY the line below into your .cpp code to forward declare the function and then you can call it.
 // - Call from your application's message handler. Keep calling your message handler unless this function returns TRUE.
 
@@ -33,8 +33,8 @@ extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg
 // DPI-related helpers (optional)
 // - Use to enable DPI awareness without having to create an application manifest.
 // - Your own app may already do this via a manifest or explicit calls. This is mostly useful for our examples/ apps.
-// - In theory we could call simple functions from Windows SDK such as SetProcessDPIAware(), SetProcessDpiAwareness(), etc.
-//   but most of the functions provided by Microsoft require Windows 8.1/10+ SDK at compile time and Windows 8/10+ at runtime,
+// - In theory we could call simple functions from Wins SDK such as SetProcessDPIAware(), SetProcessDpiAwareness(), etc.
+//   but most of the functions provided by Microsoft require Wins 8.1/10+ SDK at compile time and Wins 8/10+ at runtime,
 //   neither we want to require the user to have. So we dynamically select and load those functions to avoid dependencies.
 IMGUI_IMPL_API void     ImGui_ImplWin32_EnableDpiAwareness();
 IMGUI_IMPL_API float    ImGui_ImplWin32_GetDpiScaleForHwnd(void* hwnd);       // HWND hwnd

@@ -37,7 +37,7 @@ D3D12_GPU_DESCRIPTOR_HANDLE TextureManager::GetGPUHandle(uint32_t texHandle)
 
 void TextureManager::Initialize() {
 
-	size.SRV = DirectXCommon::GetInstance()->GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+	size.SRV = DirectX12::GetInstance()->GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 }
 
 //void TextureManager::ResetAllTex(){
@@ -76,19 +76,19 @@ void TextureManager::LoadTex(const std::string& filePath, uint32_t index)
 	srvDesc.Texture2D.MipLevels = UINT(metadata.mipLevels);
 
 	// SRVを作成するDescriptorHeapの場所を決める
-	TextureManager::GetInstance()->cpuDescHandleSRV[index] = GetCPUDescriptorHandle(DirectXCommon::GetInstance()->GetSRV(), TextureManager::GetInstance()->size.SRV, index + 1);
-	TextureManager::GetInstance()->gpuDescHandleSRV[index] = GetGPUDescriptorHandle(DirectXCommon::GetInstance()->GetSRV(), TextureManager::GetInstance()->size.SRV, index + 1);
+	TextureManager::GetInstance()->cpuDescHandleSRV[index] = GetCPUDescriptorHandle(DirectX12::GetInstance()->GetSRV(), TextureManager::GetInstance()->size.SRV, index + 1);
+	TextureManager::GetInstance()->gpuDescHandleSRV[index] = GetGPUDescriptorHandle(DirectX12::GetInstance()->GetSRV(), TextureManager::GetInstance()->size.SRV, index + 1);
 	//先頭はImGuiが使ってるのでその次を使う
-	/*TextureManager::GetInstance()->cpuDescHandleSRV[index].ptr += DirectXCommon::GetInstance()->GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-	TextureManager::GetInstance()->gpuDescHandleSRV[index].ptr += DirectXCommon::GetInstance()->GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);*/
+	/*TextureManager::GetInstance()->cpuDescHandleSRV[index].ptr += DirectX12::GetInstance()->GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+	TextureManager::GetInstance()->gpuDescHandleSRV[index].ptr += DirectX12::GetInstance()->GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);*/
 	// SRVの生成
-	DirectXCommon::GetInstance()->GetDevice()->CreateShaderResourceView(TextureManager::GetInstance()->texResource[index].Get(), &srvDesc, TextureManager::GetInstance()->cpuDescHandleSRV[index]);
+	DirectX12::GetInstance()->GetDevice()->CreateShaderResourceView(TextureManager::GetInstance()->texResource[index].Get(), &srvDesc, TextureManager::GetInstance()->cpuDescHandleSRV[index]);
 
 }
 
 ID3D12Resource* TextureManager::CreateTextureResource(const DirectX::TexMetadata& metadata) {
 
-	Microsoft::WRL::ComPtr<ID3D12Device> device = DirectXCommon::GetInstance()->GetDevice();
+	Microsoft::WRL::ComPtr<ID3D12Device> device = DirectX12::GetInstance()->GetDevice();
 
 	// metadataを基にResourceの設定
 	D3D12_RESOURCE_DESC resourceDesc{};

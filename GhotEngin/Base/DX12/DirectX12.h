@@ -1,32 +1,40 @@
 #pragma once
 #include <Windows.h>
-#include <wrl.h>
-
+#include <cstdint>
+#include <format>
 #include <d3d12.h>
 #include <dxgi1_6.h>
-#include <dxgidebug.h>
-#include <dxcapi.h>
 #include <cassert>
-#include <string>
-#include <format>
-#include <cstdint>
-#include "WinApp.h"
-#include "StringUtility.h"
+#include <wrl.h>
 
 #pragma comment(lib, "d3d12.lib")
 #pragma comment(lib, "dxgi.lib")
 #pragma comment(lib, "dxguid.lib")
 
-class DirectXCommon {
-public:
+#include "StringUtility.h"
+#include "Window.h"
 
-	static DirectXCommon* GetInstance();
+class DirectX12 {
+public: // メンバ関数
+
+	// シングルトンインスタンスの取得
+	static DirectX12* GetInstance();
+
+	// デバイスの取得
+	ID3D12Device* GetDevice() { return device_.Get(); }
+
+	// 描画コマンドリストの取得
+	static ID3D12GraphicsCommandList* GetCommandList() { return commandList_.Get(); }
+
+	DXGI_SWAP_CHAIN_DESC1 GetBufferCount() { return swapChainDesc; }
+
+	ID3D12DescriptorHeap* GetSRV() { return srvHeap_.Get(); }
 
 
 	/// <summary>
 	/// 初期化
 	/// </summary>
-	void Initialize(WinApp* win);
+	void Initialize(Window* win);
 
 	/// <summary>
 	/// 描画前
@@ -62,22 +70,21 @@ public:
 
 	/// 深度バッファ生成
 	void CreateDepthBuffer();
-	
 
-	Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> CreateDescriptorHeap(ID3D12Device* device, D3D12_DESCRIPTOR_HEAP_TYPE heapType, UINT numDescriptors, bool shaderVisible);
+private: // メンバ関数
+	DirectX12() = default;
+	~DirectX12() = default;
+	DirectX12(const DirectX12&) = delete;
+	const DirectX12& operator=(const DirectX12&) = delete;
 
-	// Accessor
-	static ID3D12GraphicsCommandList* GetCommandList_() { return commandList_.Get(); }
-	Microsoft::WRL::ComPtr<ID3D12Device> GetDevice() { return device_.Get(); }
-	DXGI_SWAP_CHAIN_DESC1 GetswapChainDesc() { return swapChainDesc; }
-	ID3D12DescriptorHeap* GetsrvDescriptorHeap_() { return srvDescriptorHeap_.Get(); }
-
-
+private: // メンバ関数
+	Window* win_;
+	// FPS固定初期化
+	void InitializeFixFPS();
+	// FPS固定更新
+	void UpdateFixFPS();
 
 private:
-
-	WinApp* winApp_;
-
 	// DirectX3D関連
 	Microsoft::WRL::ComPtr<IDXGIFactory7> dxgiFactory_;
 	Microsoft::WRL::ComPtr<ID3D12Device> device_;
@@ -102,5 +109,6 @@ private:
 	// シザー矩形
 	D3D12_RECT scissorRect{};
 	UINT backBufferIndex_;
-
+	// 記録時間	(FPS固定用)
+	std::chrono::steady_clock::time_point reference_;
 };

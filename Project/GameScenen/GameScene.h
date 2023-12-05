@@ -5,10 +5,10 @@
 //#include "ModelSphere.h"
 //#include "ModelCube.h"
 #include "Input.h"
-#include "ImguiManeger.h"
+#include "ImguiManager.h"
 
 #include "WorldTransform.h"
-#include "ViewProjection.h"
+#include "CameraRole.h"
 
 /// <summary>
 /// ゲームシーン

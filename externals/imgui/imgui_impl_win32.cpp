@@ -1,4 +1,4 @@
-// dear imgui: Platform Backend for Windows (standard windows API for 32-bits AND 64-bits applications)
+// dear imgui: Platform Backend for Wins (standard Wins API for 32-bits AND 64-bits applications)
 // This needs to be used along with a Renderer (e.g. DirectX11, OpenGL3, Vulkan..)
 
 // Implemented features:
@@ -18,8 +18,8 @@
 #ifndef WIN32_LEAN_AND_MEAN
 #define WIN32_LEAN_AND_MEAN
 #endif
-#include <windows.h>
-#include <windowsx.h> // GET_X_LPARAM(), GET_Y_LPARAM()
+#include <Windows.h>
+#include <Windowsx.h> // GET_X_LPARAM(), GET_Y_LPARAM()
 #include <tchar.h>
 #include <dwmapi.h>
 
@@ -40,7 +40,7 @@ typedef DWORD (WINAPI *PFN_XInputGetState)(DWORD, XINPUT_STATE*);
 //  2023-02-15: Inputs: Use WM_NCMOUSEMOVE / WM_NCMOUSELEAVE to track mouse position over non-client area (e.g. OS decorations) when app is not focused. (#6045, #6162)
 //  2023-02-02: Inputs: Flipping WM_MOUSEHWHEEL (horizontal mouse-wheel) value to match other backends and offer consistent horizontal scrolling direction. (#4019, #6096, #1463)
 //  2022-10-11: Using 'nullptr' instead of 'NULL' as per our switch to C++11.
-//  2022-09-28: Inputs: Convert WM_CHAR values with MultiByteToWideChar() when window class was registered as MBCS (not Unicode).
+//  2022-09-28: Inputs: Convert WM_CHAR values with MultiByteToWideChar() when Win class was registered as MBCS (not Unicode).
 //  2022-09-26: Inputs: Renamed ImGuiKey_ModXXX introduced in 1.87 to ImGuiMod_XXX (old names still supported).
 //  2022-01-26: Inputs: replaced short-lived io.AddKeyModsEvent() (added two weeks ago) with io.AddKeyEvent() using ImGuiKey_ModXXX flags. Sorry for the confusion.
 //  2021-01-20: Inputs: calling new io.AddKeyAnalogEvent() for gamepad support, instead of writing directly to io.NavInputs[].
@@ -51,13 +51,13 @@ typedef DWORD (WINAPI *PFN_XInputGetState)(DWORD, XINPUT_STATE*);
 //  2022-01-10: Inputs: calling new io.AddKeyEvent(), io.AddKeyModsEvent() + io.SetKeyEventNativeData() API (1.87+). Support for full ImGuiKey range.
 //  2021-12-16: Inputs: Fill VK_LCONTROL/VK_RCONTROL/VK_LSHIFT/VK_RSHIFT/VK_LMENU/VK_RMENU for completeness.
 //  2021-08-17: Calling io.AddFocusEvent() on WM_SETFOCUS/WM_KILLFOCUS messages.
-//  2021-08-02: Inputs: Fixed keyboard modifiers being reported when host window doesn't have focus.
-//  2021-07-29: Inputs: MousePos is correctly reported when the host platform window is hovered but not focused (using TrackMouseEvent() to receive WM_MOUSELEAVE events).
+//  2021-08-02: Inputs: Fixed keyboard modifiers being reported when host Win doesn't have focus.
+//  2021-07-29: Inputs: MousePos is correctly reported when the host platform Win is hovered but not focused (using TrackMouseEvent() to receive WM_MOUSELEAVE events).
 //  2021-06-29: Reorganized backend to pull data from a single structure to facilitate usage with multiple-contexts (all g_XXXX access changed to bd->XXXX).
-//  2021-06-08: Fixed ImGui_ImplWin32_EnableDpiAwareness() and ImGui_ImplWin32_GetDpiScaleForMonitor() to handle Windows 8.1/10 features without a manifest (per-monitor DPI, and properly calls SetProcessDpiAwareness() on 8.1).
+//  2021-06-08: Fixed ImGui_ImplWin32_EnableDpiAwareness() and ImGui_ImplWin32_GetDpiScaleForMonitor() to handle Wins 8.1/10 features without a manifest (per-monitor DPI, and properly calls SetProcessDpiAwareness() on 8.1).
 //  2021-03-23: Inputs: Clearing keyboard down array when losing focus (WM_KILLFOCUS).
 //  2021-02-18: Added ImGui_ImplWin32_EnableAlphaCompositing(). Non Visual Studio users will need to link with dwmapi.lib (MinGW/gcc: use -ldwmapi).
-//  2021-02-17: Fixed ImGui_ImplWin32_EnableDpiAwareness() attempting to get SetProcessDpiAwareness from shcore.dll on Windows 8 whereas it is only supported on Windows 8.1.
+//  2021-02-17: Fixed ImGui_ImplWin32_EnableDpiAwareness() attempting to get SetProcessDpiAwareness from shcore.dll on Wins 8 whereas it is only supported on Wins 8.1.
 //  2021-01-25: Inputs: Dynamically loading XInput DLL.
 //  2020-12-04: Misc: Fixed setting of io.DisplaySize to invalid/uninitialized data when after hwnd has been closed.
 //  2020-03-03: Inputs: Calling AddInputCharacterUTF16() to support surrogate pairs leading to codepoint >= 0x10000 (for more complete CJK inputs)
@@ -65,10 +65,10 @@ typedef DWORD (WINAPI *PFN_XInputGetState)(DWORD, XINPUT_STATE*);
 //  2020-01-14: Inputs: Added support for #define IMGUI_IMPL_WIN32_DISABLE_GAMEPAD/IMGUI_IMPL_WIN32_DISABLE_LINKING_XINPUT.
 //  2019-12-05: Inputs: Added support for ImGuiMouseCursor_NotAllowed mouse cursor.
 //  2019-05-11: Inputs: Don't filter value from WM_CHAR before calling AddInputCharacter().
-//  2019-01-17: Misc: Using GetForegroundWindow()+IsChild() instead of GetActiveWindow() to be compatible with windows created in a different thread or parent.
+//  2019-01-17: Misc: Using GetForegroundWin()+IsChild() instead of GetActiveWin() to be compatible with Wins created in a different thread or parent.
 //  2019-01-17: Inputs: Added support for mouse buttons 4 and 5 via WM_XBUTTON* messages.
 //  2019-01-15: Inputs: Added support for XInput gamepads (if ImGuiConfigFlags_NavEnableGamepad is set by user application).
-//  2018-11-30: Misc: Setting up io.BackendPlatformName so it can be displayed in the About Window.
+//  2018-11-30: Misc: Setting up io.BackendPlatformName so it can be displayed in the About Win.
 //  2018-06-29: Inputs: Added support for the ImGuiMouseCursor_Hand cursor.
 //  2018-06-10: Inputs: Fixed handling of mouse wheel messages to support fine position messages (typically sent by track-pads).
 //  2018-06-08: Misc: Extracted imgui_impl_win32.cpp/.h away from the old combined DX9/DX10/DX11/DX12 examples.
@@ -79,7 +79,7 @@ typedef DWORD (WINAPI *PFN_XInputGetState)(DWORD, XINPUT_STATE*);
 //  2018-02-06: Misc: Removed call to ImGui::Shutdown() which is not available from 1.60 WIP, user needs to call CreateContext/DestroyContext themselves.
 //  2018-01-20: Inputs: Added Horizontal Mouse Wheel support.
 //  2018-01-08: Inputs: Added mapping for ImGuiKey_Insert.
-//  2018-01-05: Inputs: Added WM_LBUTTONDBLCLK double-click handlers for window classes with the CS_DBLCLKS flag.
+//  2018-01-05: Inputs: Added WM_LBUTTONDBLCLK double-click handlers for Win classes with the CS_DBLCLKS flag.
 //  2017-10-23: Inputs: Added WM_SYSKEYDOWN / WM_SYSKEYUP handlers so e.g. the VK_MENU key can be read.
 //  2017-10-23: Inputs: Using Win32 ::SetCapture/::GetCapture() to retrieve mouse positions outside the client area when dragging.
 //  2016-11-12: Inputs: Only call Win32 ::SetCursor(nullptr) when io.MouseDrawCursor is set.
@@ -106,7 +106,7 @@ struct ImGui_ImplWin32_Data
 };
 
 // Backend data stored in io.BackendPlatformUserData to allow support for multiple Dear ImGui contexts
-// It is STRONGLY preferred that you use docking branch with multi-viewports (== single Dear ImGui context + multiple windows) instead of multiple Dear ImGui contexts.
+// It is STRONGLY preferred that you use docking branch with multi-viewports (== single Dear ImGui context + multiple Wins) instead of multiple Dear ImGui contexts.
 // FIXME: multi-context support is not well tested and probably dysfunctional in this backend.
 // FIXME: some shared resources (mouse cursor shape, gamepad) are mishandled when using multi-context.
 static ImGui_ImplWin32_Data* ImGui_ImplWin32_GetBackendData()
@@ -147,9 +147,9 @@ static bool ImGui_ImplWin32_InitEx(void* hwnd, bool platform_has_own_dc)
     bd->WantUpdateHasGamepad = true;
     const char* xinput_dll_names[] =
     {
-        "xinput1_4.dll",   // Windows 8+
+        "xinput1_4.dll",   // Wins 8+
         "xinput1_3.dll",   // DirectX SDK
-        "xinput9_1_0.dll", // Windows Vista, Windows 7
+        "xinput9_1_0.dll", // Wins Vista, Wins 7
         "xinput1_2.dll",   // DirectX SDK
         "xinput1_1.dll"    // DirectX SDK
     };
@@ -243,7 +243,7 @@ static void ImGui_ImplWin32_AddKeyEvent(ImGuiKey key, bool down, int native_keyc
 
 static void ImGui_ImplWin32_ProcessKeyEventsWorkarounds()
 {
-    // Left & right Shift keys: when both are pressed together, Windows tend to not generate the WM_KEYUP event for the first released one.
+    // Left & right Shift keys: when both are pressed together, Wins tend to not generate the WM_KEYUP event for the first released one.
     if (ImGui::IsKeyDown(ImGuiKey_LeftShift) && !IsVkDown(VK_LSHIFT))
         ImGui_ImplWin32_AddKeyEvent(ImGuiKey_LeftShift, false, VK_LSHIFT);
     if (ImGui::IsKeyDown(ImGuiKey_RightShift) && !IsVkDown(VK_RSHIFT))
@@ -271,8 +271,8 @@ static void ImGui_ImplWin32_UpdateMouseData()
     ImGuiIO& io = ImGui::GetIO();
     IM_ASSERT(bd->hWnd != 0);
 
-    HWND focused_window = ::GetForegroundWindow();
-    const bool is_app_focused = (focused_window == bd->hWnd);
+    HWND focused_Win = ::GetForegroundWindow();
+    const bool is_app_focused = (focused_Win == bd->hWnd);
     if (is_app_focused)
     {
         // (Optional) Set OS mouse position from Dear ImGui if requested (rarely used, only when ImGuiConfigFlags_NavEnableSetMousePos is enabled by user)
@@ -357,7 +357,7 @@ void    ImGui_ImplWin32_NewFrame()
     ImGui_ImplWin32_Data* bd = ImGui_ImplWin32_GetBackendData();
     IM_ASSERT(bd != nullptr && "Did you call ImGui_ImplWin32_Init()?");
 
-    // Setup display size (every frame to accommodate for window resizing)
+    // Setup display size (every frame to accommodate for Win resizing)
     RECT rect = { 0, 0, 0, 0 };
     ::GetClientRect(bd->hWnd, &rect);
     io.DisplaySize = ImVec2((float)(rect.right - rect.left), (float)(rect.bottom - rect.top));
@@ -371,7 +371,7 @@ void    ImGui_ImplWin32_NewFrame()
     // Update OS mouse position
     ImGui_ImplWin32_UpdateMouseData();
 
-    // Process workarounds for known Windows key handling issues
+    // Process workarounds for known Wins key handling issues
     ImGui_ImplWin32_ProcessKeyEventsWorkarounds();
 
     // Update OS mouse cursor with the cursor requested by imgui
@@ -502,7 +502,7 @@ static ImGuiKey ImGui_ImplWin32_VirtualKeyToImGuiKey(WPARAM wParam)
     }
 }
 
-// Allow compilation with old Windows SDK. MinGW doesn't have default _WIN32_WINNT/WINVER versions.
+// Allow compilation with old Wins SDK. MinGW doesn't have default _WIN32_WINNT/WINVER versions.
 #ifndef WM_MOUSEHWHEEL
 #define WM_MOUSEHWHEEL 0x020E
 #endif
@@ -516,14 +516,14 @@ static ImGuiKey ImGui_ImplWin32_VirtualKeyToImGuiKey(WPARAM wParam)
 // - When io.WantCaptureMouse is true, do not dispatch mouse input data to your main application, or clear/overwrite your copy of the mouse data.
 // - When io.WantCaptureKeyboard is true, do not dispatch keyboard input data to your main application, or clear/overwrite your copy of the keyboard data.
 // Generally you may always pass all inputs to Dear ImGui, and hide them from your application based on those two flags.
-// PS: In this Win32 handler, we use the capture API (GetCapture/SetCapture/ReleaseCapture) to be able to read mouse coordinates when dragging mouse outside of our window bounds.
-// PS: We treat DBLCLK messages as regular mouse down messages, so this code will work on windows classes that have the CS_DBLCLKS flag set. Our own example app code doesn't set this flag.
+// PS: In this Win32 handler, we use the capture API (GetCapture/SetCapture/ReleaseCapture) to be able to read mouse coordinates when dragging mouse outside of our Win bounds.
+// PS: We treat DBLCLK messages as regular mouse down messages, so this code will work on Wins classes that have the CS_DBLCLKS flag set. Our own example app code doesn't set this flag.
 #if 0
 // Copy this line into your .cpp file to forward declare the function.
 extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 #endif
 
-// See https://learn.microsoft.com/en-us/windows/win32/tablet/system-events-and-mouse-messages
+// See https://learn.microsoft.com/en-us/Wins/win32/tablet/system-events-and-mouse-messages
 // Prefer to call this at the top of the message handler to avoid the possibility of other Win32 calls interfering with this.
 static ImGuiMouseSource GetMouseSourceFromMessageExtraInfo()
 {
@@ -705,8 +705,8 @@ IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hwnd, UINT msg, WPARA
 //--------------------------------------------------------------------------------------------------------
 // - Use to enable DPI awareness without having to create an application manifest.
 // - Your own app may already do this via a manifest or explicit calls. This is mostly useful for our examples/ apps.
-// - In theory we could call simple functions from Windows SDK such as SetProcessDPIAware(), SetProcessDpiAwareness(), etc.
-//   but most of the functions provided by Microsoft require Windows 8.1/10+ SDK at compile time and Windows 8/10+ at runtime,
+// - In theory we could call simple functions from Wins SDK such as SetProcessDPIAware(), SetProcessDpiAwareness(), etc.
+//   but most of the functions provided by Microsoft require Wins 8.1/10+ SDK at compile time and Wins 8/10+ at runtime,
 //   neither we want to require the user to have. So we dynamically select and load those functions to avoid dependencies.
 //---------------------------------------------------------------------------------------------------------
 // This is the scheme successfully used by GLFW (from which we borrowed some of the code) and other apps aiming to be highly portable.
@@ -716,7 +716,7 @@ IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hwnd, UINT msg, WPARA
 
 // Perform our own check with RtlVerifyVersionInfo() instead of using functions from <VersionHelpers.h> as they
 // require a manifest to be functional for checks above 8.1. See https://github.com/ocornut/imgui/issues/4200
-static BOOL _IsWindowsVersionOrGreater(WORD major, WORD minor, WORD)
+static BOOL _IsWinsVersionOrGreater(WORD major, WORD minor, WORD)
 {
     typedef LONG(WINAPI* PFN_RtlVerifyVersionInfo)(OSVERSIONINFOEXW*, ULONG, ULONGLONG);
     static PFN_RtlVerifyVersionInfo RtlVerifyVersionInfoFn = nullptr;
@@ -736,10 +736,10 @@ static BOOL _IsWindowsVersionOrGreater(WORD major, WORD minor, WORD)
 	return (RtlVerifyVersionInfoFn(&versionInfo, VER_MAJORVERSION | VER_MINORVERSION, conditionMask) == 0) ? TRUE : FALSE;
 }
 
-#define _IsWindowsVistaOrGreater()   _IsWindowsVersionOrGreater(HIBYTE(0x0600), LOBYTE(0x0600), 0) // _WIN32_WINNT_VISTA
-#define _IsWindows8OrGreater()       _IsWindowsVersionOrGreater(HIBYTE(0x0602), LOBYTE(0x0602), 0) // _WIN32_WINNT_WIN8
-#define _IsWindows8Point1OrGreater() _IsWindowsVersionOrGreater(HIBYTE(0x0603), LOBYTE(0x0603), 0) // _WIN32_WINNT_WINBLUE
-#define _IsWindows10OrGreater()      _IsWindowsVersionOrGreater(HIBYTE(0x0A00), LOBYTE(0x0A00), 0) // _WIN32_WINNT_WINTHRESHOLD / _WIN32_WINNT_WIN10
+#define _IsWinsVistaOrGreater()   _IsWinsVersionOrGreater(HIBYTE(0x0600), LOBYTE(0x0600), 0) // _WIN32_WINNT_VISTA
+#define _IsWins8OrGreater()       _IsWinsVersionOrGreater(HIBYTE(0x0602), LOBYTE(0x0602), 0) // _WIN32_WINNT_WIN8
+#define _IsWins8Point1OrGreater() _IsWinsVersionOrGreater(HIBYTE(0x0603), LOBYTE(0x0603), 0) // _WIN32_WINNT_WINBLUE
+#define _IsWins10OrGreater()      _IsWinsVersionOrGreater(HIBYTE(0x0A00), LOBYTE(0x0A00), 0) // _WIN32_WINNT_WINTHRESHOLD / _WIN32_WINNT_WIN10
 
 #ifndef DPI_ENUMS_DECLARED
 typedef enum { PROCESS_DPI_UNAWARE = 0, PROCESS_SYSTEM_DPI_AWARE = 1, PROCESS_PER_MONITOR_DPI_AWARE = 2 } PROCESS_DPI_AWARENESS;
@@ -752,14 +752,14 @@ DECLARE_HANDLE(DPI_AWARENESS_CONTEXT);
 #ifndef DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2
 #define DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2 (DPI_AWARENESS_CONTEXT)-4
 #endif
-typedef HRESULT(WINAPI* PFN_SetProcessDpiAwareness)(PROCESS_DPI_AWARENESS);                     // Shcore.lib + dll, Windows 8.1+
-typedef HRESULT(WINAPI* PFN_GetDpiForMonitor)(HMONITOR, MONITOR_DPI_TYPE, UINT*, UINT*);        // Shcore.lib + dll, Windows 8.1+
-typedef DPI_AWARENESS_CONTEXT(WINAPI* PFN_SetThreadDpiAwarenessContext)(DPI_AWARENESS_CONTEXT); // User32.lib + dll, Windows 10 v1607+ (Creators Update)
+typedef HRESULT(WINAPI* PFN_SetProcessDpiAwareness)(PROCESS_DPI_AWARENESS);                     // Shcore.lib + dll, Wins 8.1+
+typedef HRESULT(WINAPI* PFN_GetDpiForMonitor)(HMONITOR, MONITOR_DPI_TYPE, UINT*, UINT*);        // Shcore.lib + dll, Wins 8.1+
+typedef DPI_AWARENESS_CONTEXT(WINAPI* PFN_SetThreadDpiAwarenessContext)(DPI_AWARENESS_CONTEXT); // User32.lib + dll, Wins 10 v1607+ (Creators Update)
 
 // Helper function to enable DPI awareness without setting up a manifest
 void ImGui_ImplWin32_EnableDpiAwareness()
 {
-    if (_IsWindows10OrGreater())
+    if (_IsWins10OrGreater())
     {
         static HINSTANCE user32_dll = ::LoadLibraryA("user32.dll"); // Reference counted per-process
         if (PFN_SetThreadDpiAwarenessContext SetThreadDpiAwarenessContextFn = (PFN_SetThreadDpiAwarenessContext)::GetProcAddress(user32_dll, "SetThreadDpiAwarenessContext"))
@@ -768,7 +768,7 @@ void ImGui_ImplWin32_EnableDpiAwareness()
             return;
         }
     }
-    if (_IsWindows8Point1OrGreater())
+    if (_IsWins8Point1OrGreater())
     {
         static HINSTANCE shcore_dll = ::LoadLibraryA("shcore.dll"); // Reference counted per-process
         if (PFN_SetProcessDpiAwareness SetProcessDpiAwarenessFn = (PFN_SetProcessDpiAwareness)::GetProcAddress(shcore_dll, "SetProcessDpiAwareness"))
@@ -789,7 +789,7 @@ void ImGui_ImplWin32_EnableDpiAwareness()
 float ImGui_ImplWin32_GetDpiScaleForMonitor(void* monitor)
 {
     UINT xdpi = 96, ydpi = 96;
-    if (_IsWindows8Point1OrGreater())
+    if (_IsWins8Point1OrGreater())
     {
 		static HINSTANCE shcore_dll = ::LoadLibraryA("shcore.dll"); // Reference counted per-process
 		static PFN_GetDpiForMonitor GetDpiForMonitorFn = nullptr;
@@ -827,11 +827,11 @@ float ImGui_ImplWin32_GetDpiScaleForHwnd(void* hwnd)
 #endif
 
 // [experimental]
-// Borrowed from GLFW's function updateFramebufferTransparency() in src/win32_window.c
+// Borrowed from GLFW's function updateFramebufferTransparency() in src/win32_Win.c
 // (the Dwm* functions are Vista era functions but we are borrowing logic from GLFW)
 void ImGui_ImplWin32_EnableAlphaCompositing(void* hwnd)
 {
-    if (!_IsWindowsVistaOrGreater())
+    if (!_IsWinsVistaOrGreater())
         return;
 
     BOOL composition;
@@ -840,7 +840,7 @@ void ImGui_ImplWin32_EnableAlphaCompositing(void* hwnd)
 
     BOOL opaque;
     DWORD color;
-    if (_IsWindows8OrGreater() || (SUCCEEDED(::DwmGetColorizationColor(&color, &opaque)) && !opaque))
+    if (_IsWins8OrGreater() || (SUCCEEDED(::DwmGetColorizationColor(&color, &opaque)) && !opaque))
     {
         HRGN region = ::CreateRectRgn(0, 0, -1, -1);
         DWM_BLURBEHIND bb = {};

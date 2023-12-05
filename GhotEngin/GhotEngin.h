@@ -1,5 +1,5 @@
 #pragma once
-#include "WinApp.h"
+#include "Window.h"
 #include "DirectX12.h"
 #include "ShaderCompile.h"
 #include "GameScene.h"
@@ -27,9 +27,9 @@ public:
 	void Finalize();
 
 private:
-	WinApp* win_;
 
-	DirectXCommon* dxCommon_;
+	Window* win_;
+	DirectX12* dxCommon_;
 	ImGuiManager* imguiManager_;
 	GameScene* gameScene_;
 };

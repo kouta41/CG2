@@ -11,15 +11,15 @@ void GhotEngin::Initialize()
 	// COMの初期化
 	CoInitializeEx(0, COINIT_MULTITHREADED);
 
-	win_ = WinApp::GetInstance();
-	dxCommon_ = DirectXCommon::GetInstance();
+	win_ = Window::GetInstance();
+	dxCommon_ = DirectX12::GetInstance();
 
 	// ウィンドウの作成
-	win_->CreateGameWindow(L"GHOT");
+	win_->CreateGameWin(L"GHOT");
 	// DirectX初期化
 	dxCommon_->Initialize(win_);
 	Input::Init();
-	GraphicsPipeline::Init();
+	GraphicsPipeline::Initialize();
 	TextureManager::GetInstance()->Initialize();
 
 	// ゲームシーンの初期化
@@ -76,5 +76,5 @@ void GhotEngin::Finalize()
 	delete gameScene_;
 	imguiManager_->Finalize();
 	// ゲームウィンドウ破棄
-	win_->TerminateGameWindow();
+	win_->TerminateGameWin();
 }

@@ -1,9 +1,9 @@
 #include "CreateResource.h"
 
-Microsoft::WRL::ComPtr<ID3D12Resource> CreateResource::CreateBufferResource(size_t sizeInBytes)
-{
+// Resource作成
+Microsoft::WRL::ComPtr<ID3D12Resource> CreateResource::CreateBufferResource(size_t sizeInBytes) {
 
-	Microsoft::WRL::ComPtr <ID3D12Device> device = DirectXCommon::GetInstance()->GetDevice();
+	Microsoft::WRL::ComPtr <ID3D12Device> device = DirectX12::GetInstance()->GetDevice();
 
 	// 頂点リソース用のヒープの設定
 	D3D12_HEAP_PROPERTIES uploadHeapProperties{};
@@ -29,8 +29,9 @@ Microsoft::WRL::ComPtr<ID3D12Resource> CreateResource::CreateBufferResource(size
 	return Resource;
 }
 
-D3D12_INDEX_BUFFER_VIEW CreateResource::CreateIndexBufferView(Microsoft::WRL::ComPtr<ID3D12Resource> resource, size_t sizeInBytes)
-{
+// IBV
+D3D12_INDEX_BUFFER_VIEW CreateResource::CreateIndexBufferView(Microsoft::WRL::ComPtr<ID3D12Resource> resource, size_t sizeInBytes) {
+
 	// 頂点バッファビューを作成する
 	D3D12_INDEX_BUFFER_VIEW IndexBufferView{};
 	// リソースの先頭のアドレスから使う
@@ -43,8 +44,10 @@ D3D12_INDEX_BUFFER_VIEW CreateResource::CreateIndexBufferView(Microsoft::WRL::Co
 	return IndexBufferView;
 }
 
-D3D12_VERTEX_BUFFER_VIEW CreateResource::CreateVertexBufferView(Microsoft::WRL::ComPtr<ID3D12Resource> resource, size_t sizeInBytes, int size)
-{
+// VBV
+D3D12_VERTEX_BUFFER_VIEW CreateResource::CreateVertexBufferView(Microsoft::WRL::ComPtr<ID3D12Resource> resource, size_t sizeInBytes, int size) {
+
+
 	// 頂点バッファビューを作成する
 	D3D12_VERTEX_BUFFER_VIEW vertexBufferView{};
 	// VertexBufferView

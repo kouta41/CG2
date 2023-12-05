@@ -1,38 +1,65 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="ソース ファイル">
-      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
-      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
-    </Filter>
-    <Filter Include="ヘッダー ファイル">
-      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
-      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
-    </Filter>
-    <Filter Include="リソース ファイル">
-      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
-      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
-    </Filter>
     <Filter Include="imgui">
       <UniqueIdentifier>{b5958d4e-a7b8-4f81-8782-f893fdf5d5f2}</UniqueIdentifier>
     </Filter>
+    <Filter Include="GhotEngin">
+      <UniqueIdentifier>{32d7eba9-87fa-4cbf-b1af-014c8c11d397}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GhotEngin\Base">
+      <UniqueIdentifier>{97e8fa26-8832-4282-8eac-3627d06d51eb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GhotEngin\Base\DX12">
+      <UniqueIdentifier>{438a1182-b496-41e0-8da5-7b2232948387}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GhotEngin\Base\WinApp">
+      <UniqueIdentifier>{46903341-a59e-477f-8462-8fc88d7975f1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GhotEngin\CreateResource">
+      <UniqueIdentifier>{b3ec017f-ce6a-4abf-a233-b6351b6c513f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GhotEngin\GreaphicsPipeline">
+      <UniqueIdentifier>{65cfe754-475d-4ac9-80a8-e5ab32b4ab7f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GhotEngin\Input">
+      <UniqueIdentifier>{c380ac21-0dd4-4599-bd53-ac20012acfad}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GhotEngin\Math">
+      <UniqueIdentifier>{1d68d3a7-1ca3-4677-9860-8aaf4e1b20c2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GhotEngin\Model">
+      <UniqueIdentifier>{e177887f-c70b-42c9-8824-67b6be528fa0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GhotEngin\ShaderFile">
+      <UniqueIdentifier>{7ce005ad-80cf-4098-befe-a2e0c02b0b6b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GhotEngin\TextureManager">
+      <UniqueIdentifier>{dee9e925-a1c3-4630-a4fc-484a5c938c48}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GhotEngin\Sprite">
+      <UniqueIdentifier>{705ed82a-1ecc-49b6-bd8f-54292ef00d47}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GhotEngin\Transform">
+      <UniqueIdentifier>{6bddbd45-7a5e-4035-b84d-85391b6a108c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GhotEngin\Uitility">
+      <UniqueIdentifier>{423af41b-7c79-495c-83ad-a1df8018e6ba}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GhotEngin\ViewProjection">
+      <UniqueIdentifier>{2b199cec-bc38-44d7-af49-5a4d69ca21c4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Project">
+      <UniqueIdentifier>{a632aa60-3356-4edd-80fb-a9a0364cb9a2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Project\GameScenen">
+      <UniqueIdentifier>{57a8da30-c02b-4cea-8599-25552f752f91}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GhotEngin\Uitility\ImGuiManager">
+      <UniqueIdentifier>{36edfb8e-a81a-4363-a5b8-d575c31c3ce0}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="main.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="GhotEngin\Base\WinApp\WinApp.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="GhotEngin\Utility\StringUtility.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="GhotEngin\Base\DX12\DirectX12.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="GhotEngin\Model\Triangle.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
     <ClCompile Include="externals\imgui\imgui.cpp">
       <Filter>imgui</Filter>
     </ClCompile>
@@ -54,68 +81,76 @@
     <ClCompile Include="externals\imgui\imgui_widgets.cpp">
       <Filter>imgui</Filter>
     </ClCompile>
-    <ClCompile Include="GhotEngin\Utility\ImGuiManager\ImguiManager.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="GhotEngin\Model\Model.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="GhotEngin\ViewProjection\ViewProjection.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="GhotEngin\Math\Mathfunction.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
     <ClCompile Include="GhotEngin\CreateResource\CreateResource.cpp">
-      <Filter>ソース ファイル</Filter>
+      <Filter>GhotEngin\CreateResource</Filter>
     </ClCompile>
-    <ClCompile Include="GhotEngin\GraphicsPipeline\GraphicsPipeline.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="GhotEngin\Utility\ShaderCompile.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="GhotEngin\Input\Input.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="GhotEngin\Transform\WorldTransform.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="GhotEngin\GhotEngin.cpp">
-      <Filter>ソース ファイル</Filter>
+    <ClCompile Include="GhotEngin\Base\DX12\DirectX12.cpp">
+      <Filter>GhotEngin\Base\DX12</Filter>
     </ClCompile>
     <ClCompile Include="Project\GameScenen\GameScene.cpp">
-      <Filter>ソース ファイル</Filter>
+      <Filter>Project\GameScenen</Filter>
+    </ClCompile>
+    <ClCompile Include="GhotEngin\GhotEngin.cpp">
+      <Filter>GhotEngin</Filter>
+    </ClCompile>
+    <ClCompile Include="GhotEngin\GraphicsPipeline\GraphicsPipeline.cpp">
+      <Filter>GhotEngin\GreaphicsPipeline</Filter>
+    </ClCompile>
+    <ClCompile Include="GhotEngin\Utility\ImGuiManager\ImguiManager.cpp">
+      <Filter>GhotEngin\Uitility\ImGuiManager</Filter>
+    </ClCompile>
+    <ClCompile Include="GhotEngin\Input\Input.cpp">
+      <Filter>GhotEngin\Input</Filter>
+    </ClCompile>
+    <ClCompile Include="GhotEngin\Math\Mathfunction.cpp">
+      <Filter>GhotEngin\Math</Filter>
+    </ClCompile>
+    <ClCompile Include="GhotEngin\Model\Model.cpp">
+      <Filter>GhotEngin\Model</Filter>
+    </ClCompile>
+    <ClCompile Include="GhotEngin\Utility\ShaderCompile.cpp">
+      <Filter>GhotEngin\Uitility</Filter>
     </ClCompile>
     <ClCompile Include="GhotEngin\Sprite\Sprite.cpp">
-      <Filter>ソース ファイル</Filter>
+      <Filter>GhotEngin\Sprite</Filter>
+    </ClCompile>
+    <ClCompile Include="GhotEngin\Utility\StringUtility.cpp">
+      <Filter>GhotEngin\Uitility</Filter>
     </ClCompile>
     <ClCompile Include="GhotEngin\TextureManager\TextureManager.cpp">
-      <Filter>ソース ファイル</Filter>
+      <Filter>GhotEngin\TextureManager</Filter>
     </ClCompile>
+    <ClCompile Include="GhotEngin\Model\Triangle.cpp">
+      <Filter>GhotEngin\Model</Filter>
+    </ClCompile>
+    <ClCompile Include="GhotEngin\CameraRole\CameraRole.cpp">
+      <Filter>GhotEngin\ViewProjection</Filter>
+    </ClCompile>
+    <ClCompile Include="GhotEngin\Base\Window\Window.cpp">
+      <Filter>GhotEngin\Base\WinApp</Filter>
+    </ClCompile>
+    <ClCompile Include="GhotEngin\Transform\WorldTransform.cpp">
+      <Filter>GhotEngin\Transform</Filter>
+    </ClCompile>
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="GhotEngin\Model\ModelCube.cpp" />
+    <ClCompile Include="GhotEngin\Model\ModelSphere.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="GhotEngin\ShaderFile\Object3d.PS.hlsl" />
-    <FxCompile Include="GhotEngin\ShaderFile\Object3d.VS.hlsl" />
-    <FxCompile Include="GhotEngin\ShaderFile\Sprite2D.PS.hlsl" />
-    <FxCompile Include="GhotEngin\ShaderFile\Sprite2D.VS.hlsl" />
+    <FxCompile Include="GhotEngin\ShaderFile\Object3d.PS.hlsl">
+      <Filter>GhotEngin\ShaderFile</Filter>
+    </FxCompile>
+    <FxCompile Include="GhotEngin\ShaderFile\Object3d.VS.hlsl">
+      <Filter>GhotEngin\ShaderFile</Filter>
+    </FxCompile>
+    <FxCompile Include="GhotEngin\ShaderFile\Sprite2D.PS.hlsl">
+      <Filter>GhotEngin\ShaderFile</Filter>
+    </FxCompile>
+    <FxCompile Include="GhotEngin\ShaderFile\Sprite2D.VS.hlsl">
+      <Filter>GhotEngin\ShaderFile</Filter>
+    </FxCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="GhotEngin\Base\WinApp\WinApp.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="GhotEngin\Utility\StringUtility.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="GhotEngin\Base\DX12\DirectX12.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="GhotEngin\Model\Triangle.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="externals\imgui\imconfig.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
     <ClInclude Include="externals\imgui\imgui.h">
       <Filter>imgui</Filter>
     </ClInclude>
@@ -137,65 +172,87 @@
     <ClInclude Include="externals\imgui\imstb_truetype.h">
       <Filter>imgui</Filter>
     </ClInclude>
-    <ClInclude Include="GhotEngin\Utility\ImGuiManager\ImguiManager.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="GhotEngin\Model\Model.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="GhotEngin\ViewProjection\ViewProjection.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="GhotEngin\Math\Vector2.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="GhotEngin\Math\Vector3.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="GhotEngin\Math\Vector4.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="GhotEngin\Math\Matrix4x4.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="GhotEngin\Math\Matrix3x3.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="GhotEngin\Math\Mathfunction.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
     <ClInclude Include="GhotEngin\CreateResource\CreateResource.h">
-      <Filter>ヘッダー ファイル</Filter>
+      <Filter>GhotEngin\CreateResource</Filter>
     </ClInclude>
-    <ClInclude Include="GhotEngin\GraphicsPipeline\GraphicsPipeline.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="GhotEngin\Utility\ShaderCompile.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="GhotEngin\Input\Input.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="GhotEngin\Transform\WorldTransform.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="GhotEngin\GhotEngin.h">
-      <Filter>ヘッダー ファイル</Filter>
+    <ClInclude Include="GhotEngin\Base\DX12\DirectX12.h">
+      <Filter>GhotEngin\Base\DX12</Filter>
     </ClInclude>
     <ClInclude Include="Project\GameScenen\GameScene.h">
-      <Filter>ヘッダー ファイル</Filter>
+      <Filter>Project\GameScenen</Filter>
+    </ClInclude>
+    <ClInclude Include="GhotEngin\GhotEngin.h">
+      <Filter>GhotEngin</Filter>
+    </ClInclude>
+    <ClInclude Include="GhotEngin\GraphicsPipeline\GraphicsPipeline.h">
+      <Filter>GhotEngin\GreaphicsPipeline</Filter>
+    </ClInclude>
+    <ClInclude Include="externals\imgui\imconfig.h">
+      <Filter>GhotEngin\Uitility</Filter>
+    </ClInclude>
+    <ClInclude Include="GhotEngin\Utility\ImGuiManager\ImguiManager.h">
+      <Filter>GhotEngin\Uitility\ImGuiManager</Filter>
+    </ClInclude>
+    <ClInclude Include="GhotEngin\Input\Input.h">
+      <Filter>GhotEngin\Input</Filter>
+    </ClInclude>
+    <ClInclude Include="GhotEngin\Math\Mathfunction.h">
+      <Filter>GhotEngin\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="GhotEngin\Math\Matrix3x3.h">
+      <Filter>GhotEngin\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="GhotEngin\Math\Matrix4x4.h">
+      <Filter>GhotEngin\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="GhotEngin\Model\Model.h">
+      <Filter>GhotEngin\Model</Filter>
+    </ClInclude>
+    <ClInclude Include="GhotEngin\Utility\ShaderCompile.h">
+      <Filter>GhotEngin\Uitility</Filter>
     </ClInclude>
     <ClInclude Include="GhotEngin\Sprite\Sprite.h">
-      <Filter>ヘッダー ファイル</Filter>
+      <Filter>GhotEngin\Sprite</Filter>
+    </ClInclude>
+    <ClInclude Include="GhotEngin\Utility\StringUtility.h">
+      <Filter>GhotEngin\Uitility</Filter>
     </ClInclude>
     <ClInclude Include="GhotEngin\TextureManager\TextureManager.h">
-      <Filter>ヘッダー ファイル</Filter>
+      <Filter>GhotEngin\TextureManager</Filter>
     </ClInclude>
+    <ClInclude Include="GhotEngin\Model\Triangle.h">
+      <Filter>GhotEngin\Model</Filter>
+    </ClInclude>
+    <ClInclude Include="GhotEngin\Math\Vector2.h">
+      <Filter>GhotEngin\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="GhotEngin\Math\Vector3.h">
+      <Filter>GhotEngin\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="GhotEngin\Math\Vector4.h">
+      <Filter>GhotEngin\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="GhotEngin\CameraRole\CameraRole.h">
+      <Filter>GhotEngin\ViewProjection</Filter>
+    </ClInclude>
+    <ClInclude Include="GhotEngin\Base\Window\Window.h">
+      <Filter>GhotEngin\Base\WinApp</Filter>
+    </ClInclude>
+    <ClInclude Include="GhotEngin\Transform\WorldTransform.h">
+      <Filter>GhotEngin\Transform</Filter>
+    </ClInclude>
+    <ClInclude Include="GhotEngin\Model\IModelState.h" />
+    <ClInclude Include="GhotEngin\Model\ModelCube.h" />
+    <ClInclude Include="GhotEngin\Model\ModelSphere.h" />
   </ItemGroup>
   <ItemGroup>
-    <Text Include="externals\imgui\LICENSE.txt" />
+    <None Include="GhotEngin\ShaderFile\Object3d.hlsli">
+      <Filter>GhotEngin\ShaderFile</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
-    <None Include="GhotEngin\ShaderFile\Object3d.hlsli" />
+    <Text Include="externals\imgui\LICENSE.txt">
+      <Filter>GhotEngin\ShaderFile</Filter>
+    </Text>
   </ItemGroup>
 </Project>
