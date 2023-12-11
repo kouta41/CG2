@@ -17,6 +17,6 @@ public:
     /// <summary>
     /// 描画
     /// </summary>
-    virtual void Draw(WorldTransform worldTransform, CameraRole cameraRole, uint32_t texHandle) = 0;
+    virtual void Draw(WorldTransform worldTransform, ViewProjection viewProjection, uint32_t texHandle) = 0;
 
 };

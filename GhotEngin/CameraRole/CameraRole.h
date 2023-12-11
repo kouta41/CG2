@@ -2,7 +2,7 @@
 #include "Vector3.h"
 #include "Mathfunction.h"
 
-struct CameraRole{
+struct ViewProjection {
 
 #pragma region	ビュー行列の設定
 
@@ -11,7 +11,6 @@ struct CameraRole{
 	Vector3 translate = { 0,0,-60.0f };
 
 #pragma endregion
-
 
 #pragma region 射影行列の設定
 
@@ -22,9 +21,8 @@ struct CameraRole{
 	float nearZ = 0.1f;
 	// 深度限界（奥側）
 	float farZ = 1000.0f;
+
 #pragma endregion
-
-
 
 	// ビュー行列
 	Matrix4x4 matView = {};
@@ -33,8 +31,8 @@ struct CameraRole{
 	Matrix4x4 matProjection = {};
 	Matrix4x4 sMatProjection = {};
 
-	void Init();
+	void Initialize();
 
 	void UpdateMatrix();
-};
 
+};

@@ -1,17 +1,18 @@
 #pragma once
+#include "Window.h"
 #include <cassert>
+#define DIRECTINPUT_VERSION 0x0800
 #include <dinput.h>
-//#define DIRECTINPUT_VERSION 0x0800
 #pragma comment(lib,"xinput.lib")
 #pragma comment(lib,"dinput8.lib")
 
-#include "Window.h"
-
-class Input{
+class Input {
 public:
+
+
 	static Input* GetInstance();
 
-	static void Init();
+	static void Initialize();
 
 	static void Update();
 
@@ -30,6 +31,7 @@ private:
 	bool isInitialize = false;
 
 
+
 	//0x80=押している状態
 	//0x00=押してない状態
 	Input() = default;
@@ -37,4 +39,3 @@ private:
 	Input(const Input&) = delete;
 	const Input& operator=(const Input&) = delete;
 };
-

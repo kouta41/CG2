@@ -3,7 +3,7 @@
 // Resource作成
 Microsoft::WRL::ComPtr<ID3D12Resource> CreateResource::CreateBufferResource(size_t sizeInBytes) {
 
-	Microsoft::WRL::ComPtr <ID3D12Device> device = DirectX12::GetInstance()->GetDevice();
+	Microsoft::WRL::ComPtr <ID3D12Device> device = DirectXCommon::GetInstance()->GetDevice();
 
 	// 頂点リソース用のヒープの設定
 	D3D12_HEAP_PROPERTIES uploadHeapProperties{};

@@ -2,13 +2,11 @@
 #include "Sprite.h"
 #include "Triangle.h"
 #include "Model.h"
-//#include "ModelSphere.h"
-//#include "ModelCube.h"
+#include "ModelSphere.h"
+#include "ModelCube.h"
 #include "Input.h"
-#include "ImguiManager.h"
+#include "ImGuiManager/ImGuiManager.h"
 
-#include "WorldTransform.h"
-#include "CameraRole.h"
 
 /// <summary>
 /// ゲームシーン
@@ -42,5 +40,5 @@ public: // メンバ関数
 	void Draw();
 
 private: // メンバ変数
-
+	
 };

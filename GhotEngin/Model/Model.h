@@ -43,31 +43,21 @@ public:
 	/// <summary>
 	/// 描画
 	/// </summary>
-	void Draw(WorldTransform worldTransform, CameraRole cameraRole, uint32_t texHandle);
+	void Draw(WorldTransform worldTransform, ViewProjection viewprojection, uint32_t texHandle);
 
 	/// <summary>
 	/// Objの描画
 	/// </summary>
-	void Draw(WorldTransform worldTransform, CameraRole cameraRole);
+	void Draw(WorldTransform worldTransform, ViewProjection viewprojection);
 
 	// setter
 	void SetTexHandle(uint32_t texHandle) { texHandle_ = texHandle; }
 
 	// ライティングのsetter
 	int32_t SetEnableLighting(int32_t enableLighting) { return materialData_->enableLighting = enableLighting; }
-
-	int32_t GetEnebleLighting() { return materialData_->enableLighting; }
-
 	// 色のsetter
 	Vector4 SetColor(Vector4 color) { return materialData_->color = color; }
-	// lightの設定
-	PointLight SetPointLightProperty(PointLight pointLight) { return *pointLightData_ = pointLight; }
-	// cameradataの設定
-	Vector3 SetCameraData(Vector3 camera) { return cameraData_->worldPosition = camera; }
 
-public:
-
-	PointLight pointLight_;
 
 private:
 
@@ -95,7 +85,5 @@ private: // メンバ変数
 	D3D12_VERTEX_BUFFER_VIEW objVertexBufferView_{};
 	Material* materialData_ = nullptr;
 	DirectionalLight* directionalLightData_ = nullptr;
-	PointLight* pointLightData_ = nullptr;
-	Camera* cameraData_ = nullptr;
 	uint32_t texHandle_ = 0;
 };

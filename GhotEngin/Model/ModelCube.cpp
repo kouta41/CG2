@@ -115,27 +115,27 @@ void ModelCube::Initialize(Model* state) {
 
 }
 
-void ModelCube::Draw(WorldTransform worldTransform, CameraRole CameraRole, uint32_t texHandle) {
+void ModelCube::Draw(WorldTransform worldTransform, ViewProjection viewProjection, uint32_t texHandle) {
 
-	worldTransform.TransferMatrix(resource_.wvpResource, CameraRole);
+	worldTransform.TransferMatrix(resource_.wvpResource, viewProjection);
 
 	Property property = GraphicsPipeline::GetInstance()->GetPSO().Object3D;
 
 	// Rootsignatureを設定。PSOに設定してるけど別途設定が必要
-	DirectX12::GetCommandList()->SetGraphicsRootSignature(property.rootSignature_.Get());
-	DirectX12::GetCommandList()->SetPipelineState(property.graphicsPipelineState_.Get()); // PSOを設定
-	DirectX12::GetCommandList()->IASetVertexBuffers(0, 1, &VBV); // VBVを設定
-	DirectX12::GetCommandList()->IASetIndexBuffer(&IBV); // IBVの設定
+	DirectXCommon::GetCommandList()->SetGraphicsRootSignature(property.rootSignature_.Get());
+	DirectXCommon::GetCommandList()->SetPipelineState(property.graphicsPipelineState_.Get()); // PSOを設定
+	DirectXCommon::GetCommandList()->IASetVertexBuffers(0, 1, &VBV); // VBVを設定
+	DirectXCommon::GetCommandList()->IASetIndexBuffer(&IBV); // IBVの設定
 	// 形状を設定。PSOに設定しているものとはまた別。同じものを設定すると考えておけば良い
-	DirectX12::GetCommandList()->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	DirectXCommon::GetCommandList()->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	// マテリアルCBufferの場所を設定
-	DirectX12::GetCommandList()->SetGraphicsRootConstantBufferView(0, resource_.materialResource->GetGPUVirtualAddress());
+	DirectXCommon::GetCommandList()->SetGraphicsRootConstantBufferView(0, resource_.materialResource->GetGPUVirtualAddress());
 	// wvp用のCBufferの場所を設定
-	DirectX12::GetCommandList()->SetGraphicsRootConstantBufferView(1, resource_.wvpResource->GetGPUVirtualAddress());
-	DirectX12::GetCommandList()->SetGraphicsRootDescriptorTable(2, TextureManager::GetInstance()->GetGPUHandle(texHandle));
+	DirectXCommon::GetCommandList()->SetGraphicsRootConstantBufferView(1, resource_.wvpResource->GetGPUVirtualAddress());
+	DirectXCommon::GetCommandList()->SetGraphicsRootDescriptorTable(2, TextureManager::GetInstance()->GetGPUHandle(texHandle));
 	// 平行光源
-	DirectX12::GetCommandList()->SetGraphicsRootConstantBufferView(3, resource_.directionalLightResource->GetGPUVirtualAddress());
+	DirectXCommon::GetCommandList()->SetGraphicsRootConstantBufferView(3, resource_.directionalLightResource->GetGPUVirtualAddress());
 	// 描画。(DrawCall/ドローコール)。
-	DirectX12::GetCommandList()->DrawIndexedInstanced(36, 1, 0, 0, 0);
+	DirectXCommon::GetCommandList()->DrawIndexedInstanced(36, 1, 0, 0, 0);
 
 }

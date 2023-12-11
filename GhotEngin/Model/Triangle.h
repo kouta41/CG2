@@ -14,7 +14,7 @@ class Triangle {
 public:
 	void Initialize();
 
-	void Draw(WorldTransform worldTransform, CameraRole cameraRole, uint32_t texHandle);
+	void Draw(WorldTransform worldTransform, ViewProjection viewProjection, uint32_t texHandle);
 
 private:
 

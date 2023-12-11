@@ -3,9 +3,9 @@
 #include <dxcapi.h>
 #pragma comment(lib, "dxcompiler.lib")
 
-class ShaderCompile
-{
-public:
+class ShaderCompile {
+public: // メンバ関数
+
 	// CompileShader関数
 	IDxcBlob* CompileShader(
 		// CompilerするShaderファイルへのパス
@@ -16,6 +16,4 @@ public:
 		IDxcUtils* dxcUtils,
 		IDxcCompiler3* dxcCompiler,
 		IDxcIncludeHandler* includeHandler);
-
 };
-

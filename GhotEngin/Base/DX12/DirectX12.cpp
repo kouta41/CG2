@@ -1,20 +1,20 @@
 #include "DirectX12.h"
+#include "StringUtility.h"
 
-DirectX12* DirectX12::GetInstance(){
-	static DirectX12 instance;
+DirectXCommon* DirectXCommon::GetInstance() {
+	static DirectXCommon instance;
 	return &instance;
 }
-Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList> DirectX12::commandList_;
+
+Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList> DirectXCommon::commandList_;
 
 // 初期化
-void DirectX12::Initialize(Window* win) {
+void DirectXCommon::Initialize(WinApp* winApp) {
 	// nullptrチェック
-	assert(win);
+	assert(winApp);
 
-	Win_ = win;
+	winApp_ = winApp;
 
-	// FPS固定初期化
-	//InitializeFixFPS();
 	// dxgiDevice 初期化
 	InitializeDxgi();
 	// コマンド
@@ -44,7 +44,7 @@ void DirectX12::Initialize(Window* win) {
 }
 
 // 描画前
-void DirectX12::PreDraw() {
+void DirectXCommon::PreDraw() {
 	// これから書き込むバックバッファのインデックスを取得
 	backBufferIndex_ = swapChain_->GetCurrentBackBufferIndex();
 	// SwapChainからResourceを引っ張ってくる
@@ -77,7 +77,7 @@ void DirectX12::PreDraw() {
 }
 
 // 描画後
-void DirectX12::PostDraw() {
+void DirectXCommon::PostDraw() {
 
 	// 画面に描く処理はすべて終わり、画面に写すので、状態を遷移
 	// 今回はRenderTargetからPresentにする
@@ -110,8 +110,6 @@ void DirectX12::PostDraw() {
 
 	}
 
-	// FPS固定
-	//UpdateFixFPS();
 
 	// 次のフレーム用のコマンドリストを準備
 	hr_ = commandAllocator_->Reset();
@@ -120,9 +118,8 @@ void DirectX12::PostDraw() {
 	assert(SUCCEEDED(hr_));
 }
 
-
 // dxgi初期化
-void DirectX12::InitializeDxgi() {
+void DirectXCommon::InitializeDxgi() {
 
 #ifdef _DEBUG
 	Microsoft::WRL::ComPtr<ID3D12Debug1> debugController = nullptr;
@@ -137,7 +134,7 @@ void DirectX12::InitializeDxgi() {
 
 	// DXGIファクトリーの生成
 	dxgiFactory_ = nullptr;
-	// HRESULTはWin敬のエラーコードであり、
+	// HRESULTはWindow敬のエラーコードであり、
 	// 関数が成功したかどうかをSUCCEEDEDマクロで判定できる
 	hr_ = CreateDXGIFactory(IID_PPV_ARGS(&dxgiFactory_));
 	// 初期化の根本的な部分エラーでた場合はプログラムが間違ってるか、どう
@@ -195,8 +192,8 @@ void DirectX12::InitializeDxgi() {
 		// 抑制するエラー
 		D3D12_MESSAGE_ID denyIds[] = {
 			/*
-			 * Wins11でのDXGIデバッグレイヤーとDX12デバッグレイヤーの相互作用バグによるエラーメッセージ
-			 * https://stackoverflow.com/questions/69805245/directx-12-application-is-crashing-in-Wins-11
+			 * Windows11でのDXGIデバッグレイヤーとDX12デバッグレイヤーの相互作用バグによるエラーメッセージ
+			 * https://stackoverflow.com/questions/69805245/directx-12-application-is-crashing-in-windows-11
 			 */
 			D3D12_MESSAGE_ID_RESOURCE_BARRIER_MISMATCHING_COMMAND_LIST_TYPE };
 		// 抑制する表示レベル
@@ -218,7 +215,7 @@ void DirectX12::InitializeDxgi() {
 }
 
 // コマンド初期化
-void DirectX12::InitializeCommand() {
+void DirectXCommon::InitializeCommand() {
 	// コマンドキューを生成する
 	commandQueue_ = nullptr;
 	D3D12_COMMAND_QUEUE_DESC commandQueueDesc{};
@@ -242,7 +239,7 @@ void DirectX12::InitializeCommand() {
 }
 
 // スワップチェーン作成
-void DirectX12::CreateSwapChain() {
+void DirectXCommon::CreateSwapChain() {
 	// スワップチェーンを生成する
 	swapChain_ = nullptr;
 	swapChainDesc.Width = 1280;      // 画面の幅。ウィンドウのクライアント領域を同じものにしておく
@@ -253,13 +250,13 @@ void DirectX12::CreateSwapChain() {
 	swapChainDesc.BufferCount = 2; // ダブルバッファ
 	swapChainDesc.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD;   // モニタにうつしたら、中身を破棄
 	// コマンドキュー、ウィンドウハンドル、設定を渡して生成する
-	hr_ = dxgiFactory_->CreateSwapChainForHwnd(commandQueue_.Get(), Win_->GetHwnd(), &swapChainDesc,
+	hr_ = dxgiFactory_->CreateSwapChainForHwnd(commandQueue_.Get(), winApp_->GetHwnd(), &swapChainDesc,
 		nullptr, nullptr, reinterpret_cast<IDXGISwapChain1**>(swapChain_.GetAddressOf()));
 	assert(SUCCEEDED(hr_));
 }
 
 // descriptorHeap作成
-Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> DirectX12::CreateDescriptorHeap(D3D12_DESCRIPTOR_HEAP_TYPE type, UINT numDescriptors, bool shaderVisible)
+Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> DirectXCommon::CreateDescriptorHeap(D3D12_DESCRIPTOR_HEAP_TYPE type, UINT numDescriptors, bool shaderVisible)
 {
 	// ディスクリプタヒープの生成
 	Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> DescriptorHeap = nullptr;
@@ -275,7 +272,7 @@ Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> DirectX12::CreateDescriptorHeap(D3D
 }
 
 // RTV作成
-void DirectX12::CreateRenderTargetView() {
+void DirectXCommon::CreateRenderTargetView() {
 
 	rtvHeap_ = CreateDescriptorHeap(D3D12_DESCRIPTOR_HEAP_TYPE_RTV, 2, false);
 	srvHeap_ = CreateDescriptorHeap(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, 128, true);
@@ -305,7 +302,7 @@ void DirectX12::CreateRenderTargetView() {
 
 
 // Fence作成
-void DirectX12::CreateFence() {
+void DirectXCommon::CreateFence() {
 	// 初期値0でFenceを作る
 	fence_ = nullptr;
 	fenceVal_ = 0;
@@ -319,7 +316,7 @@ void DirectX12::CreateFence() {
 
 }
 
-void DirectX12::ClearDepthBuffer()
+void DirectXCommon::ClearDepthBuffer()
 {
 	// 描画先のRTVとDSVを設定する
 	D3D12_CPU_DESCRIPTOR_HANDLE dsvHandle = dsvHeap_->GetCPUDescriptorHandleForHeapStart();
@@ -328,7 +325,7 @@ void DirectX12::ClearDepthBuffer()
 	commandList_->ClearDepthStencilView(dsvHandle, D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);
 }
 
-void DirectX12::CreateDepthBuffer()
+void DirectXCommon::CreateDepthBuffer()
 {
 	// dsvHeap用のヒープ
 	dsvHeap_ = CreateDescriptorHeap(D3D12_DESCRIPTOR_HEAP_TYPE_DSV, 1, false);
@@ -370,38 +367,5 @@ void DirectX12::CreateDepthBuffer()
 	// DSVHeapの先頭にDSVを作る
 	device_->CreateDepthStencilView(depthBuffer_.Get(), &dsvDesc, dsvHeap_->GetCPUDescriptorHandleForHeapStart());
 
-
-}
-
-void DirectX12::InitializeFixFPS()
-{
-	// 現在時間を記録する
-	reference_ = std::chrono::steady_clock::now();
-
-
-}
-
-void DirectX12::UpdateFixFPS()
-{
-	// 1/ 60秒ぴったりの時間
-	const std::chrono::microseconds kMinTime(uint64_t(1000000.0f / 60.0f));
-	// 1/ 60秒よりわずかに短い時間
-	const std::chrono::microseconds kMinCheckTime(uint64_t(1000000.0f / 65.0f));
-
-	// 現在時間を取得する
-	std::chrono::steady_clock::time_point now = std::chrono::steady_clock::now();
-	// 前回の記録からの経過時間を取得する
-	std::chrono::microseconds elapsed = std::chrono::duration_cast<std::chrono::microseconds>(now - reference_);
-
-	// 1 / 60秒 (よりわずかに短い時間) 経ってない場合
-	if (elapsed < kMinCheckTime) {
-		// 1 / 60秒経過するまで微小なスリープを繰り返す
-		while (std::chrono::steady_clock::now() - reference_ < kMinTime) {
-			// 1マイクロ秒スリープ
-			std::this_thread::sleep_for(std::chrono::microseconds(1));
-		}
-	}
-	// 現在の時間を記録する
-	reference_ = std::chrono::steady_clock::now();
 
 }

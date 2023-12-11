@@ -9,7 +9,7 @@ public:
 
 	void Initialize(Model* state)override;
 
-	void Draw(WorldTransform worldTransform, CameraRole cameraRole, uint32_t texHandle)override;
+	void Draw(WorldTransform worldTransform, ViewProjection viewProjection, uint32_t texHandle)override;
 
 private:
 

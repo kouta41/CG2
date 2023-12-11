@@ -1,22 +1,16 @@
 #pragma once
 
-#include "DirectX12.h"
-#include "Window.h"
 #include <d3d12.h>
-#include "imgui.h"
+#include <imgui.h>
+#include <wrl.h>
+extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
-#include <Windows.h>
-#include <cstdint>
-#include <d3d12.h>
 
-#include <imgui_impl_dx12.h>
-#include <imgui_impl_win32.h>
-
-class Window;
-
-class DirectX12;
+class WinApp;
+class DirectXCommon;
 
 class ImGuiManager {
+
 public:
 
     static ImGuiManager* GetInstance();
@@ -24,7 +18,7 @@ public:
     /// <summary>
     /// 初期化
     /// </summary>
-    void Initialize(Window* Win, DirectX12* dxCommon);
+    void Initialize(WinApp* winApp, DirectXCommon* dxCommon);
 
     /// <summary>
     /// 終了
@@ -46,6 +40,7 @@ public:
     /// </summary>
     void Draw();
 
+private:
 
 private:
     ImGuiManager() = default;
@@ -53,10 +48,7 @@ private:
     ImGuiManager(const ImGuiManager&) = delete;
     const ImGuiManager& operator=(const ImGuiManager&) = delete;
 
-#ifdef _DEBUG
     // DirectX基盤インスタンス（借りてくる）
-    DirectX12* dxCommon_ = nullptr;
-#endif
+    DirectXCommon* dxCommon_ = nullptr;
 
 };
-

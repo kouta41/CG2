@@ -17,7 +17,6 @@ void Model::Initialize(IModelState* state)
 
 void Model::InitializeObj(const std::string& filename)
 {
-
 	modelData_ = LoadObjFile("resources", filename);
 
 	// VertexResource
@@ -43,11 +42,6 @@ void Model::InitializeObj(const std::string& filename)
 	resource_.materialResource->Map(0, nullptr, reinterpret_cast<void**>(&materialData_));
 	materialData_->color = { 1.0f,1.0f,1.0f,1.0f };
 	materialData_->enableLighting = false;
-	materialData_->shininess = 70.0f;
-
-	resource_.cameraResource = CreateResource::CreateBufferResource(sizeof(Camera));
-	resource_.cameraResource->Map(0, nullptr, reinterpret_cast<void**>(&cameraData_));
-	cameraData_->worldPosition = { 0.0f,10.0f,-40.0f };
 
 	resource_.wvpResource = CreateResource::CreateBufferResource(sizeof(TransformationMatrix));
 
@@ -59,14 +53,6 @@ void Model::InitializeObj(const std::string& filename)
 	directionalLightData_->color = { 1.0f,1.0f,1.0f,1.0f };
 	directionalLightData_->direction = Normalize({ 0.0f, -1.0f, 0.0f });
 	directionalLightData_->intensity = 1.0f;
-
-	resource_.pointLightResource = CreateResource::CreateBufferResource(sizeof(PointLight));
-	resource_.pointLightResource->Map(0, nullptr, reinterpret_cast<void**>(&pointLightData_));
-	pointLightData_->color = { 1.0f,1.0f,1.0f,1.0f };
-	pointLightData_->position = { 0.0f,10.0f,0.0f };
-	pointLightData_->intensity = 1.0f;
-	pointLightData_->radius = 12.0f;
-	pointLightData_->decay = 0.6f;
 
 }
 
@@ -96,38 +82,33 @@ Model* Model::CreateObj(const std::string& filename) {
 }
 
 
-void Model::Draw(WorldTransform worldTransform, CameraRole cameraRole, uint32_t texHandle)
+void Model::Draw(WorldTransform worldTransform, ViewProjection viewprojection, uint32_t texHandle)
 {
-	state_->Draw(worldTransform, cameraRole, texHandle);
+	state_->Draw(worldTransform, viewprojection, texHandle);
 }
 
-void Model::Draw(WorldTransform worldTransform, CameraRole cameraRole)
+void Model::Draw(WorldTransform worldTransform, ViewProjection viewprojection)
 {
 
-	worldTransform.TransferMatrix(resource_.wvpResource, cameraRole);
+	worldTransform.TransferMatrix(resource_.wvpResource, viewprojection);
 
-	//Property property = GraphicsPipeline::GetInstance()->GetPSO().Object3D;
-	Property property = GraphicsPipeline::GetInstance()->GetPSO().PointLight;
+	Property property = GraphicsPipeline::GetInstance()->GetPSO().Object3D;
 
 	// Rootsignatureを設定。PSOに設定してるけど別途設定が必要
-	DirectX12::GetCommandList()->SetGraphicsRootSignature(property.rootSignature_.Get());
-	DirectX12::GetCommandList()->SetPipelineState(property.graphicsPipelineState_.Get()); // PSOを設定
-	DirectX12::GetCommandList()->IASetVertexBuffers(0, 1, &objVertexBufferView_); // VBVを設定
+	DirectXCommon::GetCommandList()->SetGraphicsRootSignature(property.rootSignature_.Get());
+	DirectXCommon::GetCommandList()->SetPipelineState(property.graphicsPipelineState_.Get()); // PSOを設定
+	DirectXCommon::GetCommandList()->IASetVertexBuffers(0, 1, &objVertexBufferView_); // VBVを設定
 	// 形状を設定。PSOに設定しているものとはまた別。同じものを設定すると考えておけば良い
-	DirectX12::GetCommandList()->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	DirectXCommon::GetCommandList()->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	// マテリアルCBufferの場所を設定
-	DirectX12::GetCommandList()->SetGraphicsRootConstantBufferView(0, resource_.materialResource->GetGPUVirtualAddress());
+	DirectXCommon::GetCommandList()->SetGraphicsRootConstantBufferView(0, resource_.materialResource->GetGPUVirtualAddress());
 	// wvp用のCBufferの場所を設定
-	DirectX12::GetCommandList()->SetGraphicsRootConstantBufferView(1, resource_.wvpResource->GetGPUVirtualAddress());
-	DirectX12::GetCommandList()->SetGraphicsRootDescriptorTable(2, TextureManager::GetInstance()->GetGPUHandle(texHandle_));
+	DirectXCommon::GetCommandList()->SetGraphicsRootConstantBufferView(1, resource_.wvpResource->GetGPUVirtualAddress());
+	DirectXCommon::GetCommandList()->SetGraphicsRootDescriptorTable(2, TextureManager::GetInstance()->GetGPUHandle(texHandle_));
 	// 平行光源
-	DirectX12::GetCommandList()->SetGraphicsRootConstantBufferView(3, resource_.directionalLightResource->GetGPUVirtualAddress());
-	// カメラ用
-	DirectX12::GetCommandList()->SetGraphicsRootConstantBufferView(4, resource_.cameraResource->GetGPUVirtualAddress());
-	// ポイントライト用
-	DirectX12::GetCommandList()->SetGraphicsRootConstantBufferView(5, resource_.pointLightResource->GetGPUVirtualAddress());
+	DirectXCommon::GetCommandList()->SetGraphicsRootConstantBufferView(3, resource_.directionalLightResource->GetGPUVirtualAddress());
 	// 描画。(DrawCall/ドローコール)。
-	DirectX12::GetCommandList()->DrawInstanced(UINT(modelData_.vertices.size()), 1, 0, 0);
+	DirectXCommon::GetCommandList()->DrawInstanced(UINT(modelData_.vertices.size()), 1, 0, 0);
 }
 
 

@@ -17,7 +17,6 @@ struct Property {
 struct PipelineState {
 	Property Object3D;
 	Property Sprite2D;
-	Property PointLight;
 };
 
 // BlendMode
@@ -74,8 +73,6 @@ private:
 	static Property CreateObject3D(Microsoft::WRL::ComPtr <ID3D12Device> device, const std::wstring& shaderName);
 
 	static Property CreateSprite2D(Microsoft::WRL::ComPtr <ID3D12Device> device, const std::wstring& shaderName);
-
-	static Property CreatePointLight(Microsoft::WRL::ComPtr <ID3D12Device> device, const std::wstring& shaderName);
 
 	PipelineState pso = {};
 

@@ -1,4 +1,5 @@
 #include "Sprite.h"
+#include "Vector4.h"
 
 Sprite* Sprite::sprite_;
 
@@ -72,28 +73,28 @@ Sprite* Sprite::Create(Vector2 position, Vector4 color)
 /// </summary>
 /// <param name="v"></param>
 /// <param name="t"></param>
-void Sprite::Draw(CameraRole CameraRole, uint32_t texHandle)
+void Sprite::Draw(ViewProjection viewProjection, uint32_t texHandle)
 {
 
-	Transform_.UpdateMatrix();
-	Transform_.STransferMatrix(sResource_.wvpResource, CameraRole);
-	Transform_.translate.x = GetPosition().x;
-	Transform_.translate.y = GetPosition().y;
+	worldTransform_.UpdateMatrix();
+	worldTransform_.STransferMatrix(sResource_.wvpResource, viewProjection);
+	worldTransform_.translate.x = GetPosition().x;
+	worldTransform_.translate.y = GetPosition().y;
 
 	Property property = GraphicsPipeline::GetInstance()->GetPSO().Sprite2D;
 
 	// Rootsignatureを設定。PSOに設定してるけど別途設定が必要
-	DirectX12::GetCommandList()->SetGraphicsRootSignature(property.rootSignature_.Get());
-	DirectX12::GetCommandList()->SetPipelineState(property.graphicsPipelineState_.Get()); // PSOを設定
-	DirectX12::GetCommandList()->IASetVertexBuffers(0, 1, &sVBV_); // VBVを設定
+	DirectXCommon::GetCommandList()->SetGraphicsRootSignature(property.rootSignature_.Get());
+	DirectXCommon::GetCommandList()->SetPipelineState(property.graphicsPipelineState_.Get()); // PSOを設定
+	DirectXCommon::GetCommandList()->IASetVertexBuffers(0, 1, &sVBV_); // VBVを設定
 	// 形状を設定。PSOに設定しているものとはまた別。同じものを設定すると考えておけば良い
-	DirectX12::GetCommandList()->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	DirectXCommon::GetCommandList()->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	// マテリアルCBufferの場所を設定
-	DirectX12::GetCommandList()->SetGraphicsRootConstantBufferView(0, sResource_.materialResource->GetGPUVirtualAddress());
+	DirectXCommon::GetCommandList()->SetGraphicsRootConstantBufferView(0, sResource_.materialResource->GetGPUVirtualAddress());
 	// wvp用のCBufferの場所を設定
-	DirectX12::GetCommandList()->SetGraphicsRootConstantBufferView(1, sResource_.wvpResource->GetGPUVirtualAddress());
-	DirectX12::GetCommandList()->SetGraphicsRootDescriptorTable(2, TextureManager::GetInstance()->GetGPUHandle(texHandle));
+	DirectXCommon::GetCommandList()->SetGraphicsRootConstantBufferView(1, sResource_.wvpResource->GetGPUVirtualAddress());
+	DirectXCommon::GetCommandList()->SetGraphicsRootDescriptorTable(2, TextureManager::GetInstance()->GetGPUHandle(texHandle));
 	// 描画。(DrawCall/ドローコール)。3頂点で1つのインスタンス。インスタンスについては今後
-	DirectX12::GetCommandList()->DrawInstanced(6, 1, 0, 0);
+	DirectXCommon::GetCommandList()->DrawInstanced(6, 1, 0, 0);
 
 }

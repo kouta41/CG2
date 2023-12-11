@@ -5,7 +5,6 @@
 #include <unordered_map>
 #include <wrl.h>
 #include <DirectXTex.h>
-
 #include "StringUtility.h"
 #include "DirectX12.h"
 #define TEXTURE_LOAD_MAX 128
@@ -17,9 +16,7 @@ struct descSize {
 	uint32_t DSV = 0;
 };
 
-
-class TextureManager
-{
+class TextureManager {
 public:
 	/// <summary>
 	/// シングルトン
@@ -76,4 +73,3 @@ private: // メンバ変数
 	D3D12_GPU_DESCRIPTOR_HANDLE gpuDescHandleSRV[TEXTURE_LOAD_MAX] = {};
 
 };
-

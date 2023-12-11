@@ -4,12 +4,11 @@
 #include "ShaderCompile.h"
 #include "GameScene.h"
 #include "GraphicsPipeline.h"
-#include "ImguiManager.h"
+#include "ImGuiManager.h"
 #include "TextureManager.h"
 #include "Input.h"
 
-class GhotEngin
-{
+class Engine {
 public:
 	/// <summary>
 	/// 初期化
@@ -17,20 +16,17 @@ public:
 	void Initialize();
 
 	/// <summary>
-	/// 更新処理
+	/// ゲームループ
 	/// </summary>
-	void Update();
+	void Run();
 
 	/// <summary>
 	/// 終了
 	/// </summary>
-	void Finalize();
+	int Finalize();
 
 private:
-
-	Window* win_;
-	DirectX12* dxCommon_;
+	WinApp* win_;
+	DirectXCommon* dxCommon_;
 	ImGuiManager* imguiManager_;
-	GameScene* gameScene_;
 };
-

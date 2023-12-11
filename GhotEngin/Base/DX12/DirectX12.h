@@ -1,4 +1,5 @@
 #pragma once
+
 #include <Windows.h>
 #include <cstdint>
 #include <format>
@@ -6,19 +7,16 @@
 #include <dxgi1_6.h>
 #include <cassert>
 #include <wrl.h>
-
 #pragma comment(lib, "d3d12.lib")
 #pragma comment(lib, "dxgi.lib")
 #pragma comment(lib, "dxguid.lib")
-
-#include "StringUtility.h"
 #include "Window.h"
 
-class DirectX12 {
+class DirectXCommon {
 public: // メンバ関数
 
 	// シングルトンインスタンスの取得
-	static DirectX12* GetInstance();
+	static DirectXCommon* GetInstance();
 
 	// デバイスの取得
 	ID3D12Device* GetDevice() { return device_.Get(); }
@@ -34,7 +32,7 @@ public: // メンバ関数
 	/// <summary>
 	/// 初期化
 	/// </summary>
-	void Initialize(Window* win);
+	void Initialize(WinApp* win);
 
 	/// <summary>
 	/// 描画前
@@ -72,19 +70,13 @@ public: // メンバ関数
 	void CreateDepthBuffer();
 
 private: // メンバ関数
-	DirectX12() = default;
-	~DirectX12() = default;
-	DirectX12(const DirectX12&) = delete;
-	const DirectX12& operator=(const DirectX12&) = delete;
-
-private: // メンバ関数
-	Window* win_;
-	// FPS固定初期化
-	void InitializeFixFPS();
-	// FPS固定更新
-	void UpdateFixFPS();
+	DirectXCommon() = default;
+	~DirectXCommon() = default;
+	DirectXCommon(const DirectXCommon&) = delete;
+	const DirectXCommon& operator=(const DirectXCommon&) = delete;
 
 private:
+	WinApp* winApp_;
 	// DirectX3D関連
 	Microsoft::WRL::ComPtr<IDXGIFactory7> dxgiFactory_;
 	Microsoft::WRL::ComPtr<ID3D12Device> device_;
@@ -109,6 +101,4 @@ private:
 	// シザー矩形
 	D3D12_RECT scissorRect{};
 	UINT backBufferIndex_;
-	// 記録時間	(FPS固定用)
-	std::chrono::steady_clock::time_point reference_;
 };
