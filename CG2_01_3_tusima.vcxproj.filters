@@ -81,72 +81,72 @@
     <ClCompile Include="externals\imgui\imgui_widgets.cpp">
       <Filter>imgui</Filter>
     </ClCompile>
-    <ClCompile Include="GhotEngin\CreateResource\CreateResource.cpp">
+    <ClCompile Include="GhotEngine\CreateResource\CreateResource.cpp">
       <Filter>GhotEngin\CreateResource</Filter>
     </ClCompile>
-    <ClCompile Include="GhotEngin\Base\DX12\DirectX12.cpp">
+    <ClCompile Include="GhotEngine\Base\DX12\DirectX12.cpp">
       <Filter>GhotEngin\Base\DX12</Filter>
     </ClCompile>
     <ClCompile Include="Project\GameScenen\GameScene.cpp">
       <Filter>Project\GameScenen</Filter>
     </ClCompile>
-    <ClCompile Include="GhotEngin\GhotEngin.cpp">
+    <ClCompile Include="GhotEngine\GhotEngin.cpp">
       <Filter>GhotEngin</Filter>
     </ClCompile>
-    <ClCompile Include="GhotEngin\GraphicsPipeline\GraphicsPipeline.cpp">
+    <ClCompile Include="GhotEngine\GraphicsPipeline\GraphicsPipeline.cpp">
       <Filter>GhotEngin\GreaphicsPipeline</Filter>
     </ClCompile>
-    <ClCompile Include="GhotEngin\Utility\ImGuiManager\ImguiManager.cpp">
+    <ClCompile Include="GhotEngine\Utility\ImGuiManager\ImguiManager.cpp">
       <Filter>GhotEngin\Uitility\ImGuiManager</Filter>
     </ClCompile>
-    <ClCompile Include="GhotEngin\Input\Input.cpp">
+    <ClCompile Include="GhotEngine\Input\Input.cpp">
       <Filter>GhotEngin\Input</Filter>
     </ClCompile>
-    <ClCompile Include="GhotEngin\Math\Mathfunction.cpp">
+    <ClCompile Include="GhotEngine\Math\Mathfunction.cpp">
       <Filter>GhotEngin\Math</Filter>
     </ClCompile>
-    <ClCompile Include="GhotEngin\Model\Model.cpp">
+    <ClCompile Include="GhotEngine\Model\Model.cpp">
       <Filter>GhotEngin\Model</Filter>
     </ClCompile>
-    <ClCompile Include="GhotEngin\Utility\ShaderCompile.cpp">
+    <ClCompile Include="GhotEngine\Utility\ShaderCompile.cpp">
       <Filter>GhotEngin\Uitility</Filter>
     </ClCompile>
-    <ClCompile Include="GhotEngin\Sprite\Sprite.cpp">
+    <ClCompile Include="GhotEngine\Sprite\Sprite.cpp">
       <Filter>GhotEngin\Sprite</Filter>
     </ClCompile>
-    <ClCompile Include="GhotEngin\Utility\StringUtility.cpp">
+    <ClCompile Include="GhotEngine\Utility\StringUtility.cpp">
       <Filter>GhotEngin\Uitility</Filter>
     </ClCompile>
-    <ClCompile Include="GhotEngin\TextureManager\TextureManager.cpp">
+    <ClCompile Include="GhotEngine\TextureManager\TextureManager.cpp">
       <Filter>GhotEngin\TextureManager</Filter>
     </ClCompile>
-    <ClCompile Include="GhotEngin\Model\Triangle.cpp">
+    <ClCompile Include="GhotEngine\Model\Triangle.cpp">
       <Filter>GhotEngin\Model</Filter>
     </ClCompile>
-    <ClCompile Include="GhotEngin\CameraRole\CameraRole.cpp">
+    <ClCompile Include="GhotEngine\CameraRole\CameraRole.cpp">
       <Filter>GhotEngin\ViewProjection</Filter>
     </ClCompile>
-    <ClCompile Include="GhotEngin\Base\Window\Window.cpp">
+    <ClCompile Include="GhotEngine\Base\Window\Window.cpp">
       <Filter>GhotEngin\Base\WinApp</Filter>
     </ClCompile>
-    <ClCompile Include="GhotEngin\Transform\WorldTransform.cpp">
+    <ClCompile Include="GhotEngine\Transform\WorldTransform.cpp">
       <Filter>GhotEngin\Transform</Filter>
     </ClCompile>
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="GhotEngin\Model\ModelCube.cpp" />
-    <ClCompile Include="GhotEngin\Model\ModelSphere.cpp" />
+    <ClCompile Include="GhotEngine\Model\ModelCube.cpp" />
+    <ClCompile Include="GhotEngine\Model\ModelSphere.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="GhotEngin\ShaderFile\Object3d.PS.hlsl">
+    <FxCompile Include="GhotEngine\ShaderFile\Object3d.PS.hlsl">
       <Filter>GhotEngin\ShaderFile</Filter>
     </FxCompile>
-    <FxCompile Include="GhotEngin\ShaderFile\Object3d.VS.hlsl">
+    <FxCompile Include="GhotEngine\ShaderFile\Object3d.VS.hlsl">
       <Filter>GhotEngin\ShaderFile</Filter>
     </FxCompile>
-    <FxCompile Include="GhotEngin\ShaderFile\Sprite2D.PS.hlsl">
+    <FxCompile Include="GhotEngine\ShaderFile\Sprite2D.PS.hlsl">
       <Filter>GhotEngin\ShaderFile</Filter>
     </FxCompile>
-    <FxCompile Include="GhotEngin\ShaderFile\Sprite2D.VS.hlsl">
+    <FxCompile Include="GhotEngine\ShaderFile\Sprite2D.VS.hlsl">
       <Filter>GhotEngin\ShaderFile</Filter>
     </FxCompile>
   </ItemGroup>
@@ -172,81 +172,81 @@
     <ClInclude Include="externals\imgui\imstb_truetype.h">
       <Filter>imgui</Filter>
     </ClInclude>
-    <ClInclude Include="GhotEngin\CreateResource\CreateResource.h">
+    <ClInclude Include="GhotEngine\CreateResource\CreateResource.h">
       <Filter>GhotEngin\CreateResource</Filter>
     </ClInclude>
-    <ClInclude Include="GhotEngin\Base\DX12\DirectX12.h">
+    <ClInclude Include="GhotEngine\Base\DX12\DirectX12.h">
       <Filter>GhotEngin\Base\DX12</Filter>
     </ClInclude>
     <ClInclude Include="Project\GameScenen\GameScene.h">
       <Filter>Project\GameScenen</Filter>
     </ClInclude>
-    <ClInclude Include="GhotEngin\GhotEngin.h">
+    <ClInclude Include="GhotEngine\GhotEngin.h">
       <Filter>GhotEngin</Filter>
     </ClInclude>
-    <ClInclude Include="GhotEngin\GraphicsPipeline\GraphicsPipeline.h">
+    <ClInclude Include="GhotEngine\GraphicsPipeline\GraphicsPipeline.h">
       <Filter>GhotEngin\GreaphicsPipeline</Filter>
     </ClInclude>
     <ClInclude Include="externals\imgui\imconfig.h">
       <Filter>GhotEngin\Uitility</Filter>
     </ClInclude>
-    <ClInclude Include="GhotEngin\Utility\ImGuiManager\ImguiManager.h">
+    <ClInclude Include="GhotEngine\Utility\ImGuiManager\ImguiManager.h">
       <Filter>GhotEngin\Uitility\ImGuiManager</Filter>
     </ClInclude>
-    <ClInclude Include="GhotEngin\Input\Input.h">
+    <ClInclude Include="GhotEngine\Input\Input.h">
       <Filter>GhotEngin\Input</Filter>
     </ClInclude>
-    <ClInclude Include="GhotEngin\Math\Mathfunction.h">
+    <ClInclude Include="GhotEngine\Math\Mathfunction.h">
       <Filter>GhotEngin\Math</Filter>
     </ClInclude>
-    <ClInclude Include="GhotEngin\Math\Matrix3x3.h">
+    <ClInclude Include="GhotEngine\Math\Matrix3x3.h">
       <Filter>GhotEngin\Math</Filter>
     </ClInclude>
-    <ClInclude Include="GhotEngin\Math\Matrix4x4.h">
+    <ClInclude Include="GhotEngine\Math\Matrix4x4.h">
       <Filter>GhotEngin\Math</Filter>
     </ClInclude>
-    <ClInclude Include="GhotEngin\Model\Model.h">
+    <ClInclude Include="GhotEngine\Model\Model.h">
       <Filter>GhotEngin\Model</Filter>
     </ClInclude>
-    <ClInclude Include="GhotEngin\Utility\ShaderCompile.h">
+    <ClInclude Include="GhotEngine\Utility\ShaderCompile.h">
       <Filter>GhotEngin\Uitility</Filter>
     </ClInclude>
-    <ClInclude Include="GhotEngin\Sprite\Sprite.h">
+    <ClInclude Include="GhotEngine\Sprite\Sprite.h">
       <Filter>GhotEngin\Sprite</Filter>
     </ClInclude>
-    <ClInclude Include="GhotEngin\Utility\StringUtility.h">
+    <ClInclude Include="GhotEngine\Utility\StringUtility.h">
       <Filter>GhotEngin\Uitility</Filter>
     </ClInclude>
-    <ClInclude Include="GhotEngin\TextureManager\TextureManager.h">
+    <ClInclude Include="GhotEngine\TextureManager\TextureManager.h">
       <Filter>GhotEngin\TextureManager</Filter>
     </ClInclude>
-    <ClInclude Include="GhotEngin\Model\Triangle.h">
+    <ClInclude Include="GhotEngine\Model\Triangle.h">
       <Filter>GhotEngin\Model</Filter>
     </ClInclude>
-    <ClInclude Include="GhotEngin\Math\Vector2.h">
+    <ClInclude Include="GhotEngine\Math\Vector2.h">
       <Filter>GhotEngin\Math</Filter>
     </ClInclude>
-    <ClInclude Include="GhotEngin\Math\Vector3.h">
+    <ClInclude Include="GhotEngine\Math\Vector3.h">
       <Filter>GhotEngin\Math</Filter>
     </ClInclude>
-    <ClInclude Include="GhotEngin\Math\Vector4.h">
+    <ClInclude Include="GhotEngine\Math\Vector4.h">
       <Filter>GhotEngin\Math</Filter>
     </ClInclude>
-    <ClInclude Include="GhotEngin\CameraRole\CameraRole.h">
+    <ClInclude Include="GhotEngine\CameraRole\CameraRole.h">
       <Filter>GhotEngin\ViewProjection</Filter>
     </ClInclude>
-    <ClInclude Include="GhotEngin\Base\Window\Window.h">
+    <ClInclude Include="GhotEngine\Base\Window\Window.h">
       <Filter>GhotEngin\Base\WinApp</Filter>
     </ClInclude>
-    <ClInclude Include="GhotEngin\Transform\WorldTransform.h">
+    <ClInclude Include="GhotEngine\Transform\WorldTransform.h">
       <Filter>GhotEngin\Transform</Filter>
     </ClInclude>
-    <ClInclude Include="GhotEngin\Model\IModelState.h" />
-    <ClInclude Include="GhotEngin\Model\ModelCube.h" />
-    <ClInclude Include="GhotEngin\Model\ModelSphere.h" />
+    <ClInclude Include="GhotEngine\Model\IModelState.h" />
+    <ClInclude Include="GhotEngine\Model\ModelCube.h" />
+    <ClInclude Include="GhotEngine\Model\ModelSphere.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="GhotEngin\ShaderFile\Object3d.hlsli">
+    <None Include="GhotEngine\ShaderFile\Object3d.hlsli">
       <Filter>GhotEngin\ShaderFile</Filter>
     </None>
   </ItemGroup>

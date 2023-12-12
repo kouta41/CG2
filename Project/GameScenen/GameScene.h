@@ -40,5 +40,11 @@ public: // メンバ関数
 	void Draw();
 
 private: // メンバ変数
-	
+
+	WorldTransform worldTransform_;
+	ViewProjection viewProjection_;
+	//3Dモデル
+	std::unique_ptr<Model> model_{};
+
+	uint32_t texHandle_ = 0;
 };

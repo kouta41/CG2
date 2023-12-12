@@ -8,8 +8,15 @@ GameScene::~GameScene() {
 
 // 初期化
 void GameScene::Initialize() {
+	worldTransform_.Initialize();
+	viewProjection_.Initialize();
 
-	
+
+	model_.reset(Model::CreateObj("cube.obj"));
+
+	texHandle_= TextureManager::Load("resources/goal.png");
+	model_->SetTexHandle(texHandle_);
+
 
 }
 
