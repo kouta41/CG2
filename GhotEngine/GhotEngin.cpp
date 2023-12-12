@@ -21,6 +21,9 @@ void Engine::Initialize() {
 	GraphicsPipeline::Initialize();
 	TextureManager::GetInstance()->Initialize();
 
+	//ゲームシーンの初期化
+	gameScene_ = new GameScene();
+	gameScene_->Initialize();
 	
 	// ImGuiの初期化
 	imguiManager_ = ImGuiManager::GetInstance();
@@ -44,14 +47,15 @@ void Engine::Run() {
 		//imgui受付開始
 		imguiManager_->Begin();
 
-	
-
+		//ゲームシーンの更新
+		gameScene_->Update();
 		//imguiManager_->End();
 
 		// 描画前処理
 		dxCommon_->PreDraw();
 
-		
+		//ゲームシーンの描画
+		gameScene_->Draw();
 
 		imguiManager_->End();
 

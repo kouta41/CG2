@@ -29,4 +29,5 @@ private:
 	WinApp* win_;
 	DirectXCommon* dxCommon_;
 	ImGuiManager* imguiManager_;
+	GameScene* gameScene_;
 };
