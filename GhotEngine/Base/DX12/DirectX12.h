@@ -7,6 +7,7 @@
 #include <dxgi1_6.h>
 #include <cassert>
 #include <wrl.h>
+#include <chrono>
 #pragma comment(lib, "d3d12.lib")
 #pragma comment(lib, "dxgi.lib")
 #pragma comment(lib, "dxguid.lib")
@@ -68,6 +69,14 @@ public: // メンバ関数
 
 	/// 深度バッファ生成
 	void CreateDepthBuffer();
+
+private: // メンバ関数
+	//FPS固定初期化
+	void InitializeFixFPS();
+	//FPS固定更新
+	void UpdateFixFPS();
+	//記録時間(FPS固定用)
+	std::chrono::steady_clock::time_point reference_;
 
 private: // メンバ関数
 	DirectXCommon() = default;

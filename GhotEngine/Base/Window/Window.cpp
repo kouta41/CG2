@@ -1,5 +1,6 @@
 #include "Window.h"
 #include <string>
+#pragma comment(lib,"winmm.lib")
 
 WinApp* WinApp::GetInstance() {
 	static WinApp instance;
